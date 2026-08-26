@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="/favicon.png">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>rate my username.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">
+    <svg class="logo-mark" width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <rect x="1.5" y="1.5" width="27" height="27" rx="8" fill="#FFFFFF" stroke="#15151B" stroke-width="2"/>
+      <text x="15" y="20.5" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="15" fill="#FF4222">@</text>
+    </svg>
+    <span class="dot"></span><span class="logo-text">rate my username<span class="logo-period">.</span></span>
+  </div>
+  <div class="badge">no login. no cap.</div>
+</header>
+
+<main>
+  <div class="stage">
+
+    <!-- ============ RATE VIEW ============ -->
+    <section id="view-home" class="view view-enter">
+      <div class="hero">
+        <p class="kicker">rate my username.</p>
+        <h1 class="headline">is your <span class="accent">@</span> actually tuff?</h1>
+        <p class="sub">type it in. find out. no signup, nothing saved.</p>
+
+        <form id="rate-form" autocomplete="off">
+          <div class="input-row">
+            <input id="rate-input" class="mono" type="text" placeholder="@ enter your username" maxlength="40" aria-label="username to rate" />
+            <button type="submit" class="btn btn-primary">rate it →</button>
+          </div>
+          <p id="rate-error" class="error-msg">type something first, we can't rate silence.</p>
+        </form>
+
+        <div class="switcher">
+          <p class="or-divider"><span>or</span></p>
+          <button type="button" id="go-compare" class="btn btn-secondary">compare 2 usernames <span class="accent">⚔️</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LOADING VIEW ============ -->
+    <section id="view-loading" class="view" hidden>
+      <div class="loading-wrap">
+        <div class="loading-orb" aria-hidden="true">
+          <span class="orb-ring orb-ring-1"></span>
+          <span class="orb-ring orb-ring-2"></span>
+          <span class="orb-ring orb-ring-3"></span>
+        </div>
+        <p id="loading-text" class="loading-text mono">calculating aura...</p>
+      </div>
+    </section>
+
+    <!-- ============ RESULT VIEW ============ -->
+    <section id="view-result" class="view" hidden>
+      <div class="result-wrap">
+        <div class="stub" id="result-stub">
+          <div class="stub-handle"><span></span></div>
+          <div id="stamp" class="stamp">cert.</div>
+          <div class="handle-row">
+            <span id="res-avatar" class="avatar" aria-hidden="true"></span>
+            <p id="res-handle" class="handle-name mono">@username</p>
+          </div>
+          <div class="score-big">
+            <span id="res-score" class="score-num">0</span>
+            <span class="score-den mono">/100</span>
+          </div>
+          <p id="res-comment" class="verdict-line">""</p>
+          <p id="res-verdict" class="verdict-sub"></p>
+
+          <div class="stub-tear"></div>
+
+          <div class="cats" id="res-cats"></div>
+        </div>
+
+        <div class="result-actions">
+          <button type="button" id="rate-another" class="btn btn-outline">rate another →</button>
+          <button type="button" id="share-btn" class="btn btn-outline share">share score ↗</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ COMPARE INPUT VIEW ============ -->
+    <section id="view-compare" class="view" hidden>
+      <div class="hero">
+        <p class="kicker">// two enter, one wins</p>
+        <h1 class="headline">compare 2 usernames <span class="accent">⚔️</span></h1>
+        <p class="sub">pick your fighters.</p>
+
+        <form id="compare-form" autocomplete="off">
+          <div class="compare-inputs">
+            <div class="compare-field">
+              <input id="cmp-input-1" class="mono" type="text" placeholder="@username1" maxlength="40" aria-label="first username" />
+            </div>
+            <div class="vs-badge">vs</div>
+            <div class="compare-field">
+              <input id="cmp-input-2" class="mono" type="text" placeholder="@username2" maxlength="40" aria-label="second username" />
+            </div>
+          </div>
+          <p id="compare-error" class="error-msg" style="text-align:center;">enter both usernames to start the fight.</p>
+          <div class="compare-cta-row">
+            <button type="submit" class="btn btn-primary">compare →</button>
+          </div>
+        </form>
+
+        <div class="switcher">
+          <button type="button" id="go-home" class="btn btn-ghost">← back to rating</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ COMPARE RESULT VIEW ============ -->
+    <section id="view-versus" class="view" hidden>
+      <div class="versus-result">
+        <div class="versus-cards">
+          <div id="vcard-1" class="vcard">
+            <span class="crown">👑</span>
+            <p class="v-handle mono">@username1</p>
+            <p class="v-score" id="v1-score">0</p>
+          </div>
+          <div class="vs-mid">vs</div>
+          <div id="vcard-2" class="vcard">
+            <span class="crown">👑</span>
+            <p class="v-handle mono">@username2</p>
+            <p class="v-score" id="v2-score">0</p>
+          </div>
+        </div>
+
+        <p id="win-banner" class="win-banner"></p>
+        <p id="win-verdict" class="win-verdict"></p>
+
+        <div class="cat-compare" id="cat-compare"></div>
+
+        <div class="result-actions">
+          <button type="button" id="run-it-back" class="btn btn-outline">run it back →</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<a
+  class="instagram-tab"
+  href="https://www.instagram.com/officialratemyusername/"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Join us on Instagram"
+>
+  <span class="instagram-tab-icon" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="ig-grad" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#FFDB6B"/>
+          <stop offset="0.35" stop-color="#FF4222"/>
+          <stop offset="0.68" stop-color="#D6249F"/>
+          <stop offset="1" stop-color="#5B51D8"/>
+        </linearGradient>
+      </defs>
+      <rect x="2.25" y="2.25" width="19.5" height="19.5" rx="6.2" stroke="url(#ig-grad)" stroke-width="2"/>
+      <circle cx="12" cy="12" r="4.6" stroke="url(#ig-grad)" stroke-width="2"/>
+      <circle cx="17.7" cy="6.3" r="1.35" fill="url(#ig-grad)"/>
+    </svg>
+  </span>
+  <span class="instagram-tab-text mono">join us on instagram</span>
+</a>
+
+<section class="about-section" id="about">
+  <div class="about-inner">
+    <button type="button" id="about-toggle" class="about-toggle mono" aria-expanded="false" aria-controls="about-content">
+      about rate my username. <span class="about-toggle-icon" aria-hidden="true">+</span>
+    </button>
+    <div class="about-content" id="about-content">
+      <div class="about-content-inner">
+        <h2 class="about-title">think your <span class="accent">@</span> is actually tuff?</h2>
+        <p class="about-text">rate my username gives your username a completely unbiased internet-style rating — from aura and originality to pure memorability.</p>
+        <p class="about-text">no sign-ups. no complicated stuff. just enter your @, get your score, and find out if you cooked or need a rebrand.</p>
+        <p class="about-text">got a friend with a questionable username? put two @s head-to-head and see who wins.</p>
+        <p class="about-tagline">made for fun. judged by questionable science. 💀</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="credit">ratemyusername.local — screenshots encouraged, receipts not included</footer>
+
+<!-- ============ SHARE OVERLAY ============ -->
+<div id="share-overlay" class="share-overlay">
+  <div class="share-panel">
+    <canvas id="share-canvas" width="640" height="800"></canvas>
+    <div class="share-actions">
+      <button type="button" id="share-download" class="btn btn-outline share">download ↓</button>
+      <button type="button" id="share-native" class="btn btn-outline" style="display:none;">share…</button>
+    </div>
+    <button type="button" id="share-close" class="share-close">close</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

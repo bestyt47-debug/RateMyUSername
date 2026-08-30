@@ -198,11 +198,16 @@
     return COMPARE_LINES.blowout[Math.floor(Math.random() * COMPARE_LINES.blowout.length)];
   }
 
+  function cssVar(name, fallback){
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name);
+    return v && v.trim() ? v.trim() : fallback;
+  }
+
   function colorForScore(score){
-    if (score >= 90) return "#17C989"; // green
-    if (score >= 75) return "#FFCF3F"; // yellow
-    if (score >= 50) return "#2E52FF"; // blue
-    return "#FF4222"; // red
+    if (score >= 90) return cssVar("--mint", "#17C989");
+    if (score >= 75) return cssVar("--yellow", "#FFCF3F");
+    if (score >= 50) return cssVar("--blue", "#2E52FF");
+    return cssVar("--red", "#FF4222");
   }
 
   /* ========================================================
@@ -731,6 +736,30 @@
       aboutToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
       const icon = aboutToggle.querySelector(".about-toggle-icon");
       if (icon) icon.textContent = isOpen ? "×" : "+";
+    });
+  }
+
+  /* ---------- light / dark theme toggle ---------- */
+  const THEME_KEY = "rmu-theme";
+  const themeToggle = document.getElementById("theme-toggle");
+  const rootEl = document.documentElement;
+
+  function storeTheme(theme){
+    try{ localStorage.setItem(THEME_KEY, theme); } catch(e){ /* storage unavailable */ }
+  }
+  function applyTheme(theme){
+    rootEl.setAttribute("data-theme", theme);
+    if (themeToggle) themeToggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+  }
+
+  // sync toggle state with whatever the anti-flash inline script already set
+  applyTheme(rootEl.getAttribute("data-theme") === "dark" ? "dark" : "light");
+
+  if (themeToggle){
+    themeToggle.addEventListener("click", function(){
+      const next = rootEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      applyTheme(next);
+      storeTheme(next);
     });
   }
 

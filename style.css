@@ -205,7 +205,7 @@
   }
 
   /* ---------- hero ---------- */
-  .hero{ text-align:center; padding-top: 58px; }
+  .hero{ text-align:center; padding-top: 58px; position: relative; }
   .kicker{
     font-family:'JetBrains Mono', monospace;
     font-size: 12px;
@@ -905,6 +905,127 @@
     .instagram-tab:hover{ transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink); }
     .instagram-tab:active{ transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--ink); }
     .instagram-tab-text{ writing-mode: horizontal-tb; transform: none; font-size: 11px; }
+  }
+
+  /* ---------- tips bar (left side) ---------- */
+  .tips-tab{
+    position: fixed;
+    top: 50%;
+    left: 18px;
+    transform: translateY(-50%);
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 88px;
+    padding: 24px 12px;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    font: inherit;
+    color: var(--ink);
+    text-align: center;
+    transition: transform .18s cubic-bezier(.2,.9,.25,1), box-shadow .18s cubic-bezier(.2,.9,.25,1), background .18s ease;
+  }
+  .tips-tab:hover{
+    transform: translateY(-50%) translate(-2px,-2px);
+    box-shadow: 5px 5px 0 var(--ink);
+    background: var(--yellow);
+  }
+  .tips-tab:active{
+    transform: translateY(-50%) translate(0,0);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .tips-tab-icon{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink: 0;
+    font-size: 24px;
+    line-height: 1;
+  }
+  .tips-tab-text{
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    text-transform: lowercase;
+    line-height: 1.35;
+  }
+
+  /* ---------- arrow pointing at the tips bar ---------- */
+  .tips-tab-arrow{
+    position: absolute;
+    top: 50%;
+    right: -38px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--red);
+    pointer-events: none;
+    animation: tips-arrow-nudge 1.6s ease-in-out infinite;
+  }
+  .tips-tab-arrow svg{ display:block; }
+  @keyframes tips-arrow-nudge{
+    0%, 100%{ transform: translateY(-50%) translateX(6px); opacity: .55; }
+    50%{ transform: translateY(-50%) translateX(-2px); opacity: 1; }
+  }
+
+  @media (max-width: 900px){
+    .tips-tab{
+      top: auto;
+      bottom: 18px;
+      left: 14px;
+      transform: none;
+      flex-direction: row;
+      width: auto;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 10px 16px;
+    }
+    .tips-tab:hover{ transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink); }
+    .tips-tab:active{ transform: translate(0,0); box-shadow: 1px 1px 0 var(--ink); }
+    .tips-tab-icon{ font-size: 16px; }
+    .tips-tab-text{ font-size: 11px; line-height: 1; }
+    .tips-tab-text br{ display: none; }
+    .tips-tab-arrow{ display: none; }
+  }
+
+  /* ---------- tips panel content (reuses .share-panel/.share-overlay chrome) ---------- */
+  .tips-panel{
+    max-width: 380px;
+    text-align: left;
+  }
+  .tips-kicker{
+    margin: 0 0 6px;
+    text-align: left;
+  }
+  .tips-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+  }
+  .tips-list{
+    margin: 0 0 6px;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .tips-list li{
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    padding-left: 4px;
+  }
+  .tips-list li::marker{
+    color: var(--red);
+    font-weight: 700;
   }
 
   /* ---------- about section ---------- */

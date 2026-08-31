@@ -468,10 +468,13 @@
      COMPARE FLOW
      ======================================================== */
 
-  document.getElementById("go-compare").addEventListener("click", function(){
-    showView("compare");
-    setTimeout(() => document.getElementById("cmp-input-1").focus(), 200);
-  });
+  const goCompareBtn = document.getElementById("go-compare");
+  if (goCompareBtn){
+    goCompareBtn.addEventListener("click", function(){
+      showView("compare");
+      setTimeout(() => document.getElementById("cmp-input-1").focus(), 200);
+    });
+  }
   document.getElementById("go-home").addEventListener("click", function(){ showView("home"); });
 
   const compareForm = document.getElementById("compare-form");
@@ -748,6 +751,229 @@
       }
     });
   }
+
+  /* ---------- try these: tool shortcut cards ---------- */
+  const toolRate = document.getElementById("tool-rate");
+  const toolCompare = document.getElementById("tool-compare");
+
+  if (toolRate){
+    toolRate.addEventListener("click", function(){
+      showView("home");
+      const input = document.getElementById("rate-input");
+      if (input) input.focus();
+    });
+  }
+  if (toolCompare){
+    toolCompare.addEventListener("click", function(){
+      const goCompare = document.getElementById("go-compare");
+      if (goCompare){
+        goCompare.click();
+      } else if (typeof showView === "function"){
+        showView("compare");
+        setTimeout(() => {
+          const cmp1 = document.getElementById("cmp-input-1");
+          if (cmp1) cmp1.focus();
+        }, 200);
+      }
+    });
+  }
+
+  /* ---------- get og bio modal ---------- */
+  (function(){
+    const toolOgbio = document.getElementById("tool-ogbio");
+    const overlay = document.getElementById("ogbio-overlay");
+    if (!toolOgbio || !overlay) return;
+
+    const closeBtn = document.getElementById("ogbio-close");
+    const closeX = document.getElementById("ogbio-close-x");
+    const stepIdentity = document.getElementById("ogbio-step-identity");
+    const stepNext = document.getElementById("ogbio-step-next");
+    const identityCards = Array.from(document.querySelectorAll(".identity-card"));
+    const continueBtn = document.getElementById("ogbio-continue");
+    const backBtn = document.getElementById("ogbio-back");
+    const selectedSummary = document.getElementById("ogbio-selected-summary");
+    const regenerateBtn = document.getElementById("ogbio-regenerate");
+    const copyBtn = document.getElementById("ogbio-copy");
+    const bioTextEl = document.getElementById("ogbio-bio-text");
+
+    const identityLabels = {
+      gamer: "🎮 Gamer",
+      creator: "🎨 Creator",
+      social: "📱 Social",
+      memelord: "😂 Meme Lord",
+      music: "🎧 Music",
+      justme: "✨ Just Me"
+    };
+
+    // Bio lines are only defined (and only shown) for the Gamer identity.
+    // Every other identity falls back to a "coming soon" state.
+    const BIO_LINES_BY_IDENTITY = {
+      gamer: [
+        "Not for everyone, exactly how I like it.",
+        "Main character energy, side character patience.",
+        "Living quiet, moving smart, staying unbothered.",
+        "Some things are better left unexplained.",
+        "Not lost, just taking the long way.",
+        "Soft spoken, hard to read, easy to love.",
+        "Chasing peace more than I chase clout.",
+        "Certain things just aren't meant for everyone.",
+        "Built my own lane, still adding lanes.",
+        "Low profile, high standards, no explanations.",
+        "Not everything in my life deserves a caption.",
+        "Here for the story, not the spotlight.",
+        "Growing in silence, glowing without warning.",
+        "Not competing, just quietly outlasting everyone.",
+        "Some chapters just aren't for the timeline.",
+        "Calm exterior, chaotic playlist, honest heart.",
+        "Doing my own thing, no commentary needed.",
+        "Mysterious by choice, not by accident.",
+        "Still figuring it out, still winning quietly.",
+        "Energy speaks louder than any caption could.",
+        "Not chasing trends, just chasing better days.",
+        "Present but private, that's the whole vibe.",
+        "Some things you just have to witness.",
+        "Living proof that quiet can be loud.",
+        "Not lost in the noise, just above it."
+      ]
+    };
+
+    const COMING_SOON_TEXT = "Coming soon 🚧";
+
+    let selectedIdentity = null;
+    let lastBioIndex = -1;
+
+    function hasBioLines(identity){
+      const lines = BIO_LINES_BY_IDENTITY[identity];
+      return Array.isArray(lines) && lines.length > 0;
+    }
+
+    function pickBioLine(identity){
+      const lines = BIO_LINES_BY_IDENTITY[identity];
+      if (!lines || !lines.length) return COMING_SOON_TEXT;
+      if (lines.length < 2){
+        return lines[0];
+      }
+      let idx = lastBioIndex;
+      while (idx === lastBioIndex){
+        idx = Math.floor(Math.random() * lines.length);
+      }
+      lastBioIndex = idx;
+      return lines[idx];
+    }
+
+    function showNewBio(){
+      const isComingSoon = !hasBioLines(selectedIdentity);
+      const resultBox = document.getElementById("ogbio-result-box");
+      const loadingEl = document.getElementById("ogbio-bio-loading");
+
+      function applyBio(){
+        if (bioTextEl) bioTextEl.textContent = isComingSoon ? COMING_SOON_TEXT : pickBioLine(selectedIdentity);
+        if (resultBox) resultBox.classList.toggle("is-coming-soon", isComingSoon);
+
+        // Regenerate/copy only make sense once there's an actual bio to work with.
+        if (regenerateBtn) regenerateBtn.hidden = isComingSoon;
+        if (copyBtn) copyBtn.hidden = isComingSoon;
+
+        if (copyBtn) copyBtn.classList.remove("is-copied");
+        if (copyBtn) copyBtn.textContent = "copy";
+      }
+
+      if (isComingSoon){
+        applyBio();
+        return;
+      }
+
+      if (resultBox) resultBox.classList.add("is-loading");
+      if (regenerateBtn) regenerateBtn.disabled = true;
+      if (loadingEl) loadingEl.setAttribute("aria-hidden", "false");
+
+      const delay = 500 + Math.random() * 500; // 0.5s - 1s
+      window.setTimeout(function(){
+        applyBio();
+        if (resultBox) resultBox.classList.remove("is-loading");
+        if (regenerateBtn) regenerateBtn.disabled = false;
+        if (loadingEl) loadingEl.setAttribute("aria-hidden", "true");
+      }, delay);
+    }
+
+    function resetModal(){
+      selectedIdentity = null;
+      identityCards.forEach(function(c){ c.setAttribute("aria-selected", "false"); });
+      if (continueBtn) continueBtn.disabled = true;
+      if (stepIdentity) stepIdentity.hidden = false;
+      if (stepNext) stepNext.hidden = true;
+    }
+
+    function openOverlay(){
+      resetModal();
+      overlay.classList.add("open");
+    }
+    function closeOverlay(){
+      overlay.classList.remove("open");
+    }
+
+    toolOgbio.addEventListener("click", openOverlay);
+    if (closeBtn) closeBtn.addEventListener("click", closeOverlay);
+    if (closeX) closeX.addEventListener("click", closeOverlay);
+    overlay.addEventListener("click", function(e){
+      if (e.target === overlay) closeOverlay();
+    });
+    document.addEventListener("keydown", function(e){
+      if (e.key === "Escape" && overlay.classList.contains("open")) closeOverlay();
+    });
+
+    identityCards.forEach(function(card){
+      card.addEventListener("click", function(){
+        identityCards.forEach(function(c){ c.setAttribute("aria-selected", "false"); });
+        card.setAttribute("aria-selected", "true");
+        selectedIdentity = card.getAttribute("data-identity");
+        if (continueBtn) continueBtn.disabled = false;
+      });
+    });
+
+    if (continueBtn){
+      continueBtn.addEventListener("click", function(){
+        if (!selectedIdentity) return;
+        if (selectedSummary){
+          selectedSummary.textContent = "you picked: " + (identityLabels[selectedIdentity] || selectedIdentity);
+        }
+        if (stepIdentity) stepIdentity.hidden = true;
+        if (stepNext) stepNext.hidden = false;
+        showNewBio();
+      });
+    }
+
+    if (regenerateBtn){
+      regenerateBtn.addEventListener("click", showNewBio);
+    }
+
+    if (copyBtn){
+      copyBtn.addEventListener("click", function(){
+        const text = bioTextEl ? bioTextEl.textContent : "";
+        if (!text) return;
+        function markCopied(){
+          copyBtn.textContent = "copied ✓";
+          copyBtn.classList.add("is-copied");
+          setTimeout(function(){
+            copyBtn.textContent = "copy";
+            copyBtn.classList.remove("is-copied");
+          }, 1500);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(markCopied).catch(function(){
+            /* clipboard unavailable — fail silently */
+          });
+        }
+      });
+    }
+
+    if (backBtn){
+      backBtn.addEventListener("click", function(){
+        if (stepNext) stepNext.hidden = true;
+        if (stepIdentity) stepIdentity.hidden = false;
+      });
+    }
+  })();
 
   /* ---------- collapsible about section ---------- */
   const aboutSection = document.getElementById("about");

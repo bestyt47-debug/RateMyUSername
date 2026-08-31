@@ -727,6 +727,28 @@
     }, "image/png");
   });
 
+  /* ---------- tips for better usernames overlay ---------- */
+  const tipsTab = document.getElementById("tips-tab");
+  const tipsOverlay = document.getElementById("tips-overlay");
+  const tipsClose = document.getElementById("tips-close");
+
+  if (tipsTab && tipsOverlay && tipsClose){
+    tipsTab.addEventListener("click", function(){
+      tipsOverlay.classList.add("open");
+    });
+    tipsClose.addEventListener("click", function(){
+      tipsOverlay.classList.remove("open");
+    });
+    tipsOverlay.addEventListener("click", function(e){
+      if (e.target === tipsOverlay) tipsOverlay.classList.remove("open");
+    });
+    document.addEventListener("keydown", function(e){
+      if (e.key === "Escape" && tipsOverlay.classList.contains("open")){
+        tipsOverlay.classList.remove("open");
+      }
+    });
+  }
+
   /* ---------- collapsible about section ---------- */
   const aboutSection = document.getElementById("about");
   const aboutToggle = document.getElementById("about-toggle");

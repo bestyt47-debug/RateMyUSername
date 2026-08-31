@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script defer src="https://cloud.umami.is/script.js" data-website-id="04ed4637-fdeb-4a08-853e-c8676ed534b6"></script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -67,6 +66,7 @@
           <p class="or-divider"><span>or</span></p>
           <button type="button" id="go-compare" class="btn btn-secondary">compare 2 usernames <span class="accent">⚔️</span></button>
         </div>
+
       </div>
     </section>
 
@@ -171,6 +171,23 @@
   </div>
 </main>
 
+<button
+  type="button"
+  id="tips-tab"
+  class="tips-tab"
+  aria-haspopup="dialog"
+  aria-controls="tips-overlay"
+  aria-label="Open tips for better usernames"
+>
+  <span class="tips-tab-icon" aria-hidden="true">💡</span>
+  <span class="tips-tab-text mono">tips for a<br>better @</span>
+  <span class="tips-tab-arrow" aria-hidden="true">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 12H4M4 12l6-6M4 12l6 6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>
+</button>
+
 <a
   class="instagram-tab"
   href="https://www.instagram.com/officialratemyusername/"
@@ -214,6 +231,27 @@
 </section>
 
 <footer class="credit">ratemyusername.local — screenshots encouraged, receipts not included</footer>
+
+<!-- ============ TIPS OVERLAY ============ -->
+<div id="tips-overlay" class="share-overlay" role="dialog" aria-modal="true" aria-labelledby="tips-title">
+  <div class="share-panel tips-panel">
+    <p class="kicker tips-kicker">// level up your @</p>
+    <h3 id="tips-title" class="tips-title">tips for better usernames</h3>
+    <ol class="tips-list mono">
+      <li>Keep it short &amp; simple.</li>
+      <li>Make it easy to remember.</li>
+      <li>Avoid unnecessary numbers.</li>
+      <li>Don't overuse underscores.</li>
+      <li>Keep the spelling easy.</li>
+      <li>Make it match your vibe.</li>
+      <li>Avoid too many special characters.</li>
+      <li>Make it easy to say out loud.</li>
+      <li>Keep it unique.</li>
+      <li>Think long-term before choosing.</li>
+    </ol>
+    <button type="button" id="tips-close" class="share-close">close</button>
+  </div>
+</div>
 
 <!-- ============ SHARE OVERLAY ============ -->
 <div id="share-overlay" class="share-overlay">

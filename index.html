@@ -15,9 +15,7 @@
 <script>
   (function(){
     try{
-      var saved = localStorage.getItem("rmu-theme");
-      var theme = (saved === "dark" || saved === "light") ? saved : "light";
-      document.documentElement.setAttribute("data-theme", theme);
+      document.documentElement.setAttribute("data-theme", "light");
     } catch(e) {}
   })();
 </script>
@@ -64,9 +62,26 @@
           <p id="rate-error" class="error-msg">type something first, we can't rate silence.</p>
         </form>
 
-        <div class="switcher">
-          <p class="or-divider"><span>or</span></p>
-          <button type="button" id="go-compare" class="btn btn-secondary">compare 2 usernames <span class="accent">⚔️</span></button>
+        <div class="try-these" id="try-these">
+          <p class="tt-kicker">😎 Must try these!</p>
+          <div class="tool-grid">
+            <button type="button" class="tool-card" id="tool-rate" data-tool="rate">
+              <span class="tool-emoji" aria-hidden="true">⭐</span>
+              <span class="tool-name">Rate My Username</span>
+              <span class="tool-desc">score your @ out of 100</span>
+            </button>
+            <button type="button" class="tool-card" id="tool-compare" data-tool="compare">
+              <span class="tool-emoji" aria-hidden="true">⚔️</span>
+              <span class="tool-name">Compare 2 Usernames</span>
+              <span class="tool-desc">put two @s head-to-head</span>
+            </button>
+            <button type="button" class="tool-card tool-card-new" id="tool-ogbio" data-tool="ogbio" aria-haspopup="dialog" aria-controls="ogbio-overlay">
+              <span class="tool-badge mono">new</span>
+              <span class="tool-emoji" aria-hidden="true">🗿</span>
+              <span class="tool-name">Get OG Bio <span aria-hidden="true">🗿</span></span>
+              <span class="tool-desc">a certified og bio for your @</span>
+            </button>
+          </div>
         </div>
 
       </div>
@@ -252,6 +267,76 @@
       <li>Think long-term before choosing.</li>
     </ol>
     <button type="button" id="tips-close" class="share-close">close</button>
+  </div>
+</div>
+
+<!-- ============ GET OG BIO OVERLAY ============ -->
+<div id="ogbio-overlay" class="share-overlay" role="dialog" aria-modal="true" aria-labelledby="ogbio-title">
+  <div class="share-panel ogbio-panel">
+    <button type="button" id="ogbio-close-x" class="ogbio-close-x" aria-label="Close get OG bio">×</button>
+
+    <!-- STEP 1: identity select -->
+    <div class="ogbio-step" id="ogbio-step-identity" data-step="identity">
+      <p class="kicker ogbio-kicker">Get OG Bio's 🗿</p>
+      <h3 id="ogbio-title" class="ogbio-title">Select Your Identity</h3>
+      <p class="ogbio-sub">Choose what fits you best.</p>
+
+      <div class="identity-grid" id="identity-grid" role="listbox" aria-label="Select your identity">
+        <button type="button" class="identity-card" data-identity="gamer" role="option" aria-selected="false">
+          <span class="identity-emoji" aria-hidden="true">🎮</span>
+          <span class="identity-label">Gamer</span>
+        </button>
+        <button type="button" class="identity-card is-coming-soon" data-identity="creator" role="option" aria-selected="false" aria-disabled="true" disabled>
+          <span class="identity-badge">coming soon</span>
+          <span class="identity-emoji" aria-hidden="true">🎨</span>
+          <span class="identity-label">Creator</span>
+        </button>
+        <button type="button" class="identity-card is-coming-soon" data-identity="social" role="option" aria-selected="false" aria-disabled="true" disabled>
+          <span class="identity-badge">coming soon</span>
+          <span class="identity-emoji" aria-hidden="true">📱</span>
+          <span class="identity-label">Social</span>
+        </button>
+        <button type="button" class="identity-card is-coming-soon" data-identity="memelord" role="option" aria-selected="false" aria-disabled="true" disabled>
+          <span class="identity-badge">coming soon</span>
+          <span class="identity-emoji" aria-hidden="true">😂</span>
+          <span class="identity-label">Meme Lord</span>
+        </button>
+        <button type="button" class="identity-card is-coming-soon" data-identity="music" role="option" aria-selected="false" aria-disabled="true" disabled>
+          <span class="identity-badge">coming soon</span>
+          <span class="identity-emoji" aria-hidden="true">🎧</span>
+          <span class="identity-label">Music</span>
+        </button>
+        <button type="button" class="identity-card is-coming-soon" data-identity="justme" role="option" aria-selected="false" aria-disabled="true" disabled>
+          <span class="identity-badge">coming soon</span>
+          <span class="identity-emoji" aria-hidden="true">✨</span>
+          <span class="identity-label">Just Me</span>
+        </button>
+      </div>
+
+      <button type="button" id="ogbio-continue" class="btn btn-primary ogbio-continue" disabled>continue →</button>
+    </div>
+
+    <!-- STEP 2: generated bio result -->
+    <div class="ogbio-step" id="ogbio-step-next" data-step="next" hidden>
+      <p class="kicker ogbio-kicker">// locked in</p>
+      <h3 class="ogbio-title">your og bio 🗿</h3>
+      <p class="ogbio-sub" id="ogbio-selected-summary">you picked: —</p>
+      <div class="ogbio-result-box mono" id="ogbio-result-box">
+        <p id="ogbio-bio-text" class="ogbio-bio-text">—</p>
+        <div id="ogbio-bio-loading" class="ogbio-bio-loading" aria-hidden="true">
+          <span class="ogbio-dot"></span>
+          <span class="ogbio-dot"></span>
+          <span class="ogbio-dot"></span>
+        </div>
+      </div>
+      <div class="ogbio-btn-row">
+        <button type="button" id="ogbio-regenerate" class="btn btn-primary ogbio-regenerate">regenerate ↻</button>
+        <button type="button" id="ogbio-copy" class="btn btn-outline ogbio-copy">copy</button>
+      </div>
+      <button type="button" id="ogbio-back" class="btn btn-ghost">← back to identities</button>
+    </div>
+
+    <button type="button" id="ogbio-close" class="share-close">close</button>
   </div>
 </div>
 

@@ -1600,3 +1600,26 @@
     color: var(--ink);
     margin: 14px 0 0;
   }
+
+  /* ---------- blog nav/footer links (additive, homepage untouched otherwise) ---------- */
+  .nav-blog-link{
+    text-decoration: none;
+    margin-right: 8px;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink);
+    border-color: var(--line);
+    transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+  }
+  .nav-blog-link:hover{
+    background: var(--yellow);
+    transform: translate(-1px, -1px);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .footer-blog-link{
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .footer-blog-link:hover{ color: var(--ink); }

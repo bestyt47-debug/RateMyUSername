@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script defer src="https://cloud.umami.is/script.js" data-website-id="04ed4637-fdeb-4a08-853e-c8676ed534b6"></script>
-<link rel="icon" type="image/png" href="/Favicon.png">
+<link rel="icon" type="image/png" href="/favicon.png">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="google-site-verification" content="6liRt7sSZLzX1MMLntCGgpT1fMaqrPw9pgbddLtZngQ" />
-<title>Rate My Username | Vibe Check Your Handles</title>
-<link rel="canonical" href="https://ratemyusername.fun" />
+<title>rate my username.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -28,7 +26,7 @@
       <rect class="logo-mark-rect" x="1.5" y="1.5" width="27" height="27" rx="8" fill="#FFFFFF" stroke="#15151B" stroke-width="2"/>
       <text x="15" y="20.5" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="15" fill="#FF4222">@</text>
     </svg>
-    <span class="dot"></span><span class="logo-text">rate my username<span class="logo-period">.</span></span>
+    <span class="dot"></span><span class="logo-text">Rate My Username<span class="logo-period">.</span></span>
   </div>
   <div class="topbar-right">
     <div class="badge">no login. no cap.</div>
@@ -80,6 +78,11 @@
               <span class="tool-emoji" aria-hidden="true">🗿</span>
               <span class="tool-name">Get OG Bio <span aria-hidden="true">🗿</span></span>
               <span class="tool-desc">a certified og bio for your @</span>
+            </button>
+            <button type="button" class="tool-card" id="tool-championship" data-tool="championship">
+              <span class="tool-emoji" aria-hidden="true">🏆</span>
+              <span class="tool-name">Ultimate Username Championship</span>
+              <span class="tool-desc">battle it out for the crown</span>
             </button>
           </div>
         </div>
@@ -181,6 +184,200 @@
 
         <div class="result-actions">
           <button type="button" id="run-it-back" class="btn btn-outline">run it back →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CHAMPIONSHIP INPUT VIEW ============ -->
+    <section id="view-championship" class="view" hidden>
+      <div class="hero">
+        <button
+          type="button"
+          id="champ-how-btn"
+          class="champ-how-btn"
+          aria-haspopup="dialog"
+          aria-controls="champ-how-overlay"
+        >
+          <span aria-hidden="true">❓</span> How this works?
+        </button>
+        <p class="kicker kicker-cinematic"><span class="accent">#1</span> Battle</p>
+        <h1 class="headline">the ultimate username championship <span class="accent">🏆</span></h1>
+        <p class="sub">two usernames enter. one leaves champion.</p>
+
+        <form id="championship-form" autocomplete="off">
+          <div class="compare-inputs">
+            <div class="compare-field">
+              <input id="champ-input-1" class="mono" type="text" placeholder="Username A" maxlength="40" aria-label="username a" />
+            </div>
+            <div class="vs-badge">vs</div>
+            <div class="compare-field">
+              <input id="champ-input-2" class="mono" type="text" placeholder="Username B" maxlength="40" aria-label="username b" />
+            </div>
+          </div>
+          <p id="championship-error" class="error-msg" style="text-align:center;">enter both usernames to start the battle.</p>
+          <div class="compare-cta-row">
+            <button type="submit" class="btn btn-primary">Start Battle ⚔️</button>
+          </div>
+        </form>
+
+        <div class="switcher">
+          <button type="button" id="champ-go-home" class="btn btn-ghost">← back to rating</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CHAMPIONSHIP RESULT VIEW ============ -->
+    <section id="view-championship-result" class="view" hidden>
+      <div class="versus-result">
+        <div class="versus-cards">
+          <div id="champ-vcard-1" class="vcard">
+            <span class="crown">👑</span>
+            <p class="v-handle mono">@usernameA</p>
+            <p class="v-score" id="champ-v1-score">0</p>
+          </div>
+          <div class="vs-mid">vs</div>
+          <div id="champ-vcard-2" class="vcard">
+            <span class="crown">👑</span>
+            <p class="v-handle mono">@usernameB</p>
+            <p class="v-score" id="champ-v2-score">0</p>
+          </div>
+        </div>
+
+        <p id="champ-win-banner" class="win-banner">🏆 Winner: @username</p>
+        <div class="score-big">
+          <span id="champ-winner-score" class="score-num">0</span>
+          <span class="score-den mono">/100</span>
+        </div>
+        <p id="champ-win-verdict" class="win-verdict"></p>
+
+        <div class="cat-compare" id="champ-cat-compare"></div>
+
+        <div class="result-actions">
+          <button type="button" id="champ-run-it-back" class="btn btn-outline">battle again →</button>
+        </div>
+
+        <!-- ============ BATTLE 2 ENTRY (reveals once Battle 1's winner is shown) ============ -->
+        <div id="champ-battle2-block" class="champ-battle2-block" hidden>
+          <p class="kicker kicker-cinematic">Battle 2 <span class="accent">⚔️</span></p>
+
+          <form id="championship-form-2" autocomplete="off">
+            <div class="compare-inputs">
+              <div class="compare-field">
+                <input id="champ2-input-1" class="mono" type="text" placeholder="Username C" maxlength="40" aria-label="username c" />
+              </div>
+              <div class="vs-badge">vs</div>
+              <div class="compare-field">
+                <input id="champ2-input-2" class="mono" type="text" placeholder="Username D" maxlength="40" aria-label="username d" />
+              </div>
+            </div>
+            <p id="championship-error-2" class="error-msg" style="text-align:center;">enter both usernames to start the battle.</p>
+            <div class="compare-cta-row">
+              <button type="submit" class="btn btn-primary">Start Battle ⚔️</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ============ BATTLE 2 RESULT ============ -->
+        <div id="champ-battle2-result-block" class="champ-battle2-result-block versus-result" hidden>
+          <div class="versus-cards">
+            <div id="champ2-vcard-1" class="vcard">
+              <span class="crown">👑</span>
+              <p class="v-handle mono">@usernameC</p>
+              <p class="v-score" id="champ2-v1-score">0</p>
+            </div>
+            <div class="vs-mid">vs</div>
+            <div id="champ2-vcard-2" class="vcard">
+              <span class="crown">👑</span>
+              <p class="v-handle mono">@usernameD</p>
+              <p class="v-score" id="champ2-v2-score">0</p>
+            </div>
+          </div>
+
+          <p id="champ2-win-banner" class="win-banner">🏆 Winner: @username</p>
+          <div class="score-big">
+            <span id="champ2-winner-score" class="score-num">0</span>
+            <span class="score-den mono">/100</span>
+          </div>
+          <p id="champ2-win-verdict" class="win-verdict"></p>
+
+          <div class="cat-compare" id="champ2-cat-compare"></div>
+
+          <div class="result-actions">
+            <button type="button" id="champ2-run-it-back" class="btn btn-outline">battle again →</button>
+          </div>
+        </div>
+
+        <!-- ============ SEMIFINAL ENTRY (reveals once Battle 2's winner is shown — contenders are auto-filled from Battle 1 & Battle 2, no re-entry needed) ============ -->
+        <div id="champ-semifinal-block" class="champ-battle2-block" hidden>
+          <p class="kicker kicker-cinematic">Semifinal <span class="accent">⚔️</span></p>
+          <p class="sub semifinal-sub">the two champions collide.</p>
+
+          <div class="compare-inputs">
+            <div class="compare-field semifinal-preview">
+              <p id="semi-preview-1" class="mono">🏆 @winner1</p>
+            </div>
+            <div class="vs-badge">vs</div>
+            <div class="compare-field semifinal-preview">
+              <p id="semi-preview-2" class="mono">🏆 @winner2</p>
+            </div>
+          </div>
+          <div class="compare-cta-row">
+            <button type="button" id="start-semifinal" class="btn btn-primary">Start Semifinal ⚔️</button>
+          </div>
+        </div>
+
+        <!-- ============ SEMIFINAL RESULT ============ -->
+        <div id="champ-semifinal-result-block" class="champ-battle2-result-block versus-result" hidden>
+          <div class="versus-cards">
+            <div id="champ-semi-vcard-1" class="vcard">
+              <span class="crown">👑</span>
+              <p class="v-handle mono">@winner1</p>
+              <p class="v-score" id="champ-semi-v1-score">0</p>
+            </div>
+            <div class="vs-mid">vs</div>
+            <div id="champ-semi-vcard-2" class="vcard">
+              <span class="crown">👑</span>
+              <p class="v-handle mono">@winner2</p>
+              <p class="v-score" id="champ-semi-v2-score">0</p>
+            </div>
+          </div>
+
+          <p id="champ-semi-win-banner" class="win-banner">🏆 Winner: @username</p>
+          <div class="score-big">
+            <span id="champ-semi-winner-score" class="score-num">0</span>
+            <span class="score-den mono">/100</span>
+          </div>
+          <p id="champ-semi-win-verdict" class="win-verdict"></p>
+
+          <div class="cat-compare" id="champ-semi-cat-compare"></div>
+
+          <div class="result-actions">
+            <button type="button" id="champ-semi-run-it-back" class="btn btn-outline">re-run analysis ↻</button>
+          </div>
+        </div>
+
+        <!-- ============ FINAL RESULT (reveals once the Semifinal's winner is shown) ============ -->
+        <div id="champ-final-block" class="champ-battle2-block champ-final-block" hidden>
+          <p class="kicker kicker-cinematic">Final Result <span class="accent">🏆</span></p>
+          <h2 class="champ-final-title">🏆 THE ULTIMATE USERNAME CHAMPION</h2>
+
+          <div class="handle-row">
+            <span id="champ-final-avatar" class="avatar" aria-hidden="true"></span>
+            <p id="champ-final-handle" class="handle-name mono">@winner</p>
+          </div>
+
+          <p class="verdict-sub champ-final-score-label mono">final score</p>
+          <div class="score-big">
+            <span id="champ-final-score" class="score-num">0</span>
+            <span class="score-den mono">/100</span>
+          </div>
+
+          <div class="cats champ-final-cats" id="champ-final-cats"></div>
+
+          <div class="result-actions">
+            <button type="button" id="champ-final-share-btn" class="btn btn-outline share">Share Victory ↗</button>
+            <button type="button" id="champ-final-restart-btn" class="btn btn-outline">Start New Championship →</button>
+          </div>
         </div>
       </div>
     </section>
@@ -344,6 +541,21 @@
       <button type="button" id="share-native" class="btn btn-outline" style="display:none;">share…</button>
     </div>
     <button type="button" id="share-close" class="share-close">close</button>
+  </div>
+</div>
+
+<!-- ============ CHAMPIONSHIP: HOW THIS WORKS OVERLAY ============ -->
+<div id="champ-how-overlay" class="share-overlay" role="dialog" aria-modal="true" aria-labelledby="champ-how-title">
+  <div class="share-panel champ-how-panel">
+    <button type="button" id="champ-how-close-x" class="ogbio-close-x" aria-label="Close how this works">×</button>
+    <h3 id="champ-how-title" class="tips-title">How this works <span aria-hidden="true">🏆</span></h3>
+    <ol class="tips-list mono">
+      <li>Enter 2 usernames and battle them.</li>
+      <li>The winner advances.</li>
+      <li>Enter 2 more usernames for the second battle.</li>
+      <li>Both winners face each other in the semifinal.</li>
+      <li>The final winner becomes the Ultimate Username Champion <span aria-hidden="true">🏆</span></li>
+    </ol>
   </div>
 </div>
 

@@ -215,6 +215,27 @@
     margin: 0 0 16px;
     opacity: .85;
   }
+  /* cinematic variant — used only on the championship "battle" kicker */
+  .kicker.kicker-cinematic{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: clamp(22px, 5.4vw, 36px);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    color: var(--ink);
+    opacity: 1;
+    text-shadow: 3px 3px 0 var(--yellow);
+    margin: 0 0 18px;
+    animation: accent-pop .55s .05s cubic-bezier(.3,1.4,.4,1) both;
+  }
+  .kicker.kicker-cinematic .accent{
+    color: var(--red);
+    -webkit-text-stroke: 1px var(--ink);
+  }
+  @media (max-width: 480px){
+    .kicker.kicker-cinematic{ text-shadow: 2px 2px 0 var(--yellow); }
+  }
   h1.headline{
     font-family:'Space Grotesk', sans-serif;
     font-weight: 900;
@@ -876,6 +897,64 @@
   .cc-fill{ display:block; height:100%; border-radius:6px; }
   .cc-fill.left{ margin-left:auto; }
 
+  /* ---------- championship: battle 2 ----------
+     Layout wrapper only — every visible piece inside reuses the same
+     kicker/compare-field/vcard/win-banner/score-big/cat-compare styles
+     already defined above for Battle 1 & Compare 2 Usernames. */
+  .champ-battle2-block{
+    width:100%;
+    text-align:center;
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 2px dashed var(--line);
+  }
+  .champ-battle2-result-block{
+    width:100%;
+    margin-top: 8px;
+  }
+  .champ-battle2-block.show-battle2,
+  .champ-battle2-result-block.show-battle2{
+    animation: view-in .5s cubic-bezier(.2,.9,.25,1) both;
+  }
+
+  /* ---------- championship: semifinal (auto-filled contenders) ----------
+     Reuses .champ-battle2-block / .champ-battle2-result-block layout above.
+     Only new bit: a centered read-only preview of each auto-advanced
+     champion, styled like .compare-field but without an input. */
+  .semifinal-sub{ margin-top: -4px; }
+  .compare-field.semifinal-preview{
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ---------- championship: final result ----------
+     Reuses .champ-battle2-block wrapper (dashed divider + reveal
+     animation) plus the same .handle-row/.avatar/.handle-name,
+     .score-big/.score-num, and .cats/.cat-row styles as the single
+     Rate My Username result — just centered instead of on a stub. */
+  .champ-final-title{
+    text-align:center;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: clamp(20px, 4.6vw, 28px);
+    line-height: 1.15;
+    margin: 0 0 18px;
+    animation: fade-up-sm .45s .05s cubic-bezier(.2,.9,.25,1) both;
+  }
+  .champ-final-score-label{ margin-bottom: 0; }
+  .champ-final-cats{
+    max-width: 340px;
+    margin: 4px auto 0;
+    text-align: left;
+  }
+
+  .compare-field.semifinal-preview p{
+    width:100%;
+    text-align:center;
+    font-size: 15px;
+    color: var(--ink);
+    margin: 0;
+  }
+
   /* ---------- share overlay ---------- */
   .share-overlay{
     position:fixed; inset:0;
@@ -1130,6 +1209,46 @@
   .tips-list li::marker{
     color: var(--red);
     font-weight: 700;
+  }
+
+  /* ---------- championship: how this works button + overlay ---------- */
+  .champ-how-btn{
+    position: absolute;
+    top: 2px;
+    right: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: var(--card);
+    cursor: pointer;
+    z-index: 2;
+    transition: transform .15s ease, box-shadow .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .champ-how-btn:hover{
+    color: var(--ink);
+    border-color: var(--ink);
+    transform: translate(-1px,-1px);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .champ-how-btn:active{ transform: translate(0,0); box-shadow: none; }
+  .champ-how-panel{
+    max-width: 380px;
+    text-align: left;
+    position: relative;
+    padding: 26px 22px 20px;
+  }
+  @media (max-width: 480px){
+    .champ-how-btn{
+      top: 0;
+      font-size: 10px;
+      padding: 5px 10px;
+    }
   }
 
   /* ---------- get og bio overlay ---------- */
@@ -1398,7 +1517,7 @@
   /* ---------- about section ---------- */
   .about-section{
     width: 100%;
-    max-width: 900px;
+    max-width: 620px;
     padding: 10px 20px 40px;
   }
   .about-inner{
@@ -1406,11 +1525,11 @@
     border: 2px solid var(--line);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    padding: 18px 30px;
+    padding: 14px 20px;
     transition: padding .3s ease;
   }
   .about-section.is-open .about-inner{
-    padding: 26px 30px 34px;
+    padding: 18px 20px 22px;
   }
   .about-toggle{
     display: flex;
@@ -1421,7 +1540,7 @@
     background: none;
     border: none;
     margin: 0;
-    padding: 8px 0;
+    padding: 6px 0;
     font-size: 12px;
     color: var(--ink-soft);
     text-transform: lowercase;
@@ -1434,7 +1553,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1;
     transition: transform .3s ease;
   }
@@ -1464,20 +1583,20 @@
   .about-title{
     font-family:'Space Grotesk', sans-serif;
     font-weight: 900;
-    font-size: 26px;
+    font-size: 19px;
     letter-spacing: -0.02em;
-    margin: 0 0 16px;
+    margin: 0 0 12px;
   }
   .about-text{
-    font-size: 14.5px;
-    line-height: 1.6;
+    font-size: 13px;
+    line-height: 1.55;
     color: var(--ink-soft);
-    margin: 0 0 12px;
+    margin: 0 0 10px;
     max-width: 62ch;
   }
   .about-tagline{
     font-family:'JetBrains Mono', monospace;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--ink);
-    margin: 18px 0 0;
+    margin: 14px 0 0;
   }

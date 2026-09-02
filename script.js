@@ -272,7 +272,9 @@
     loading: document.getElementById("view-loading"),
     result: document.getElementById("view-result"),
     compare: document.getElementById("view-compare"),
-    versus: document.getElementById("view-versus")
+    versus: document.getElementById("view-versus"),
+    championship: document.getElementById("view-championship"),
+    championshipResult: document.getElementById("view-championship-result")
   };
 
   const LOADING_LINES = [
@@ -578,6 +580,527 @@
   });
 
   /* ========================================================
+     THE ULTIMATE USERNAME CHAMPIONSHIP 🏆
+     (same rating engine + same dramatic reveal style as
+     the compare/versus flow above — new copy & entry point only)
+     ======================================================== */
+
+  const toolChampionship = document.getElementById("tool-championship");
+  if (toolChampionship){
+    toolChampionship.addEventListener("click", function(){
+      showView("championship");
+      setTimeout(() => document.getElementById("champ-input-1").focus(), 200);
+    });
+  }
+
+  const champGoHome = document.getElementById("champ-go-home");
+  if (champGoHome){
+    champGoHome.addEventListener("click", function(){ showView("home"); });
+  }
+
+  const championshipForm = document.getElementById("championship-form");
+  const champError = document.getElementById("championship-error");
+
+  // Battle 2 elements (see below, after renderChampionship, for the flow)
+  const champ2Form = document.getElementById("championship-form-2");
+  const champ2Error = document.getElementById("championship-error-2");
+  const champBattle2Block = document.getElementById("champ-battle2-block");
+  const champBattle2ResultBlock = document.getElementById("champ-battle2-result-block");
+  let battle2RevealTimer = null;
+
+  // Semifinal elements — contenders are the Battle 1 & Battle 2 winners,
+  // captured automatically below (see below, after each battle renders).
+  const champSemifinalBlock = document.getElementById("champ-semifinal-block");
+  const champSemifinalResultBlock = document.getElementById("champ-semifinal-result-block");
+  const startSemifinalBtn = document.getElementById("start-semifinal");
+  let semifinalRevealTimer = null;
+  let champWinner1 = null; // winning result object from Battle 1
+  let champWinner2 = null; // winning result object from Battle 2
+
+  // Final result — reveals once the Semifinal's winner is shown, no
+  // user entry needed (the Semifinal champion is THE champion).
+  const champFinalBlock = document.getElementById("champ-final-block");
+  let finalRevealTimer = null;
+  let champFinalWinnerResult = null; // winning result object from the Semifinal
+
+  if (championshipForm){
+    championshipForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      const raw1 = document.getElementById("champ-input-1").value;
+      const raw2 = document.getElementById("champ-input-2").value;
+      const err1 = validateHandle(raw1);
+      const err2 = validateHandle(raw2);
+      if (err1 || err2){
+        champError.textContent = "enter two real usernames to start the battle.";
+        champError.classList.add("show");
+        return;
+      }
+      const r1 = scoreUsername(raw1);
+      const r2 = scoreUsername(raw2);
+      if (r1.handle.toLowerCase() === r2.handle.toLowerCase()){
+        champError.textContent = "that's the same username twice — you can't battle yourself 💀";
+        champError.classList.add("show");
+        return;
+      }
+      champError.classList.remove("show");
+      showLoading(function(){
+        renderChampionship(r1, r2);
+        showView("championshipResult");
+      });
+    });
+  }
+
+  const champRunItBack = document.getElementById("champ-run-it-back");
+  if (champRunItBack){
+    champRunItBack.addEventListener("click", function(){
+      document.getElementById("champ-input-1").value = "";
+      document.getElementById("champ-input-2").value = "";
+      champError.classList.remove("show");
+      resetBattle2(); // starting Battle 1 over clears any Battle 2 (and Semifinal) that followed it
+      resetSemifinal();
+      champWinner1 = null;
+      showView("championship");
+      setTimeout(() => document.getElementById("champ-input-1").focus(), 200);
+    });
+  }
+
+  ["champ-input-1", "champ-input-2"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el){
+      el.addEventListener("keydown", function(e){
+        if (e.key === "Enter"){ e.preventDefault(); championshipForm.requestSubmit(); }
+      });
+    }
+  });
+
+  function renderChampionship(r1, r2){
+    document.querySelector("#champ-vcard-1 .v-handle").textContent = emojiForHandle(r1.handle) + " @" + r1.handle;
+    document.querySelector("#champ-vcard-2 .v-handle").textContent = emojiForHandle(r2.handle) + " @" + r2.handle;
+
+    const s1 = document.getElementById("champ-v1-score");
+    const s2 = document.getElementById("champ-v2-score");
+    s1.textContent = "0"; s2.textContent = "0";
+    s1.style.color = colorForScore(r1.overall);
+    s2.style.color = colorForScore(r2.overall);
+    animateCount(s1, r1.overall, 800);
+    animateCount(s2, r2.overall, 800);
+
+    const card1 = document.getElementById("champ-vcard-1");
+    const card2 = document.getElementById("champ-vcard-2");
+    card1.classList.remove("winner"); card2.classList.remove("winner");
+
+    const diff = Math.abs(r1.overall - r2.overall);
+    const banner = document.getElementById("champ-win-banner");
+    const verdict = document.getElementById("champ-win-verdict");
+    const winnerScoreEl = document.getElementById("champ-winner-score");
+
+    let winner;
+    if (r1.overall === r2.overall){
+      banner.textContent = "🤝 dead even";
+      winner = r1.overall >= r2.overall ? r1 : r2; // deterministic display when tied
+    } else if (r1.overall > r2.overall){
+      card1.classList.add("winner");
+      banner.textContent = "🏆 Winner: @" + r1.handle;
+      winner = r1;
+    } else {
+      card2.classList.add("winner");
+      banner.textContent = "🏆 Winner: @" + r2.handle;
+      winner = r2;
+    }
+
+    winnerScoreEl.textContent = "0";
+    winnerScoreEl.style.color = colorForScore(winner.overall);
+    animateCount(winnerScoreEl, winner.overall, 900);
+
+    verdict.textContent = compareLine(diff);
+
+    const catCompare = document.getElementById("champ-cat-compare");
+    catCompare.innerHTML = "";
+    Object.keys(r1.categories).forEach((label) => {
+      const v1 = r1.categories[label];
+      const v2 = r2.categories[label];
+      const row = document.createElement("div");
+      row.className = "cc-row";
+      row.innerHTML = `
+        <span style="text-align:right;">${v1}</span>
+        <span class="cc-bar"><span class="cc-fill left" style="width:${v1}%; background:${colorForScore(v1)}"></span></span>
+        <span class="cc-label">${label}</span>
+        <span class="cc-bar"><span class="cc-fill" style="width:${v2}%; background:${colorForScore(v2)}"></span></span>
+        <span>${v2}</span>
+      `;
+      catCompare.appendChild(row);
+    });
+
+    // Battle 1's winner is now revealed — clear out any previous Battle 2
+    // (and Semifinal) and, after a beat so the reveal above lands first,
+    // show Battle 2's entry section.
+    champWinner1 = winner;
+    resetBattle2();
+    resetSemifinal();
+    clearTimeout(battle2RevealTimer);
+    battle2RevealTimer = setTimeout(revealBattle2Entry, 1000);
+  }
+
+  /* ========================================================
+     THE ULTIMATE USERNAME CHAMPIONSHIP — BATTLE 2 ⚔️
+     (same rating engine + same versus/reveal markup & styling as
+     Battle 1 above — new entry point + result target only)
+     ======================================================== */
+
+  function resetBattle2(){
+    clearTimeout(battle2RevealTimer);
+    if (champ2Form) champ2Form.reset();
+    if (champ2Error) champ2Error.classList.remove("show");
+    if (champBattle2Block){
+      champBattle2Block.hidden = true;
+      champBattle2Block.classList.remove("show-battle2");
+    }
+    if (champBattle2ResultBlock){
+      champBattle2ResultBlock.hidden = true;
+      champBattle2ResultBlock.classList.remove("show-battle2");
+    }
+  }
+
+  function revealBattle2Entry(){
+    if (!champBattle2Block) return;
+    champBattle2Block.hidden = false;
+    void champBattle2Block.offsetWidth; // restart animation
+    champBattle2Block.classList.add("show-battle2");
+  }
+
+  if (champ2Form){
+    champ2Form.addEventListener("submit", function(e){
+      e.preventDefault();
+      const raw1 = document.getElementById("champ2-input-1").value;
+      const raw2 = document.getElementById("champ2-input-2").value;
+      const err1 = validateHandle(raw1);
+      const err2 = validateHandle(raw2);
+      if (err1 || err2){
+        champ2Error.textContent = "enter two real usernames to start the battle.";
+        champ2Error.classList.add("show");
+        return;
+      }
+      const r1 = scoreUsername(raw1);
+      const r2 = scoreUsername(raw2);
+      if (r1.handle.toLowerCase() === r2.handle.toLowerCase()){
+        champ2Error.textContent = "that's the same username twice — you can't battle yourself 💀";
+        champ2Error.classList.add("show");
+        return;
+      }
+      champ2Error.classList.remove("show");
+      resetSemifinal(); // a re-run of Battle 2 invalidates any Semifinal that followed it
+      showLoading(function(){
+        renderChampionshipBattle2(r1, r2);
+        showView("championshipResult");
+        champBattle2ResultBlock.hidden = false;
+        void champBattle2ResultBlock.offsetWidth; // restart animation
+        champBattle2ResultBlock.classList.add("show-battle2");
+        setTimeout(() => {
+          champBattle2ResultBlock.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 60);
+      });
+    });
+  }
+
+  const champ2RunItBack = document.getElementById("champ2-run-it-back");
+  if (champ2RunItBack){
+    champ2RunItBack.addEventListener("click", function(){
+      document.getElementById("champ2-input-1").value = "";
+      document.getElementById("champ2-input-2").value = "";
+      champ2Error.classList.remove("show");
+      champBattle2ResultBlock.classList.remove("show-battle2");
+      champBattle2ResultBlock.hidden = true;
+      resetSemifinal(); // re-entering Battle 2 invalidates any Semifinal that followed it
+      revealBattle2Entry();
+      setTimeout(() => document.getElementById("champ2-input-1").focus(), 200);
+    });
+  }
+
+  ["champ2-input-1", "champ2-input-2"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el){
+      el.addEventListener("keydown", function(e){
+        if (e.key === "Enter"){ e.preventDefault(); champ2Form.requestSubmit(); }
+      });
+    }
+  });
+
+  function renderChampionshipBattle2(r1, r2){
+    document.querySelector("#champ2-vcard-1 .v-handle").textContent = emojiForHandle(r1.handle) + " @" + r1.handle;
+    document.querySelector("#champ2-vcard-2 .v-handle").textContent = emojiForHandle(r2.handle) + " @" + r2.handle;
+
+    const s1 = document.getElementById("champ2-v1-score");
+    const s2 = document.getElementById("champ2-v2-score");
+    s1.textContent = "0"; s2.textContent = "0";
+    s1.style.color = colorForScore(r1.overall);
+    s2.style.color = colorForScore(r2.overall);
+    animateCount(s1, r1.overall, 800);
+    animateCount(s2, r2.overall, 800);
+
+    const card1 = document.getElementById("champ2-vcard-1");
+    const card2 = document.getElementById("champ2-vcard-2");
+    card1.classList.remove("winner"); card2.classList.remove("winner");
+
+    const diff = Math.abs(r1.overall - r2.overall);
+    const banner = document.getElementById("champ2-win-banner");
+    const verdict = document.getElementById("champ2-win-verdict");
+    const winnerScoreEl = document.getElementById("champ2-winner-score");
+
+    let winner;
+    if (r1.overall === r2.overall){
+      banner.textContent = "🤝 dead even";
+      winner = r1.overall >= r2.overall ? r1 : r2; // deterministic display when tied
+    } else if (r1.overall > r2.overall){
+      card1.classList.add("winner");
+      banner.textContent = "🏆 Winner: @" + r1.handle;
+      winner = r1;
+    } else {
+      card2.classList.add("winner");
+      banner.textContent = "🏆 Winner: @" + r2.handle;
+      winner = r2;
+    }
+
+    winnerScoreEl.textContent = "0";
+    winnerScoreEl.style.color = colorForScore(winner.overall);
+    animateCount(winnerScoreEl, winner.overall, 900);
+
+    verdict.textContent = compareLine(diff);
+
+    const catCompare = document.getElementById("champ2-cat-compare");
+    catCompare.innerHTML = "";
+    Object.keys(r1.categories).forEach((label) => {
+      const v1 = r1.categories[label];
+      const v2 = r2.categories[label];
+      const row = document.createElement("div");
+      row.className = "cc-row";
+      row.innerHTML = `
+        <span style="text-align:right;">${v1}</span>
+        <span class="cc-bar"><span class="cc-fill left" style="width:${v1}%; background:${colorForScore(v1)}"></span></span>
+        <span class="cc-label">${label}</span>
+        <span class="cc-bar"><span class="cc-fill" style="width:${v2}%; background:${colorForScore(v2)}"></span></span>
+        <span>${v2}</span>
+      `;
+      catCompare.appendChild(row);
+    });
+
+    // Battle 2's winner is now revealed — the Semifinal contenders (Battle 1
+    // & Battle 2 champions) are both known now, so auto-advance them and,
+    // after a beat, reveal the Semifinal entry (no re-typing required).
+    champWinner2 = winner;
+    resetSemifinal();
+    clearTimeout(semifinalRevealTimer);
+    semifinalRevealTimer = setTimeout(revealSemifinalEntry, 1000);
+  }
+
+  /* ========================================================
+     THE ULTIMATE USERNAME CHAMPIONSHIP — SEMIFINAL ⚔️
+     (contenders are auto-advanced from Battle 1's & Battle 2's winners —
+     no user entry — then given a fresh rating/analysis pass using the
+     same rating engine + same versus/reveal markup & styling as the
+     battles above.)
+     ======================================================== */
+
+  function resetSemifinal(){
+    clearTimeout(semifinalRevealTimer);
+    if (champSemifinalBlock){
+      champSemifinalBlock.hidden = true;
+      champSemifinalBlock.classList.remove("show-battle2");
+    }
+    if (champSemifinalResultBlock){
+      champSemifinalResultBlock.hidden = true;
+      champSemifinalResultBlock.classList.remove("show-battle2");
+    }
+    resetFinal(); // redoing the Semifinal invalidates any Final Result that followed it
+  }
+
+  function revealSemifinalEntry(){
+    if (!champSemifinalBlock || !champWinner1 || !champWinner2) return;
+    const p1 = document.getElementById("semi-preview-1");
+    const p2 = document.getElementById("semi-preview-2");
+    if (p1) p1.textContent = "🏆 " + emojiForHandle(champWinner1.handle) + " @" + champWinner1.handle;
+    if (p2) p2.textContent = "🏆 " + emojiForHandle(champWinner2.handle) + " @" + champWinner2.handle;
+    champSemifinalBlock.hidden = false;
+    void champSemifinalBlock.offsetWidth; // restart animation
+    champSemifinalBlock.classList.add("show-battle2");
+  }
+
+  if (startSemifinalBtn){
+    startSemifinalBtn.addEventListener("click", function(){
+      if (!champWinner1 || !champWinner2) return;
+      // fresh rating/analysis pass — re-run the scoring engine on the
+      // advancing handles rather than reusing the Battle 1 / Battle 2
+      // result objects directly.
+      const r1 = scoreUsername(champWinner1.handle);
+      const r2 = scoreUsername(champWinner2.handle);
+      showLoading(function(){
+        renderChampionshipSemifinal(r1, r2);
+        showView("championshipResult");
+        champSemifinalResultBlock.hidden = false;
+        void champSemifinalResultBlock.offsetWidth; // restart animation
+        champSemifinalResultBlock.classList.add("show-battle2");
+        setTimeout(() => {
+          champSemifinalResultBlock.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 60);
+      });
+    });
+  }
+
+  const champSemiRunItBack = document.getElementById("champ-semi-run-it-back");
+  if (champSemiRunItBack){
+    champSemiRunItBack.addEventListener("click", function(){
+      champSemifinalResultBlock.classList.remove("show-battle2");
+      champSemifinalResultBlock.hidden = true;
+      revealSemifinalEntry();
+      setTimeout(() => {
+        champSemifinalBlock.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 60);
+    });
+  }
+
+  function renderChampionshipSemifinal(r1, r2){
+    document.querySelector("#champ-semi-vcard-1 .v-handle").textContent = emojiForHandle(r1.handle) + " @" + r1.handle;
+    document.querySelector("#champ-semi-vcard-2 .v-handle").textContent = emojiForHandle(r2.handle) + " @" + r2.handle;
+
+    const s1 = document.getElementById("champ-semi-v1-score");
+    const s2 = document.getElementById("champ-semi-v2-score");
+    s1.textContent = "0"; s2.textContent = "0";
+    s1.style.color = colorForScore(r1.overall);
+    s2.style.color = colorForScore(r2.overall);
+    animateCount(s1, r1.overall, 800);
+    animateCount(s2, r2.overall, 800);
+
+    const card1 = document.getElementById("champ-semi-vcard-1");
+    const card2 = document.getElementById("champ-semi-vcard-2");
+    card1.classList.remove("winner"); card2.classList.remove("winner");
+
+    const diff = Math.abs(r1.overall - r2.overall);
+    const banner = document.getElementById("champ-semi-win-banner");
+    const verdict = document.getElementById("champ-semi-win-verdict");
+    const winnerScoreEl = document.getElementById("champ-semi-winner-score");
+
+    let winner;
+    if (r1.overall === r2.overall){
+      banner.textContent = "🤝 dead even";
+      winner = r1.overall >= r2.overall ? r1 : r2; // deterministic display when tied
+    } else if (r1.overall > r2.overall){
+      card1.classList.add("winner");
+      banner.textContent = "🏆 Winner: @" + r1.handle;
+      winner = r1;
+    } else {
+      card2.classList.add("winner");
+      banner.textContent = "🏆 Winner: @" + r2.handle;
+      winner = r2;
+    }
+
+    winnerScoreEl.textContent = "0";
+    winnerScoreEl.style.color = colorForScore(winner.overall);
+    animateCount(winnerScoreEl, winner.overall, 900);
+
+    verdict.textContent = compareLine(diff);
+
+    const catCompare = document.getElementById("champ-semi-cat-compare");
+    catCompare.innerHTML = "";
+    Object.keys(r1.categories).forEach((label) => {
+      const v1 = r1.categories[label];
+      const v2 = r2.categories[label];
+      const row = document.createElement("div");
+      row.className = "cc-row";
+      row.innerHTML = `
+        <span style="text-align:right;">${v1}</span>
+        <span class="cc-bar"><span class="cc-fill left" style="width:${v1}%; background:${colorForScore(v1)}"></span></span>
+        <span class="cc-label">${label}</span>
+        <span class="cc-bar"><span class="cc-fill" style="width:${v2}%; background:${colorForScore(v2)}"></span></span>
+        <span>${v2}</span>
+      `;
+      catCompare.appendChild(row);
+    });
+
+    // The Semifinal's winner is now revealed — that's THE Ultimate
+    // Username Champion. After a beat so the reveal above lands first,
+    // show the Final Result.
+    resetFinal();
+    clearTimeout(finalRevealTimer);
+    finalRevealTimer = setTimeout(() => revealChampionshipFinal(winner), 1000);
+  }
+
+  /* ========================================================
+     THE ULTIMATE USERNAME CHAMPIONSHIP — FINAL RESULT 🏆
+     (the Semifinal's winner, no further battles — same reveal timing
+     as Battle 2 & Semifinal above, with the category list styled like
+     the single Rate My Username result.)
+     ======================================================== */
+
+  function resetFinal(){
+    clearTimeout(finalRevealTimer);
+    champFinalWinnerResult = null;
+    if (champFinalBlock){
+      champFinalBlock.hidden = true;
+      champFinalBlock.classList.remove("show-battle2");
+    }
+  }
+
+  function renderChampionshipFinal(winner){
+    champFinalWinnerResult = winner;
+    document.getElementById("champ-final-avatar").innerHTML = generateAvatarSVG(winner.handle);
+    document.getElementById("champ-final-handle").textContent = emojiForHandle(winner.handle) + " @" + winner.handle;
+
+    const scoreEl = document.getElementById("champ-final-score");
+    scoreEl.textContent = "0";
+    scoreEl.style.color = colorForScore(winner.overall);
+    animateCount(scoreEl, winner.overall, 900);
+
+    const catsWrap = document.getElementById("champ-final-cats");
+    catsWrap.innerHTML = "";
+    Object.entries(winner.categories).forEach(([label, val]) => {
+      const row = document.createElement("div");
+      row.className = "cat-row";
+      row.innerHTML = `
+        <span class="cat-label">${label}</span>
+        <span class="cat-track"><span class="cat-fill" style="background:${colorForScore(val)}"></span></span>
+        <span class="cat-val">${val}</span>
+      `;
+      catsWrap.appendChild(row);
+      requestAnimationFrame(() => {
+        setTimeout(() => { row.querySelector(".cat-fill").style.width = val + "%"; }, 60);
+      });
+    });
+  }
+
+  function revealChampionshipFinal(winner){
+    if (!champFinalBlock || !winner) return;
+    renderChampionshipFinal(winner);
+    champFinalBlock.hidden = false;
+    void champFinalBlock.offsetWidth; // restart animation
+    champFinalBlock.classList.add("show-battle2");
+    setTimeout(() => {
+      champFinalBlock.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
+  }
+
+  const champFinalShareBtn = document.getElementById("champ-final-share-btn");
+  if (champFinalShareBtn){
+    champFinalShareBtn.addEventListener("click", function(){
+      if (!champFinalWinnerResult) return;
+      openShare(champFinalWinnerResult);
+    });
+  }
+
+  const champFinalRestartBtn = document.getElementById("champ-final-restart-btn");
+  if (champFinalRestartBtn){
+    champFinalRestartBtn.addEventListener("click", function(){
+      document.getElementById("champ-input-1").value = "";
+      document.getElementById("champ-input-2").value = "";
+      champError.classList.remove("show");
+      resetBattle2();
+      resetSemifinal(); // cascades into resetFinal()
+      champWinner1 = null;
+      champWinner2 = null;
+      showView("championship");
+      setTimeout(() => document.getElementById("champ-input-1").focus(), 200);
+    });
+  }
+
+  /* ========================================================
      SHARE CARD (canvas)
      ======================================================== */
 
@@ -748,6 +1271,28 @@
     document.addEventListener("keydown", function(e){
       if (e.key === "Escape" && tipsOverlay.classList.contains("open")){
         tipsOverlay.classList.remove("open");
+      }
+    });
+  }
+
+  /* ---------- championship: how this works modal ---------- */
+  const champHowBtn = document.getElementById("champ-how-btn");
+  const champHowOverlay = document.getElementById("champ-how-overlay");
+  const champHowClose = document.getElementById("champ-how-close-x");
+
+  if (champHowBtn && champHowOverlay && champHowClose){
+    champHowBtn.addEventListener("click", function(){
+      champHowOverlay.classList.add("open");
+    });
+    champHowClose.addEventListener("click", function(){
+      champHowOverlay.classList.remove("open");
+    });
+    champHowOverlay.addEventListener("click", function(e){
+      if (e.target === champHowOverlay) champHowOverlay.classList.remove("open");
+    });
+    document.addEventListener("keydown", function(e){
+      if (e.key === "Escape" && champHowOverlay.classList.contains("open")){
+        champHowOverlay.classList.remove("open");
       }
     });
   }

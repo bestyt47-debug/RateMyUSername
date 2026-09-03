@@ -50,7 +50,7 @@
 <main>
   <div class="stage">
 
-    <!-- ============ RATE VIEW ============ -->
+    <!-- ============ MAIN HOME / RATE VIEW ============ -->
     <section id="view-home" class="view view-enter">
       <div class="hero">
         <p class="kicker">rate my username.</p>
@@ -68,28 +68,37 @@
         <div class="try-these" id="try-these">
           <p class="tt-kicker">😎 Must try these!</p>
           <div class="tool-grid">
-            <button type="button" class="tool-card" id="tool-rate" data-tool="rate">
+            <!-- Rate My Username Card -->
+            <button type="button" class="tool-card" id="tool-rate" data-feature="rate">
               <span class="tool-emoji" aria-hidden="true">⭐</span>
               <span class="tool-name">Rate My Username</span>
               <span class="tool-desc">score your @ out of 100</span>
             </button>
-            <button type="button" class="tool-card" id="tool-compare" data-tool="compare">
+            
+            <!-- Compare 2 Usernames Card -->
+            <button type="button" class="tool-card" id="tool-compare" data-feature="compare">
               <span class="tool-emoji" aria-hidden="true">⚔️</span>
               <span class="tool-name">Compare 2 Usernames</span>
               <span class="tool-desc">put two @s head-to-head</span>
             </button>
-            <button type="button" class="tool-card tool-card-new" id="tool-ogbio" data-tool="ogbio" aria-haspopup="dialog" aria-controls="ogbio-overlay">
+            
+            <!-- Get OG Bio Card -->
+            <button type="button" class="tool-card tool-card-new" id="tool-ogbio" data-feature="bio" aria-haspopup="dialog" aria-controls="ogbio-overlay">
               <span class="tool-badge mono">new</span>
               <span class="tool-emoji" aria-hidden="true">🗿</span>
               <span class="tool-name">Get OG Bio <span aria-hidden="true">🗿</span></span>
               <span class="tool-desc">a certified og bio for your @</span>
             </button>
-            <button type="button" class="tool-card" id="tool-championship" data-tool="championship">
+            
+            <!-- Ultimate Username Championship Card -->
+            <button type="button" class="tool-card" id="tool-championship" data-feature="championship">
               <span class="tool-emoji" aria-hidden="true">🏆</span>
               <span class="tool-name">Ultimate Username Championship</span>
               <span class="tool-desc">battle it out for the crown</span>
             </button>
-            <button type="button" class="tool-card tool-card-new" id="tool-gamecard" data-tool="gamecard">
+            
+            <!-- GameCard Card -->
+            <button type="button" class="tool-card tool-card-new" id="tool-gamecard" data-feature="gamecard">
               <span class="tool-badge mono">new</span>
               <span class="tool-emoji" aria-hidden="true">⚡</span>
               <span class="tool-name">GameCard</span>
@@ -159,718 +168,42 @@
               <input id="cmp-input-2" class="mono" type="text" placeholder="@username2" maxlength="40" aria-label="second username" />
             </div>
           </div>
-          <p id="compare-error" class="error-msg" style="text-align:center;">enter both usernames to start the fight.</p>
-          <div class="compare-cta-row">
-            <button type="submit" class="btn btn-primary">compare →</button>
-          </div>
         </form>
-
-        <div class="switcher">
-          <button type="button" id="go-home" class="btn btn-ghost">← back to rating</button>
-        </div>
       </div>
     </section>
 
-    <!-- ============ COMPARE RESULT VIEW ============ -->
-    <section id="view-versus" class="view" hidden>
-      <div class="versus-result">
-        <div class="versus-cards">
-          <div id="vcard-1" class="vcard">
-            <span class="crown">👑</span>
-            <p class="v-handle mono">@username1</p>
-            <p class="v-score" id="v1-score">0</p>
-          </div>
-          <div class="vs-mid">vs</div>
-          <div id="vcard-2" class="vcard">
-            <span class="crown">👑</span>
-            <p class="v-handle mono">@username2</p>
-            <p class="v-score" id="v2-score">0</p>
-          </div>
-        </div>
-
-        <p id="win-banner" class="win-banner"></p>
-        <p id="win-verdict" class="win-verdict"></p>
-
-        <div class="cat-compare" id="cat-compare"></div>
-
-        <div class="result-actions">
-          <button type="button" id="run-it-back" class="btn btn-outline">run it back →</button>
-        </div>
+    <!-- ============ HIDDEN ROUTED FEATURE VIEWS CONTAINER ============ -->
+    <!-- These containers are safely hidden and will handle rendering the separate UI content via code -->
+    <section id="view-rate" class="view" hidden>
+      <div class="hero">
+        <h1 class="headline">Rate My Username</h1>
+        <button type="button" class="btn btn-outline back-home-btn">← back to dashboard</button>
       </div>
     </section>
 
-    <!-- ============ CHAMPIONSHIP INPUT VIEW ============ -->
+    <section id="view-bio" class="view" hidden>
+      <div class="hero">
+        <h1 class="headline">Get OG Bio <span class="accent">🗿</span></h1>
+        <button type="button" class="btn btn-outline back-home-btn">← back to dashboard</button>
+      </div>
+    </section>
+
     <section id="view-championship" class="view" hidden>
       <div class="hero">
-        <button
-          type="button"
-          id="champ-how-btn"
-          class="champ-how-btn"
-          aria-haspopup="dialog"
-          aria-controls="champ-how-overlay"
-        >
-          <span aria-hidden="true">❓</span> How this works?
-        </button>
-        <p class="kicker kicker-cinematic"><span class="accent">#1</span> Battle</p>
-        <h1 class="headline">the ultimate username championship <span class="accent">🏆</span></h1>
-        <p class="sub">two usernames enter. one leaves champion.</p>
-
-        <form id="championship-form" autocomplete="off">
-          <div class="compare-inputs">
-            <div class="compare-field">
-              <input id="champ-input-1" class="mono" type="text" placeholder="Username A" maxlength="40" aria-label="username a" />
-            </div>
-            <div class="vs-badge">vs</div>
-            <div class="compare-field">
-              <input id="champ-input-2" class="mono" type="text" placeholder="Username B" maxlength="40" aria-label="username b" />
-            </div>
-          </div>
-          <p id="championship-error" class="error-msg" style="text-align:center;">enter both usernames to start the battle.</p>
-          <div class="compare-cta-row">
-            <button type="submit" class="btn btn-primary">Start Battle ⚔️</button>
-          </div>
-        </form>
-
-        <div class="switcher">
-          <button type="button" id="champ-go-home" class="btn btn-ghost">← back to rating</button>
-        </div>
+        <h1 class="headline">Ultimate Username Championship <span class="accent">🏆</span></h1>
+        <button type="button" class="btn btn-outline back-home-btn">← back to dashboard</button>
       </div>
     </section>
 
-    <!-- ============ CHAMPIONSHIP RESULT VIEW ============ -->
-    <section id="view-championship-result" class="view" hidden>
-      <div class="versus-result">
-        <div class="versus-cards">
-          <div id="champ-vcard-1" class="vcard">
-            <span class="crown">👑</span>
-            <p class="v-handle mono">@usernameA</p>
-            <p class="v-score" id="champ-v1-score">0</p>
-          </div>
-          <div class="vs-mid">vs</div>
-          <div id="champ-vcard-2" class="vcard">
-            <span class="crown">👑</span>
-            <p class="v-handle mono">@usernameB</p>
-            <p class="v-score" id="champ-v2-score">0</p>
-          </div>
-        </div>
-
-        <p id="champ-win-banner" class="win-banner">🏆 Winner: @username</p>
-        <div class="score-big">
-          <span id="champ-winner-score" class="score-num">0</span>
-          <span class="score-den mono">/100</span>
-        </div>
-        <p id="champ-win-verdict" class="win-verdict"></p>
-
-        <div class="cat-compare" id="champ-cat-compare"></div>
-
-        <div class="result-actions">
-          <button type="button" id="champ-run-it-back" class="btn btn-outline">battle again →</button>
-        </div>
-
-        <!-- ============ BATTLE 2 ENTRY (reveals once Battle 1's winner is shown) ============ -->
-        <div id="champ-battle2-block" class="champ-battle2-block" hidden>
-          <p class="kicker kicker-cinematic">Battle 2 <span class="accent">⚔️</span></p>
-
-          <form id="championship-form-2" autocomplete="off">
-            <div class="compare-inputs">
-              <div class="compare-field">
-                <input id="champ2-input-1" class="mono" type="text" placeholder="Username C" maxlength="40" aria-label="username c" />
-              </div>
-              <div class="vs-badge">vs</div>
-              <div class="compare-field">
-                <input id="champ2-input-2" class="mono" type="text" placeholder="Username D" maxlength="40" aria-label="username d" />
-              </div>
-            </div>
-            <p id="championship-error-2" class="error-msg" style="text-align:center;">enter both usernames to start the battle.</p>
-            <div class="compare-cta-row">
-              <button type="submit" class="btn btn-primary">Start Battle ⚔️</button>
-            </div>
-          </form>
-        </div>
-
-        <!-- ============ BATTLE 2 RESULT ============ -->
-        <div id="champ-battle2-result-block" class="champ-battle2-result-block versus-result" hidden>
-          <div class="versus-cards">
-            <div id="champ2-vcard-1" class="vcard">
-              <span class="crown">👑</span>
-              <p class="v-handle mono">@usernameC</p>
-              <p class="v-score" id="champ2-v1-score">0</p>
-            </div>
-            <div class="vs-mid">vs</div>
-            <div id="champ2-vcard-2" class="vcard">
-              <span class="crown">👑</span>
-              <p class="v-handle mono">@usernameD</p>
-              <p class="v-score" id="champ2-v2-score">0</p>
-            </div>
-          </div>
-
-          <p id="champ2-win-banner" class="win-banner">🏆 Winner: @username</p>
-          <div class="score-big">
-            <span id="champ2-winner-score" class="score-num">0</span>
-            <span class="score-den mono">/100</span>
-          </div>
-          <p id="champ2-win-verdict" class="win-verdict"></p>
-
-          <div class="cat-compare" id="champ2-cat-compare"></div>
-
-          <div class="result-actions">
-            <button type="button" id="champ2-run-it-back" class="btn btn-outline">battle again →</button>
-          </div>
-        </div>
-
-        <!-- ============ SEMIFINAL ENTRY (reveals once Battle 2's winner is shown — contenders are auto-filled from Battle 1 & Battle 2, no re-entry needed) ============ -->
-        <div id="champ-semifinal-block" class="champ-battle2-block" hidden>
-          <p class="kicker kicker-cinematic">Semifinal <span class="accent">⚔️</span></p>
-          <p class="sub semifinal-sub">the two champions collide.</p>
-
-          <div class="compare-inputs">
-            <div class="compare-field semifinal-preview">
-              <p id="semi-preview-1" class="mono">🏆 @winner1</p>
-            </div>
-            <div class="vs-badge">vs</div>
-            <div class="compare-field semifinal-preview">
-              <p id="semi-preview-2" class="mono">🏆 @winner2</p>
-            </div>
-          </div>
-          <div class="compare-cta-row">
-            <button type="button" id="start-semifinal" class="btn btn-primary">Start Semifinal ⚔️</button>
-          </div>
-        </div>
-
-        <!-- ============ SEMIFINAL RESULT ============ -->
-        <div id="champ-semifinal-result-block" class="champ-battle2-result-block versus-result" hidden>
-          <div class="versus-cards">
-            <div id="champ-semi-vcard-1" class="vcard">
-              <span class="crown">👑</span>
-              <p class="v-handle mono">@winner1</p>
-              <p class="v-score" id="champ-semi-v1-score">0</p>
-            </div>
-            <div class="vs-mid">vs</div>
-            <div id="champ-semi-vcard-2" class="vcard">
-              <span class="crown">👑</span>
-              <p class="v-handle mono">@winner2</p>
-              <p class="v-score" id="champ-semi-v2-score">0</p>
-            </div>
-          </div>
-
-          <p id="champ-semi-win-banner" class="win-banner">🏆 Winner: @username</p>
-          <div class="score-big">
-            <span id="champ-semi-winner-score" class="score-num">0</span>
-            <span class="score-den mono">/100</span>
-          </div>
-          <p id="champ-semi-win-verdict" class="win-verdict"></p>
-
-          <div class="cat-compare" id="champ-semi-cat-compare"></div>
-
-          <div class="result-actions">
-            <button type="button" id="champ-semi-run-it-back" class="btn btn-outline">re-run analysis ↻</button>
-          </div>
-        </div>
-
-        <!-- ============ FINAL RESULT (reveals once the Semifinal's winner is shown) ============ -->
-        <div id="champ-final-block" class="champ-battle2-block champ-final-block" hidden>
-          <p class="kicker kicker-cinematic">Final Result <span class="accent">🏆</span></p>
-          <h2 class="champ-final-title">🏆 THE ULTIMATE USERNAME CHAMPION</h2>
-
-          <div class="handle-row">
-            <span id="champ-final-avatar" class="avatar" aria-hidden="true"></span>
-            <p id="champ-final-handle" class="handle-name mono">@winner</p>
-          </div>
-
-          <p class="verdict-sub champ-final-score-label mono">final score</p>
-          <div class="score-big">
-            <span id="champ-final-score" class="score-num">0</span>
-            <span class="score-den mono">/100</span>
-          </div>
-
-          <div class="cats champ-final-cats" id="champ-final-cats"></div>
-
-          <div class="result-actions">
-            <button type="button" id="champ-final-share-btn" class="btn btn-outline share">Share Victory ↗</button>
-            <button type="button" id="champ-final-restart-btn" class="btn btn-outline">Start New Championship →</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ GAMECARD INPUT VIEW ============ -->
     <section id="view-gamecard" class="view" hidden>
       <div class="hero">
-        <p class="kicker">// build your identity</p>
-        <h1 class="headline">⚡ gamecard</h1>
-        <p class="sub">turn your @ into a premium vertical identity poster — built for gamers, creators, and anyone leveling up their profile.</p>
-
-        <form id="gamecard-form" class="gc-form" autocomplete="off">
-          <div class="gc-field">
-            <label class="gc-label mono" for="gc-name">Your Name / Username</label>
-            <div class="input-row">
-              <input id="gc-name" class="mono" type="text" placeholder="Enter your name or username..." maxlength="40" aria-label="Your Name / Username" />
-            </div>
-          </div>
-
-          <div class="gc-field">
-            <p class="gc-label mono" id="gc-game-label">Game / Social Media</p>
-            <div class="gc-option-grid gc-option-grid-5" id="gc-game-grid" role="listbox" aria-label="Game / Social Media" aria-labelledby="gc-game-label">
-              <button type="button" class="gc-option-card" data-game="gaming" role="option" aria-selected="false">
-                <span class="gc-option-emoji" aria-hidden="true">🎮</span>
-                <span class="gc-option-label">Gaming</span>
-              </button>
-              <button type="button" class="gc-option-card" data-game="youtube" role="option" aria-selected="false">
-                <span class="gc-option-emoji" aria-hidden="true">▶️</span>
-                <span class="gc-option-label">YouTube</span>
-              </button>
-              <button type="button" class="gc-option-card" data-game="instagram" role="option" aria-selected="false">
-                <span class="gc-option-emoji" aria-hidden="true">📸</span>
-                <span class="gc-option-label">Instagram</span>
-              </button>
-              <button type="button" class="gc-option-card" data-game="streaming" role="option" aria-selected="false">
-                <span class="gc-option-emoji" aria-hidden="true">🎙️</span>
-                <span class="gc-option-label">Streaming</span>
-              </button>
-              <button type="button" class="gc-option-card" data-game="other" role="option" aria-selected="false">
-                <span class="gc-option-emoji" aria-hidden="true">💻</span>
-                <span class="gc-option-label">Other</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="gc-field">
-            <div class="gc-label-row">
-              <label class="gc-label mono" for="gc-bio">Bio</label>
-              <button type="button" id="gc-get-ogbio" class="gc-ogbio-link mono">✨ Get OG Bio →</button>
-            </div>
-            <div class="gc-textarea-row">
-              <textarea id="gc-bio" class="mono" placeholder="Write something about yourself..." maxlength="200" rows="3" aria-label="Bio"></textarea>
-            </div>
-          </div>
-
-          <div class="gc-field">
-            <p class="gc-label mono" id="gc-style-label">Style / Background</p>
-            <div class="gc-option-grid" id="gc-style-grid" role="listbox" aria-label="Style / Background" aria-labelledby="gc-style-label">
-              <button type="button" class="gc-option-card" data-style="cyberpunk" role="option" aria-selected="false">
-                <span class="gc-option-emoji" aria-hidden="true">⚡</span>
-                <span class="gc-option-label">Cyberpunk</span>
-              </button>
-              <button type="button" class="gc-option-card" data-style="esports" role="option" aria-selected="false">
-                <span class="gc-option-emoji" aria-hidden="true">🔥</span>
-                <span class="gc-option-label">Esports</span>
-              </button>
-              <button type="button" class="gc-option-card" data-style="dark" role="option" aria-selected="false">
-                <span class="gc-option-emoji" aria-hidden="true">🌌</span>
-                <span class="gc-option-label">Dark</span>
-              </button>
-              <button type="button" class="gc-option-card" data-style="neon" role="option" aria-selected="false">
-                <span class="gc-option-emoji" aria-hidden="true">💜</span>
-                <span class="gc-option-label">Neon</span>
-              </button>
-              <button type="button" class="gc-option-card" data-style="pro" role="option" aria-selected="false">
-                <span class="gc-option-emoji" aria-hidden="true">🏆</span>
-                <span class="gc-option-label">Pro</span>
-              </button>
-              <button type="button" class="gc-option-card" data-style="creator" role="option" aria-selected="false">
-                <span class="gc-option-emoji" aria-hidden="true">🎥</span>
-                <span class="gc-option-label">Creator</span>
-              </button>
-            </div>
-          </div>
-
-          <p class="gc-format-note mono"><span aria-hidden="true">📱</span> poster output — vertical 9:16</p>
-
-          <p id="gc-error" class="error-msg" style="text-align:center;">fill in your name, game/social and style first.</p>
-
-          <div class="compare-cta-row">
-            <button type="submit" class="btn btn-primary">🔥 Create My Poster</button>
-          </div>
-        </form>
-
-        <div class="switcher">
-          <button type="button" id="gc-go-home" class="btn btn-ghost">← back to rating</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ GAMECARD POSTER VIEW ============ -->
-    <section id="view-gamecard-poster" class="view" hidden>
-      <div class="hero">
-        <p class="kicker">// your identity, generated</p>
-        <h1 class="headline">⚡ your gamecard</h1>
-        <p class="sub">swap styles instantly, edit your text live, or head back to tweak your details.</p>
-
-        <div class="gc-poster-stage">
-          <div class="gc-poster" id="gc-poster" data-style="cyberpunk">
-            <div class="gc-poster-bg" aria-hidden="true">
-              <span class="gc-poster-blob gc-poster-blob-a"></span>
-              <span class="gc-poster-blob gc-poster-blob-b"></span>
-              <span class="gc-poster-shape"></span>
-              <span class="gc-poster-grid"></span>
-              <span class="gc-poster-particles"></span>
-              <span class="gc-poster-noise"></span>
-              <span class="gc-poster-sheen"></span>
-            </div>
-
-            <span class="gc-poster-giant" id="gc-poster-giant" aria-hidden="true">⚡</span>
-
-            <div class="gc-poster-content">
-              <div class="gc-poster-badge-row">
-                <span class="gc-poster-platform">
-                  <span class="gc-poster-platform-icon" id="gc-poster-platform-icon" aria-hidden="true">🎮</span>
-                  <span class="gc-poster-platform-label" id="gc-poster-platform-label">Gaming</span>
-                </span>
-                <span class="gc-poster-emblem" aria-hidden="true"><span id="gc-poster-emblem-icon">⚡</span></span>
-              </div>
-
-              <div class="gc-poster-hero">
-                <span class="gc-poster-kicker" id="gc-poster-kicker">Identity loaded</span>
-                <p class="gc-poster-name" id="gc-poster-name" contenteditable="true">@username</p>
-                <span class="gc-poster-name-bar" aria-hidden="true"></span>
-              </div>
-
-              <div class="gc-poster-bio-wrap">
-                <p class="gc-poster-bio" id="gc-poster-bio" contenteditable="true">your bio will show up here.</p>
-              </div>
-
-              <div class="gc-poster-foot">
-                <span class="gc-poster-brand">
-                  <span class="gc-poster-brand-mark" aria-hidden="true">⚡</span>
-                  <span class="gc-poster-brand-text">RateMyUsername</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="gc-style-switcher" id="gc-style-switcher" role="listbox" aria-label="Quick style switch">
-          <button type="button" class="gc-swatch" data-style="cyberpunk" role="option" aria-selected="true" aria-label="Cyberpunk style"><span aria-hidden="true">⚡</span></button>
-          <button type="button" class="gc-swatch" data-style="esports" role="option" aria-selected="false" aria-label="Esports style"><span aria-hidden="true">🔥</span></button>
-          <button type="button" class="gc-swatch" data-style="dark" role="option" aria-selected="false" aria-label="Dark style"><span aria-hidden="true">🌌</span></button>
-          <button type="button" class="gc-swatch" data-style="neon" role="option" aria-selected="false" aria-label="Neon style"><span aria-hidden="true">💜</span></button>
-          <button type="button" class="gc-swatch" data-style="pro" role="option" aria-selected="false" aria-label="Pro style"><span aria-hidden="true">🏆</span></button>
-          <button type="button" class="gc-swatch" data-style="creator" role="option" aria-selected="false" aria-label="Creator style"><span aria-hidden="true">🎥</span></button>
-        </div>
-
-        <div class="gc-poster-controls">
-          <button type="button" id="gc-poster-edit" class="btn btn-outline gc-poster-btn" aria-expanded="false" aria-controls="gc-edit-panel">✏️ Edit Poster</button>
-          <button type="button" id="gc-poster-regenerate" class="btn btn-outline gc-poster-btn">↻ Regenerate</button>
-          <button type="button" id="gc-poster-share" class="btn btn-outline gc-poster-btn share">↗ Share</button>
-        </div>
-        <p id="gc-poster-share-note" class="gc-poster-share-note mono">sharing is dropping in a future update — for now, screenshot away ✨</p>
-
-        <div class="gc-edit-panel" id="gc-edit-panel" hidden>
-          <p class="gc-edit-kicker mono">✏️ quick edit — updates your poster instantly</p>
-          <p class="gc-edit-hint mono">💡 drag text on poster or use controls below</p>
-
-          <!-- Content Section -->
-          <div class="gc-edit-section">
-            <h4 class="gc-section-title mono">📝 content</h4>
-            
-            <div class="gc-edit-field">
-              <label class="gc-edit-label mono" for="gc-edit-name">Name / Username</label>
-              <div class="input-row gc-edit-input-row">
-                <input id="gc-edit-name" class="mono" type="text" maxlength="40" placeholder="Enter your name or username..." aria-label="Name / Username" />
-              </div>
-            </div>
-
-            <div class="gc-edit-field">
-              <label class="gc-edit-label mono" for="gc-edit-game">Game / Platform</label>
-              <div class="gc-edit-select-row">
-                <select id="gc-edit-game" class="mono" aria-label="Game / Platform">
-                  <option value="gaming">🎮 Gaming</option>
-                  <option value="youtube">▶️ YouTube</option>
-                  <option value="instagram">📸 Instagram</option>
-                  <option value="streaming">🎙️ Streaming</option>
-                  <option value="other">💻 Other</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="gc-edit-field">
-              <label class="gc-edit-label mono" for="gc-edit-bio">Bio</label>
-              <div class="gc-textarea-row">
-                <textarea id="gc-edit-bio" class="mono" maxlength="200" rows="3" placeholder="Write something about yourself..." aria-label="Bio"></textarea>
-              </div>
-            </div>
-          </div>
-
-          <!-- Style Section -->
-          <div class="gc-edit-section">
-            <h4 class="gc-section-title mono">🎨 customize text</h4>
-            
-            <div class="gc-style-group">
-              <div class="gc-style-group-label">👤 name</div>
-              <div class="gc-style-controls-compact">
-                <div class="gc-style-row-compact">
-                  <label class="gc-edit-label-compact mono" for="gc-edit-name-size">size</label>
-                  <input id="gc-edit-name-size" type="range" min="14" max="60" step="1" aria-label="Name font size" />
-                </div>
-                <div class="gc-style-row-compact">
-                  <label class="gc-edit-label-compact mono" for="gc-edit-name-color">color</label>
-                  <input id="gc-edit-name-color" type="color" aria-label="Name colour" />
-                </div>
-                <div class="gc-style-row-compact">
-                  <label class="gc-edit-label-compact mono">move</label>
-                  <div class="gc-style-pos-compact">
-                    <div class="gc-pos-controls">
-                      <button type="button" class="gc-pos-btn" data-target="name" data-direction="up" aria-label="Move name up" title="↑">↑</button>
-                    </div>
-                    <div class="gc-pos-sliders">
-                      <button type="button" class="gc-pos-btn" data-target="name" data-direction="left" aria-label="Move name left" title="←">←</button>
-                      <div class="gc-slider-group">
-                        <input id="gc-edit-name-x" type="range" min="-40" max="40" step="1" aria-label="Name horizontal position" title="left / right" />
-                        <input id="gc-edit-name-y" type="range" min="-40" max="40" step="1" aria-label="Name vertical position" title="up / down" />
-                      </div>
-                      <button type="button" class="gc-pos-btn" data-target="name" data-direction="right" aria-label="Move name right" title="→">→</button>
-                    </div>
-                    <div class="gc-pos-controls">
-                      <button type="button" class="gc-pos-btn" data-target="name" data-direction="down" aria-label="Move name down" title="↓">↓</button>
-                      <button type="button" class="gc-pos-reset-btn" data-target="name" aria-label="Reset name position" title="Reset">⟲</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="gc-style-group">
-              <div class="gc-style-group-label">💬 bio</div>
-              <div class="gc-style-controls-compact">
-                <div class="gc-style-row-compact">
-                  <label class="gc-edit-label-compact mono" for="gc-edit-bio-size">size</label>
-                  <input id="gc-edit-bio-size" type="range" min="9" max="22" step="1" aria-label="Bio font size" />
-                </div>
-                <div class="gc-style-row-compact">
-                  <label class="gc-edit-label-compact mono" for="gc-edit-bio-color">color</label>
-                  <input id="gc-edit-bio-color" type="color" aria-label="Bio colour" />
-                </div>
-                <div class="gc-style-row-compact">
-                  <label class="gc-edit-label-compact mono">move</label>
-                  <div class="gc-style-pos-compact">
-                    <div class="gc-pos-controls">
-                      <button type="button" class="gc-pos-btn" data-target="bio" data-direction="up" aria-label="Move bio up" title="↑">↑</button>
-                    </div>
-                    <div class="gc-pos-sliders">
-                      <button type="button" class="gc-pos-btn" data-target="bio" data-direction="left" aria-label="Move bio left" title="←">←</button>
-                      <div class="gc-slider-group">
-                        <input id="gc-edit-bio-x" type="range" min="-40" max="40" step="1" aria-label="Bio horizontal position" title="left / right" />
-                        <input id="gc-edit-bio-y" type="range" min="-40" max="40" step="1" aria-label="Bio vertical position" title="up / down" />
-                      </div>
-                      <button type="button" class="gc-pos-btn" data-target="bio" data-direction="right" aria-label="Move bio right" title="→">→</button>
-                    </div>
-                    <div class="gc-pos-controls">
-                      <button type="button" class="gc-pos-btn" data-target="bio" data-direction="down" aria-label="Move bio down" title="↓">↓</button>
-                      <button type="button" class="gc-pos-reset-btn" data-target="bio" aria-label="Reset bio position" title="Reset">⟲</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Actions Section -->
-          <div class="gc-edit-actions">
-            <button type="button" id="gc-edit-full" class="gc-edit-full-link mono">⚙ full editor →</button>
-            <div class="gc-edit-btn-group">
-              <button type="button" id="gc-edit-done" class="btn btn-secondary gc-edit-done">✓ Done</button>
-              <button type="button" id="gc-edit-save-download" class="btn btn-primary gc-edit-done">💾 Save</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="switcher">
-          <button type="button" id="gc-poster-go-home" class="btn btn-ghost">← back to rating</button>
-        </div>
+        <h1 class="headline">GameCard Generator <span class="accent">⚡</span></h1>
+        <button type="button" class="btn btn-outline back-home-btn">← back to dashboard</button>
       </div>
     </section>
 
   </div>
 </main>
 
-<button
-  type="button"
-  id="tips-tab"
-  class="tips-tab"
-  aria-haspopup="dialog"
-  aria-controls="tips-overlay"
-  aria-label="Open tips for better usernames"
->
-  <span class="tips-tab-icon" aria-hidden="true">💡</span>
-  <span class="tips-tab-text mono">tips for a<br>better @</span>
-  <span class="tips-tab-arrow" aria-hidden="true">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20 12H4M4 12l6-6M4 12l6 6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </span>
-</button>
-
-<a
-  class="instagram-tab"
-  href="https://www.instagram.com/officialratemyusername/"
-  target="_blank"
-  rel="noopener noreferrer"
-  aria-label="Join us on Instagram"
->
-  <span class="instagram-tab-icon" aria-hidden="true">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="ig-grad" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stop-color="#FFDB6B"/>
-          <stop offset="0.35" stop-color="#FF4222"/>
-          <stop offset="0.68" stop-color="#D6249F"/>
-          <stop offset="1" stop-color="#5B51D8"/>
-        </linearGradient>
-      </defs>
-      <rect x="2.25" y="2.25" width="19.5" height="19.5" rx="6.2" stroke="url(#ig-grad)" stroke-width="2"/>
-      <circle cx="12" cy="12" r="4.6" stroke="url(#ig-grad)" stroke-width="2"/>
-      <circle cx="17.7" cy="6.3" r="1.35" fill="url(#ig-grad)"/>
-    </svg>
-  </span>
-  <span class="instagram-tab-text mono">join us on instagram</span>
-</a>
-
-<section class="about-section" id="about">
-  <div class="about-inner">
-    <button type="button" id="about-toggle" class="about-toggle mono" aria-expanded="false" aria-controls="about-content">
-      about rate my username. <span class="about-toggle-icon" aria-hidden="true">+</span>
-    </button>
-    <div class="about-content" id="about-content">
-      <div class="about-content-inner">
-        <h2 class="about-title">think your <span class="accent">@</span> is actually tuff?</h2>
-        <p class="about-text">rate my username gives your username a completely unbiased internet-style rating — from aura and originality to pure memorability.</p>
-        <p class="about-text">no sign-ups. no complicated stuff. just enter your @, get your score, and find out if you cooked or need a rebrand.</p>
-        <p class="about-text">got a friend with a questionable username? put two @s head-to-head and see who wins.</p>
-        <p class="about-tagline">made for fun. judged by questionable science. 💀</p>
-       <p class="about-text">
-          Looking for unique username ideas, cool usernames, aesthetic usernames,
-          gaming usernames, or a memorable social media username? Rate My Username
-          helps you check and improve your username before you commit to it.
-        </p>
-
-        <p class="about-text">
-          Use our free username checker to rate your username, compare two usernames,
-          and discover suggestions for Instagram, TikTok, YouTube, Discord, gaming,
-          and other social platforms.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer class="credit">ratemyusername.local — screenshots encouraged, receipts not included · <a href="blog/index.html" class="footer-blog-link">read the blog</a></footer>
-
-<!-- ============ TIPS OVERLAY ============ -->
-<div id="tips-overlay" class="share-overlay" role="dialog" aria-modal="true" aria-labelledby="tips-title">
-  <div class="share-panel tips-panel">
-    <p class="kicker tips-kicker">// level up your @</p>
-    <h3 id="tips-title" class="tips-title">tips for better usernames</h3>
-    <ol class="tips-list mono">
-      <li>Keep it short &amp; simple.</li>
-      <li>Make it easy to remember.</li>
-      <li>Avoid unnecessary numbers.</li>
-      <li>Don't overuse underscores.</li>
-      <li>Keep the spelling easy.</li>
-      <li>Make it match your vibe.</li>
-      <li>Avoid too many special characters.</li>
-      <li>Make it easy to say out loud.</li>
-      <li>Keep it unique.</li>
-      <li>Think long-term before choosing.</li>
-    </ol>
-    <button type="button" id="tips-close" class="share-close">close</button>
-  </div>
-</div>
-
-<!-- ============ GET OG BIO OVERLAY ============ -->
-<div id="ogbio-overlay" class="share-overlay" role="dialog" aria-modal="true" aria-labelledby="ogbio-title">
-  <div class="share-panel ogbio-panel">
-    <button type="button" id="ogbio-close-x" class="ogbio-close-x" aria-label="Close get OG bio">×</button>
-
-    <!-- STEP 1: identity select -->
-    <div class="ogbio-step" id="ogbio-step-identity" data-step="identity">
-      <p class="kicker ogbio-kicker">Get OG Bio's 🗿</p>
-      <h3 id="ogbio-title" class="ogbio-title">Select Your Identity</h3>
-      <p class="ogbio-sub">Choose what fits you best.</p>
-
-      <div class="identity-grid" id="identity-grid" role="listbox" aria-label="Select your identity">
-        <button type="button" class="identity-card" data-identity="gamer" role="option" aria-selected="false">
-          <span class="identity-emoji" aria-hidden="true">🎮</span>
-          <span class="identity-label">Gamer</span>
-        </button>
-        <button type="button" class="identity-card" data-identity="creator" role="option" aria-selected="false">
-          <span class="identity-emoji" aria-hidden="true">🎨</span>
-          <span class="identity-label">Creator</span>
-        </button>
-        <button type="button" class="identity-card" data-identity="social" role="option" aria-selected="false">
-          <span class="identity-emoji" aria-hidden="true">📱</span>
-          <span class="identity-label">Social</span>
-        </button>
-        <button type="button" class="identity-card" data-identity="memelord" role="option" aria-selected="false">
-          <span class="identity-emoji" aria-hidden="true">😂</span>
-          <span class="identity-label">Meme Lord</span>
-        </button>
-        <button type="button" class="identity-card" data-identity="music" role="option" aria-selected="false">
-          <span class="identity-emoji" aria-hidden="true">🎧</span>
-          <span class="identity-label">Music</span>
-        </button>
-        <button type="button" class="identity-card" data-identity="justme" role="option" aria-selected="false">
-          <span class="identity-emoji" aria-hidden="true">✨</span>
-          <span class="identity-label">Just Me</span>
-        </button>
-      </div>
-
-      <button type="button" id="ogbio-continue" class="btn btn-primary ogbio-continue" disabled>continue →</button>
-    </div>
-
-    <!-- STEP 2: generated bio result -->
-    <div class="ogbio-step" id="ogbio-step-next" data-step="next" hidden>
-      <p class="kicker ogbio-kicker">Fresh Bio's -&gt;</p>
-      <h3 class="ogbio-title">your og bio 🗿</h3>
-      <p class="ogbio-sub" id="ogbio-selected-summary">you picked: —</p>
-      <div class="ogbio-result-box mono" id="ogbio-result-box">
-        <p id="ogbio-bio-text" class="ogbio-bio-text">—</p>
-        <div id="ogbio-bio-loading" class="ogbio-bio-loading" aria-hidden="true">
-          <span class="ogbio-dot"></span>
-          <span class="ogbio-dot"></span>
-          <span class="ogbio-dot"></span>
-        </div>
-      </div>
-      <div class="ogbio-btn-row">
-        <button type="button" id="ogbio-regenerate" class="btn btn-primary ogbio-regenerate">regenerate ↻</button>
-        <button type="button" id="ogbio-copy" class="btn btn-outline ogbio-copy">copy</button>
-      </div>
-      <button type="button" id="ogbio-use-gamecard" class="btn btn-primary ogbio-use-gamecard" hidden>✨ Use This Bio in GameCard →</button>
-      <button type="button" id="ogbio-back" class="btn btn-ghost">← back to identities</button>
-    </div>
-
-    <button type="button" id="ogbio-close" class="share-close">close</button>
-  </div>
-</div>
-
-<!-- ============ SHARE OVERLAY ============ -->
-<div id="share-overlay" class="share-overlay">
-  <div class="share-panel">
-    <canvas id="share-canvas" width="640" height="800"></canvas>
-    <div class="share-actions">
-      <button type="button" id="share-download" class="btn btn-outline share">download ↓</button>
-      <button type="button" id="share-native" class="btn btn-outline" style="display:none;">share…</button>
-    </div>
-    <button type="button" id="share-close" class="share-close">close</button>
-  </div>
-</div>
-
-<!-- ============ CHAMPIONSHIP: HOW THIS WORKS OVERLAY ============ -->
-<div id="champ-how-overlay" class="share-overlay" role="dialog" aria-modal="true" aria-labelledby="champ-how-title">
-  <div class="share-panel champ-how-panel">
-    <button type="button" id="champ-how-close-x" class="ogbio-close-x" aria-label="Close how this works">×</button>
-    <h3 id="champ-how-title" class="tips-title">How this works <span aria-hidden="true">🏆</span></h3>
-    <ol class="tips-list mono">
-      <li>Enter 2 usernames and battle them.</li>
-      <li>The winner advances.</li>
-      <li>Enter 2 more usernames for the second battle.</li>
-      <li>Both winners face each other in the semifinal.</li>
-      <li>The final winner becomes the Ultimate Username Champion <span aria-hidden="true">🏆</span></li>
-    </ol>
-  </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- Link to your interactive script containing the history router logic -->
 <script src="script.js"></script>
-</body>
-</html>
-

@@ -2398,25 +2398,3 @@
   window.addEventListener("load", function(){ rateInput.focus(); });
 
 })();
-/* ========================================================
-   BULLETPROOF HASH ROUTER (PASTE AT THE VERY BOTTOM)
-   ======================================================== */
-document.addEventListener('DOMContentLoaded', () => {
-  // 1. Listen for grid card feature clicks to change the URL smoothly
-  document.querySelectorAll('.tool-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const featureName = card.getAttribute('data-feature');
-      if (featureName) {
-        // Changes your URL bar to ratemyusername.com.fun/#compare
-        window.location.hash = featureName;
-      }
-    });
-  });
-
-  // 2. Listen for back buttons to clear the hash safely back home
-  document.querySelectorAll('.back-home-btn, #rate-another, .back-btn, [id^="back-to-"]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      window.location.hash = '';
-    });
-  });
-});

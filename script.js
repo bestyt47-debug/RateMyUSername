@@ -2399,63 +2399,24 @@
 
 })();
 /* ========================================================
-   SAFE URL ROUTER (PASTE AT THE VERY BOTTOM)
+   BULLETPROOF HASH ROUTER (PASTE AT THE VERY BOTTOM)
    ======================================================== */
-function handleRouting() {
-  const path = window.location.pathname.replace(/^\//, '').trim();
-  
-  // Hide all screens first using your setup's layout class
-  document.querySelectorAll('.view').forEach(view => {
-    view.setAttribute('hidden', 'true');
-    view.classList.remove('view-enter');
-  });
-
-  // Match the URL path to your screens
-  if (path === '' || path === 'index.html') {
-    const homeView = document.getElementById('view-home');
-    if (homeView) { homeView.removeAttribute('hidden'); homeView.classList.add('view-enter'); }
-  } else if (path === 'rate') {
-    const rateView = document.getElementById('view-rate') || document.getElementById('view-home');
-    if (rateView) { rateView.removeAttribute('hidden'); rateView.classList.add('view-enter'); }
-  } else if (path === 'compare') {
-    const compareView = document.getElementById('view-compare');
-    if (compareView) { compareView.removeAttribute('hidden'); compareView.classList.add('view-enter'); }
-  } else if (path === 'bio') {
-    const bioView = document.getElementById('view-bio');
-    if (bioView) { bioView.removeAttribute('hidden'); bioView.classList.add('view-enter'); }
-  } else if (path === 'championship') {
-    const champView = document.getElementById('view-championship');
-    if (champView) { champView.removeAttribute('hidden'); champView.classList.add('view-enter'); }
-  } else if (path === 'gamecard') {
-    const gamecardView = document.getElementById('view-gamecard');
-    if (gamecardView) { gamecardView.removeAttribute('hidden'); gamecardView.classList.add('view-enter'); }
-  } else {
-    const homeView = document.getElementById('view-home');
-    if (homeView) { homeView.removeAttribute('hidden'); homeView.classList.add('view-enter'); }
-  }
-}
-
-// Intercept tool-card grid clicks to update the URL bar smoothly
 document.addEventListener('DOMContentLoaded', () => {
+  // 1. Listen for grid card feature clicks to change the URL smoothly
   document.querySelectorAll('.tool-card').forEach(card => {
     card.addEventListener('click', () => {
       const featureName = card.getAttribute('data-feature');
-      if (!featureName) return;
-      
-      history.pushState({ feature: featureName }, '', `/${featureName}`);
-      handleRouting();
+      if (featureName) {
+        // Changes your URL bar to ratemyusername.com.fun/#compare
+        window.location.hash = featureName;
+      }
     });
   });
 
-  // Wire up back links to clear the subpath URL
-  document.querySelectorAll('.back-home-btn, #rate-another, [id^="back-to-"]').forEach(btn => {
+  // 2. Listen for back buttons to clear the hash safely back home
+  document.querySelectorAll('.back-home-btn, #rate-another, .back-btn, [id^="back-to-"]').forEach(btn => {
     btn.addEventListener('click', () => {
-      history.pushState(null, '', '/');
-      handleRouting();
+      window.location.hash = '';
     });
   });
-
-  handleRouting();
 });
-
-window.addEventListener('popstate', handleRouting);

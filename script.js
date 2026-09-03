@@ -274,7 +274,9 @@
     compare: document.getElementById("view-compare"),
     versus: document.getElementById("view-versus"),
     championship: document.getElementById("view-championship"),
-    championshipResult: document.getElementById("view-championship-result")
+    championshipResult: document.getElementById("view-championship-result"),
+    gamecard: document.getElementById("view-gamecard"),
+    gamecardPoster: document.getElementById("view-gamecard-poster")
   };
 
   const LOADING_LINES = [
@@ -1323,6 +1325,668 @@
     });
   }
 
+  /* ---------- gamecard ---------- */
+  (function(){
+    const toolGamecard = document.getElementById("tool-gamecard");
+    const gcGoHome = document.getElementById("gc-go-home");
+    const gcForm = document.getElementById("gamecard-form");
+    const gcGetOgbio = document.getElementById("gc-get-ogbio");
+    const gcError = document.getElementById("gc-error");
+    const gcNameInput = document.getElementById("gc-name");
+    const gcBioInput = document.getElementById("gc-bio");
+    if (!toolGamecard || !gcForm) return;
+
+    // holds the current validated selection driving the poster preview.
+    let gcPosterData = null;
+
+    const PLATFORM_META = {
+      gaming: { icon: "🎮", label: "Gaming" },
+      youtube: { icon: "▶️", label: "YouTube" },
+      instagram: { icon: "📸", label: "Instagram" },
+      streaming: { icon: "🎙️", label: "Streaming" },
+      other: { icon: "💻", label: "Other" }
+    };
+    // small "stamp" emblem shown top-right on the poster — reuses the
+    // same emoji as the style picker/switcher so the icon language
+    // stays consistent everywhere it appears.
+    const STYLE_META = {
+      cyberpunk: { icon: "⚡", kicker: "System // identity loaded" },
+      esports: { icon: "🔥", kicker: "Now competing" },
+      dark: { icon: "🌌", kicker: "A profile presentation" },
+      neon: { icon: "💜", kicker: "Glow mode: on" },
+      pro: { icon: "🏆", kicker: "Official announcement" },
+      creator: { icon: "🎥", kicker: "New drop" }
+    };
+    const STYLE_ORDER = ["cyberpunk", "esports", "dark", "neon", "pro", "creator"];
+
+    /* ---------- poster preview elements ---------- */
+    const gcPoster = document.getElementById("gc-poster");
+    const gcPosterIcon = document.getElementById("gc-poster-platform-icon");
+    const gcPosterLabel = document.getElementById("gc-poster-platform-label");
+    const gcPosterName = document.getElementById("gc-poster-name");
+    const gcPosterKicker = document.getElementById("gc-poster-kicker");
+    const gcPosterGiant = document.getElementById("gc-poster-giant");
+    const gcPosterBio = document.getElementById("gc-poster-bio");
+    const gcPosterEmblemIcon = document.getElementById("gc-poster-emblem-icon");
+    const gcStyleSwitcher = document.getElementById("gc-style-switcher");
+    const gcPosterEdit = document.getElementById("gc-poster-edit");
+    const gcPosterRegenerate = document.getElementById("gc-poster-regenerate");
+    const gcPosterShare = document.getElementById("gc-poster-share");
+    const gcPosterShareNote = document.getElementById("gc-poster-share-note");
+    const gcPosterGoHome = document.getElementById("gc-poster-go-home");
+
+    // quick "edit text" panel — lets name/platform/bio be tweaked
+    // without leaving the poster; changes render immediately.
+    const gcEditPanel = document.getElementById("gc-edit-panel");
+    const gcEditName = document.getElementById("gc-edit-name");
+    const gcEditGame = document.getElementById("gc-edit-game");
+    const gcEditBio = document.getElementById("gc-edit-bio");
+    const gcEditDone = document.getElementById("gc-edit-done");
+    const gcEditFull = document.getElementById("gc-edit-full");
+    const gcEditSaveDownload = document.getElementById("gc-edit-save-download");
+
+    // font size / colour / position controls — applied as inline
+    // style overrides on top of the poster's normal theme styling,
+    // for the name and the bio independently.
+    const gcEditNameSize = document.getElementById("gc-edit-name-size");
+    const gcEditNameColor = document.getElementById("gc-edit-name-color");
+    const gcEditNameX = document.getElementById("gc-edit-name-x");
+    const gcEditNameY = document.getElementById("gc-edit-name-y");
+    const gcEditBioSize = document.getElementById("gc-edit-bio-size");
+    const gcEditBioColor = document.getElementById("gc-edit-bio-color");
+    const gcEditBioX = document.getElementById("gc-edit-bio-x");
+    const gcEditBioY = document.getElementById("gc-edit-bio-y");
+
+    // default (unedited) sizes/colours used to seed the controls and
+    // as the "reset to theme" fallback when a value isn't overridden.
+    const GC_NAME_DEFAULT_SIZE = 52;
+    const GC_NAME_DEFAULT_COLOR = "#f3f8ff";
+    const GC_BIO_DEFAULT_SIZE = 13;
+    const GC_BIO_DEFAULT_COLOR = "#e6f5ff";
+
+    function defaultTextStyle(){
+      return { size: null, color: null, x: 0, y: 0 };
+    }
+
+    // reads an element's current (themed) text colour so the colour
+    // picker opens showing what's actually on the poster, rather than
+    // a generic fallback — a plain #hex input can't display "rgb(...)".
+    function rgbToHex(el){
+      if (!el || !window.getComputedStyle) return null;
+      const rgb = getComputedStyle(el).color;
+      const m = rgb && rgb.match(/\d+(\.\d+)?/g);
+      if (!m || m.length < 3) return null;
+      const toHex = n => Math.max(0, Math.min(255, Math.round(Number(n)))).toString(16).padStart(2, "0");
+      return "#" + toHex(m[0]) + toHex(m[1]) + toHex(m[2]);
+    }
+
+    // the hero username is the biggest element on the poster by design —
+    // this length-based tiering keeps it that way for short handles while
+    // stepping the size down for long ones so nothing overflows the frame.
+    function nameSizeClass(name){
+      const len = (name || "").length;
+      if (len <= 9) return "";
+      if (len <= 14) return "gc-name-lg";
+      if (len <= 20) return "gc-name-md";
+      return "gc-name-sm";
+    }
+
+    // long bios get a slightly smaller size so ~4 wrapped lines stay
+    // comfortably inside the poster instead of clipping mid-sentence.
+    function bioSizeClass(bio){
+      return (bio || "").length > 120 ? "gc-bio-sm" : "";
+    }
+
+    function syncStyleGrids(styleValue){
+      // keep the form's style grid and the poster's quick switcher
+      // pointing at the same selection, whichever one changed last.
+      const formCards = document.querySelectorAll("#gc-style-grid .gc-option-card");
+      formCards.forEach(function(c){
+        c.setAttribute("aria-selected", c.getAttribute("data-style") === styleValue ? "true" : "false");
+      });
+      if (gcStyleSwitcher){
+        const swatches = gcStyleSwitcher.querySelectorAll(".gc-swatch");
+        swatches.forEach(function(s){
+          s.setAttribute("aria-selected", s.getAttribute("data-style") === styleValue ? "true" : "false");
+        });
+      }
+    }
+
+    function renderPoster(data){
+      if (!gcPoster || !data) return;
+      gcPoster.setAttribute("data-style", data.style);
+
+      const meta = PLATFORM_META[data.game] || PLATFORM_META.other;
+      if (gcPosterIcon) gcPosterIcon.textContent = meta.icon;
+      if (gcPosterLabel) gcPosterLabel.textContent = meta.label;
+
+      const styleMeta = STYLE_META[data.style] || STYLE_META.cyberpunk;
+      if (gcPosterEmblemIcon) gcPosterEmblemIcon.textContent = styleMeta.icon;
+      if (gcPosterGiant) gcPosterGiant.textContent = styleMeta.icon;
+      if (gcPosterKicker) gcPosterKicker.textContent = styleMeta.kicker;
+
+      if (gcPosterName){
+        const displayName = data.name.replace(/^@/, "");
+        gcPosterName.textContent = "@" + displayName;
+        gcPosterName.classList.remove("gc-name-lg", "gc-name-md", "gc-name-sm");
+        const sizeClass = nameSizeClass(displayName);
+        if (sizeClass) gcPosterName.classList.add(sizeClass);
+      }
+
+      if (gcPosterBio){
+        gcPosterBio.classList.remove("gc-bio-sm");
+        if (data.bio){
+          gcPosterBio.textContent = data.bio;
+          gcPosterBio.classList.remove("is-placeholder");
+          const bioClass = bioSizeClass(data.bio);
+          if (bioClass) gcPosterBio.classList.add(bioClass);
+        } else {
+          gcPosterBio.textContent = "no bio yet — this space is ready when you are.";
+          gcPosterBio.classList.add("is-placeholder");
+        }
+      }
+
+      applyTextStyle(gcPosterName, data.nameStyle);
+      applyTextStyle(gcPosterBio, data.bioStyle);
+
+      syncStyleGrids(data.style);
+    }
+
+    // applies the saved font-size / colour / position overrides (if any)
+    // to a poster text element as inline styles — leaving the element's
+    // normal themed styling untouched when a field hasn't been edited.
+    function applyTextStyle(el, textStyle){
+      if (!el) return;
+      const s = textStyle || defaultTextStyle();
+      el.style.fontSize = s.size ? (s.size + "px") : "";
+      el.style.color = s.color || "";
+      const x = s.x || 0, y = s.y || 0;
+      el.style.transform = (x || y) ? ("translate(" + x + "px, " + y + "px)") : "";
+    }
+
+    // subtle, near-instant "reshuffle" of the decorative glow
+    // placement — not the 5s generation animation, just a tasteful
+    // refresh so Regenerate visibly does something each time.
+    function reshuffleDecor(){
+      if (!gcPoster) return;
+      const rand = (min, max) => Math.round(min + Math.random() * (max - min));
+      gcPoster.style.setProperty("--blob-a-x", rand(-10, 10) + "px");
+      gcPoster.style.setProperty("--blob-a-y", rand(-10, 10) + "px");
+      gcPoster.style.setProperty("--blob-a-r", rand(-8, 8) + "deg");
+      gcPoster.style.setProperty("--blob-b-x", rand(-10, 10) + "px");
+      gcPoster.style.setProperty("--blob-b-y", rand(-10, 10) + "px");
+      gcPoster.style.setProperty("--blob-b-r", rand(-8, 8) + "deg");
+
+      gcPoster.classList.add("is-regenerating");
+      setTimeout(() => { gcPoster.classList.remove("is-regenerating"); }, 260);
+    }
+
+    toolGamecard.addEventListener("click", function(){
+      showView("gamecard");
+      if (gcError) gcError.classList.remove("show");
+      setTimeout(() => {
+        if (gcNameInput) gcNameInput.focus();
+      }, 200);
+    });
+
+    if (gcGoHome){
+      gcGoHome.addEventListener("click", function(){ showView("home"); });
+    }
+
+    // single-select option grids (game/social + style/background) —
+    // scoped to their own container, independent from the OG Bio
+    // overlay's `.identity-card` selection.
+    function wireOptionGrid(gridId){
+      const grid = document.getElementById(gridId);
+      if (!grid) return;
+      const cards = Array.from(grid.querySelectorAll(".gc-option-card"));
+      cards.forEach(function(card){
+        card.addEventListener("click", function(){
+          cards.forEach(function(c){ c.setAttribute("aria-selected", "false"); });
+          card.setAttribute("aria-selected", "true");
+          if (gcError) gcError.classList.remove("show");
+        });
+      });
+      return cards;
+    }
+    wireOptionGrid("gc-game-grid");
+    wireOptionGrid("gc-style-grid");
+
+    function getSelected(gridId){
+      const grid = document.getElementById(gridId);
+      if (!grid) return null;
+      const picked = grid.querySelector('.gc-option-card[aria-selected="true"]');
+      return picked ? picked : null;
+    }
+
+    // "Get OG Bio" links straight into the existing OG Bio feature —
+    // reuses the same overlay/trigger rather than rebuilding it. Flagging
+    // the overlay's source lets it know to offer the bio back to GameCard.
+    if (gcGetOgbio){
+      gcGetOgbio.addEventListener("click", function(){
+        const overlay = document.getElementById("ogbio-overlay");
+        if (overlay) overlay.dataset.source = "gamecard";
+        const toolOgbio = document.getElementById("tool-ogbio");
+        if (toolOgbio) toolOgbio.click();
+      });
+    }
+
+    if (gcBioInput){
+      gcBioInput.addEventListener("input", function(){
+        if (gcError) gcError.classList.remove("show");
+      });
+    }
+    if (gcNameInput){
+      gcNameInput.addEventListener("input", function(){
+        if (gcError) gcError.classList.remove("show");
+      });
+    }
+
+    function showGcError(msg){
+      if (!gcError) return;
+      gcError.textContent = msg;
+      gcError.classList.add("show");
+    }
+
+    // Validates the form, packages the selection, and renders the
+    // actual 9:16 poster preview.
+    gcForm.addEventListener("submit", function(e){
+      e.preventDefault();
+
+      const name = gcNameInput ? gcNameInput.value.trim() : "";
+      const gameCard = getSelected("gc-game-grid");
+      const styleCard = getSelected("gc-style-grid");
+
+      if (!name){
+        showGcError("add your name or username first.");
+        if (gcNameInput) gcNameInput.focus();
+        return;
+      }
+      if (!gameCard){
+        showGcError("pick a game or platform for your card.");
+        return;
+      }
+      if (!styleCard){
+        showGcError("choose a style for your poster.");
+        return;
+      }
+
+      if (gcError) gcError.classList.remove("show");
+
+      gcPosterData = {
+        name: name,
+        game: gameCard.getAttribute("data-game"),
+        bio: gcBioInput ? gcBioInput.value.trim() : "",
+        style: styleCard.getAttribute("data-style"),
+        nameStyle: defaultTextStyle(),
+        bioStyle: defaultTextStyle()
+      };
+
+      renderPoster(gcPosterData);
+      if (gcPosterShareNote) gcPosterShareNote.classList.remove("show");
+      if (gcEditPanel){ gcEditPanel.hidden = true; }
+      if (gcPosterEdit) gcPosterEdit.setAttribute("aria-expanded", "false");
+      showView("gamecardPoster");
+    });
+
+    /* ---------- poster preview controls ---------- */
+
+    // quick style switching straight from the preview — updates the
+    // poster instantly and keeps the form's style grid in sync so
+    // "Edit" reflects the same choice.
+    if (gcStyleSwitcher){
+      const swatches = Array.from(gcStyleSwitcher.querySelectorAll(".gc-swatch"));
+      swatches.forEach(function(swatch){
+        swatch.addEventListener("click", function(){
+          if (!gcPosterData) return;
+          const style = swatch.getAttribute("data-style");
+          if (style === gcPosterData.style) return;
+          gcPosterData.style = style;
+          renderPoster(gcPosterData);
+        });
+      });
+    }
+
+    // keeps the full form's fields (name/bio/game grid) in step with
+    // whatever the quick edit panel last set, so hopping into the full
+    // editor later never shows stale values.
+    function syncFullForm(data){
+      if (!data) return;
+      if (gcNameInput) gcNameInput.value = data.name;
+      if (gcBioInput) gcBioInput.value = data.bio || "";
+      const gameCards = document.querySelectorAll("#gc-game-grid .gc-option-card");
+      gameCards.forEach(function(c){
+        c.setAttribute("aria-selected", c.getAttribute("data-game") === data.game ? "true" : "false");
+      });
+    }
+
+    function openEditPanel(){
+      if (!gcEditPanel || !gcPosterData) return;
+      if (gcEditName) gcEditName.value = gcPosterData.name;
+      if (gcEditGame) gcEditGame.value = gcPosterData.game;
+      if (gcEditBio) gcEditBio.value = gcPosterData.bio || "";
+
+      if (!gcPosterData.nameStyle) gcPosterData.nameStyle = defaultTextStyle();
+      if (!gcPosterData.bioStyle) gcPosterData.bioStyle = defaultTextStyle();
+      const ns = gcPosterData.nameStyle, bs = gcPosterData.bioStyle;
+
+      if (gcEditNameSize) gcEditNameSize.value = ns.size || GC_NAME_DEFAULT_SIZE;
+      if (gcEditNameColor) gcEditNameColor.value = ns.color || rgbToHex(gcPosterName) || GC_NAME_DEFAULT_COLOR;
+      if (gcEditNameX) gcEditNameX.value = ns.x || 0;
+      if (gcEditNameY) gcEditNameY.value = ns.y || 0;
+
+      if (gcEditBioSize) gcEditBioSize.value = bs.size || GC_BIO_DEFAULT_SIZE;
+      if (gcEditBioColor) gcEditBioColor.value = bs.color || rgbToHex(gcPosterBio) || GC_BIO_DEFAULT_COLOR;
+      if (gcEditBioX) gcEditBioX.value = bs.x || 0;
+      if (gcEditBioY) gcEditBioY.value = bs.y || 0;
+
+      gcEditPanel.hidden = false;
+      if (gcPosterEdit) gcPosterEdit.setAttribute("aria-expanded", "true");
+      setTimeout(() => { if (gcEditName) gcEditName.focus(); }, 60);
+    }
+
+    function closeEditPanel(){
+      if (!gcEditPanel) return;
+      gcEditPanel.hidden = true;
+      if (gcPosterEdit) gcPosterEdit.setAttribute("aria-expanded", "false");
+    }
+
+    if (gcPosterEdit){
+      gcPosterEdit.addEventListener("click", function(){
+        if (!gcEditPanel) return;
+        if (gcEditPanel.hidden) openEditPanel();
+        else closeEditPanel();
+      });
+    }
+
+    // live text edits — the poster re-renders on every keystroke/change
+    // so the "updates immediately" requirement is felt directly, not
+    // just after a Done click.
+    if (gcEditName){
+      gcEditName.addEventListener("input", function(){
+        if (!gcPosterData) return;
+        gcPosterData.name = gcEditName.value.trim() || "username";
+        renderPoster(gcPosterData);
+        syncFullForm(gcPosterData);
+      });
+    }
+    if (gcEditGame){
+      gcEditGame.addEventListener("change", function(){
+        if (!gcPosterData) return;
+        gcPosterData.game = gcEditGame.value;
+        renderPoster(gcPosterData);
+        syncFullForm(gcPosterData);
+      });
+    }
+    if (gcEditBio){
+      gcEditBio.addEventListener("input", function(){
+        if (!gcPosterData) return;
+        gcPosterData.bio = gcEditBio.value.trim();
+        renderPoster(gcPosterData);
+        syncFullForm(gcPosterData);
+      });
+    }
+    // font size / colour / position — each control updates its own
+    // field on the current name/bio style and re-renders instantly,
+    // same live-update behaviour as the text content fields above.
+    function wireNameStyleControl(input, field, parse){
+      if (!input) return;
+      input.addEventListener("input", function(){
+        if (!gcPosterData) return;
+        if (!gcPosterData.nameStyle) gcPosterData.nameStyle = defaultTextStyle();
+        gcPosterData.nameStyle[field] = parse ? parse(input.value) : input.value;
+        renderPoster(gcPosterData);
+      });
+    }
+    function wireBioStyleControl(input, field, parse){
+      if (!input) return;
+      input.addEventListener("input", function(){
+        if (!gcPosterData) return;
+        if (!gcPosterData.bioStyle) gcPosterData.bioStyle = defaultTextStyle();
+        gcPosterData.bioStyle[field] = parse ? parse(input.value) : input.value;
+        renderPoster(gcPosterData);
+      });
+    }
+    wireNameStyleControl(gcEditNameSize, "size", Number);
+    wireNameStyleControl(gcEditNameColor, "color");
+    wireNameStyleControl(gcEditNameX, "x", Number);
+    wireNameStyleControl(gcEditNameY, "y", Number);
+    wireBioStyleControl(gcEditBioSize, "size", Number);
+    wireBioStyleControl(gcEditBioColor, "color");
+    wireBioStyleControl(gcEditBioX, "x", Number);
+    wireBioStyleControl(gcEditBioY, "y", Number);
+
+    /* ---------- directional text position movement buttons ---------- */
+    // allows users to move text position using arrow buttons for fine control
+    const STEP_SIZE = 3; // pixels per button click
+    
+    function moveTextPosition(target, direction){
+      if (!gcPosterData) return;
+      const style = target === "name" ? gcPosterData.nameStyle : gcPosterData.bioStyle;
+      if (!style) return;
+      
+      const step = STEP_SIZE;
+      switch(direction){
+        case "left":
+          style.x = (style.x || 0) - step;
+          break;
+        case "right":
+          style.x = (style.x || 0) + step;
+          break;
+        case "up":
+          style.y = (style.y || 0) - step;
+          break;
+        case "down":
+          style.y = (style.y || 0) + step;
+          break;
+      }
+      
+      // clamp values to slider limits
+      style.x = Math.max(-40, Math.min(40, style.x));
+      style.y = Math.max(-40, Math.min(40, style.y));
+      
+      // update sliders
+      if (target === "name"){
+        if (gcEditNameX) gcEditNameX.value = style.x;
+        if (gcEditNameY) gcEditNameY.value = style.y;
+      } else {
+        if (gcEditBioX) gcEditBioX.value = style.x;
+        if (gcEditBioY) gcEditBioY.value = style.y;
+      }
+      
+      renderPoster(gcPosterData);
+    }
+    
+    function resetTextPosition(target){
+      if (!gcPosterData) return;
+      const style = target === "name" ? gcPosterData.nameStyle : gcPosterData.bioStyle;
+      if (!style) return;
+      
+      style.x = 0;
+      style.y = 0;
+      
+      // update sliders
+      if (target === "name"){
+        if (gcEditNameX) gcEditNameX.value = 0;
+        if (gcEditNameY) gcEditNameY.value = 0;
+      } else {
+        if (gcEditBioX) gcEditBioX.value = 0;
+        if (gcEditBioY) gcEditBioY.value = 0;
+      }
+      
+      renderPoster(gcPosterData);
+    }
+    
+    // wire up directional movement buttons
+    const posButtons = document.querySelectorAll(".gc-pos-btn");
+    posButtons.forEach(function(btn){
+      btn.addEventListener("click", function(e){
+        e.preventDefault();
+        const target = btn.getAttribute("data-target");
+        const direction = btn.getAttribute("data-direction");
+        moveTextPosition(target, direction);
+      });
+    });
+    
+    // wire up position reset buttons
+    const resetButtons = document.querySelectorAll(".gc-pos-reset-btn");
+    resetButtons.forEach(function(btn){
+      btn.addEventListener("click", function(e){
+        e.preventDefault();
+        const target = btn.getAttribute("data-target");
+        resetTextPosition(target);
+      });
+    });
+
+    // renders the current poster (with any font size/colour/position
+    // edits applied) to an image and downloads it as a PNG.
+    function downloadPoster(){
+      if (!gcPoster || typeof html2canvas === "undefined") return;
+      const fileHandle = (gcPosterData && gcPosterData.name ? gcPosterData.name : "poster").replace(/^@/, "").replace(/[^a-z0-9_-]/gi, "-");
+      html2canvas(gcPoster, { backgroundColor: null, scale: 3, useCORS: true }).then(function(canvas){
+        canvas.toBlob(function(blob){
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "gamecard-" + fileHandle + ".png";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 2000);
+        }, "image/png");
+      }).catch(function(){ /* rendering failed — nothing to download */ });
+    }
+
+    if (gcEditDone){
+      gcEditDone.addEventListener("click", closeEditPanel);
+    }
+    if (gcEditSaveDownload){
+      gcEditSaveDownload.addEventListener("click", function(){
+        // edits are already applied live; "save" = keep them and close
+        // the panel, then hand the finished poster off as a download.
+        closeEditPanel();
+        downloadPoster();
+      });
+    }
+    if (gcEditFull){
+      gcEditFull.addEventListener("click", function(){
+        closeEditPanel();
+        showView("gamecard");
+      });
+    }
+
+    if (gcPosterRegenerate){
+      gcPosterRegenerate.addEventListener("click", function(){
+        if (!gcPosterData) return;
+        // re-render whatever is currently set (quick edits and full-form
+        // edits both keep gcPosterData current) and give the decorative
+        // glow a fresh, tasteful reshuffle.
+        renderPoster(gcPosterData);
+        reshuffleDecor();
+      });
+    }
+
+    if (gcPosterShare){
+      gcPosterShare.addEventListener("click", function(){
+        if (!gcPosterShareNote) return;
+        gcPosterShareNote.classList.add("show");
+        clearTimeout(gcPosterShare._hideTimer);
+        gcPosterShare._hideTimer = setTimeout(() => {
+          gcPosterShareNote.classList.remove("show");
+        }, 3600);
+      });
+    }
+
+    if (gcPosterGoHome){
+      gcPosterGoHome.addEventListener("click", function(){
+        closeEditPanel();
+        showView("home");
+      });
+    }
+
+    /* ---------- drag-to-reposition text elements on poster ---------- */
+    let draggedElement = null;
+    let dragOffset = { x: 0, y: 0 };
+    let dragElementType = null; // "name" or "bio"
+
+    function makeElementDraggable(el, elementType){
+      if (!el) return;
+      
+      el.style.cursor = "grab";
+      el.style.touchAction = "none";
+      el.style.userSelect = "none";
+
+      function onMouseDown(e){
+        draggedElement = el;
+        dragElementType = elementType;
+        dragOffset.x = e.clientX || e.touches?.[0].clientX || 0;
+        dragOffset.y = e.clientY || e.touches?.[0].clientY || 0;
+        el.style.cursor = "grabbing";
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
+        document.addEventListener("touchmove", onMouseMove);
+        document.addEventListener("touchend", onMouseUp);
+        e.preventDefault();
+      }
+
+      function onMouseMove(e){
+        if (draggedElement !== el || !gcPosterData) return;
+        
+        const currentX = e.clientX || e.touches?.[0].clientX || 0;
+        const currentY = e.clientY || e.touches?.[0].clientY || 0;
+        
+        const deltaX = currentX - dragOffset.x;
+        const deltaY = currentY - dragOffset.y;
+        
+        const dragSensitivity = 0.25; // adjust sensitivity for dragging
+        
+        if (elementType === "name"){
+          if (!gcPosterData.nameStyle) gcPosterData.nameStyle = defaultTextStyle();
+          gcPosterData.nameStyle.x = Math.max(-40, Math.min(40, (gcPosterData.nameStyle.x || 0) + Math.round(deltaX * dragSensitivity)));
+          gcPosterData.nameStyle.y = Math.max(-40, Math.min(40, (gcPosterData.nameStyle.y || 0) + Math.round(deltaY * dragSensitivity)));
+          if (gcEditNameX) gcEditNameX.value = gcPosterData.nameStyle.x;
+          if (gcEditNameY) gcEditNameY.value = gcPosterData.nameStyle.y;
+        } else if (elementType === "bio"){
+          if (!gcPosterData.bioStyle) gcPosterData.bioStyle = defaultTextStyle();
+          gcPosterData.bioStyle.x = Math.max(-40, Math.min(40, (gcPosterData.bioStyle.x || 0) + Math.round(deltaX * dragSensitivity)));
+          gcPosterData.bioStyle.y = Math.max(-40, Math.min(40, (gcPosterData.bioStyle.y || 0) + Math.round(deltaY * dragSensitivity)));
+          if (gcEditBioX) gcEditBioX.value = gcPosterData.bioStyle.x;
+          if (gcEditBioY) gcEditBioY.value = gcPosterData.bioStyle.y;
+        }
+        
+        renderPoster(gcPosterData);
+        
+        dragOffset.x = currentX;
+        dragOffset.y = currentY;
+      }
+
+      function onMouseUp(e){
+        el.style.cursor = "grab";
+        draggedElement = null;
+        dragElementType = null;
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+        document.removeEventListener("touchmove", onMouseMove);
+        document.removeEventListener("touchend", onMouseUp);
+      }
+
+      el.addEventListener("mousedown", onMouseDown);
+      el.addEventListener("touchstart", onMouseDown);
+    }
+
+    // Enable drag for name and bio elements when edit panel opens
+    const originalOpenEditPanel = openEditPanel;
+    window.openEditPanel = function(){
+      originalOpenEditPanel();
+      // Delay to ensure poster is rendered
+      setTimeout(() => {
+        makeElementDraggable(gcPosterName, "name");
+        makeElementDraggable(gcPosterBio, "bio");
+      }, 50);
+    };
+  })();
+
   /* ---------- get og bio modal ---------- */
   (function(){
     const toolOgbio = document.getElementById("tool-ogbio");
@@ -1340,6 +2004,7 @@
     const regenerateBtn = document.getElementById("ogbio-regenerate");
     const copyBtn = document.getElementById("ogbio-copy");
     const bioTextEl = document.getElementById("ogbio-bio-text");
+    const useInGamecardBtn = document.getElementById("ogbio-use-gamecard");
 
     const identityLabels = {
       gamer: "🎮 Gamer",
@@ -1556,6 +2221,15 @@
 
         if (copyBtn) copyBtn.classList.remove("is-copied");
         if (copyBtn) copyBtn.textContent = "copy";
+
+        // Only offer to send the bio into GameCard when that's where the
+        // "Get OG Bio" link was opened from, and there's a real bio to send.
+        if (useInGamecardBtn){
+          const fromGameCard = overlay.dataset.source === "gamecard";
+          useInGamecardBtn.hidden = isComingSoon || !fromGameCard;
+          useInGamecardBtn.classList.remove("is-used");
+          useInGamecardBtn.textContent = "✨ Use This Bio in GameCard →";
+        }
       }
 
       if (isComingSoon){
@@ -1592,7 +2266,15 @@
       overlay.classList.remove("open");
     }
 
-    toolOgbio.addEventListener("click", openOverlay);
+    toolOgbio.addEventListener("click", function(e){
+      // Real user clicks on the home "Get OG Bio" card start a fresh,
+      // standalone session. Programmatic clicks (from GameCard's
+      // "✨ Get OG Bio →" link) are e.isTrusted === false and leave
+      // overlay.dataset.source as "gamecard" (set just before the click)
+      // so the result step can offer the bio back to GameCard.
+      if (e.isTrusted) overlay.dataset.source = "home";
+      openOverlay();
+    });
     if (closeBtn) closeBtn.addEventListener("click", closeOverlay);
     if (closeX) closeX.addEventListener("click", closeOverlay);
     overlay.addEventListener("click", function(e){
@@ -1651,6 +2333,27 @@
       backBtn.addEventListener("click", function(){
         if (stepNext) stepNext.hidden = true;
         if (stepIdentity) stepIdentity.hidden = false;
+      });
+    }
+
+    // Hands the current OG Bio straight to GameCard's bio field and
+    // jumps back to it — GameCard's view stays mounted underneath this
+    // overlay the whole time, so closing is enough to reveal it again.
+    if (useInGamecardBtn){
+      useInGamecardBtn.addEventListener("click", function(){
+        const text = bioTextEl ? bioTextEl.textContent : "";
+        const gcBio = document.getElementById("gc-bio");
+        if (gcBio && text && text !== COMING_SOON_TEXT){
+          gcBio.value = text;
+          gcBio.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        useInGamecardBtn.textContent = "✓ added to your GameCard";
+        useInGamecardBtn.classList.add("is-used");
+        window.setTimeout(function(){
+          closeOverlay();
+          const gcBioEl = document.getElementById("gc-bio");
+          if (gcBioEl) gcBioEl.focus();
+        }, 450);
       });
     }
   })();

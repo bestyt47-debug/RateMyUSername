@@ -89,6 +89,12 @@
               <span class="tool-name">Ultimate Username Championship</span>
               <span class="tool-desc">battle it out for the crown</span>
             </button>
+            <button type="button" class="tool-card tool-card-new" id="tool-gamecard" data-tool="gamecard">
+              <span class="tool-badge mono">new</span>
+              <span class="tool-emoji" aria-hidden="true">⚡</span>
+              <span class="tool-name">GameCard</span>
+              <span class="tool-desc">build a 9:16 gamer/creator poster</span>
+            </button>
           </div>
         </div>
 
@@ -387,6 +393,293 @@
       </div>
     </section>
 
+    <!-- ============ GAMECARD INPUT VIEW ============ -->
+    <section id="view-gamecard" class="view" hidden>
+      <div class="hero">
+        <p class="kicker">// build your identity</p>
+        <h1 class="headline">⚡ gamecard</h1>
+        <p class="sub">turn your @ into a premium vertical identity poster — built for gamers, creators, and anyone leveling up their profile.</p>
+
+        <form id="gamecard-form" class="gc-form" autocomplete="off">
+          <div class="gc-field">
+            <label class="gc-label mono" for="gc-name">Your Name / Username</label>
+            <div class="input-row">
+              <input id="gc-name" class="mono" type="text" placeholder="Enter your name or username..." maxlength="40" aria-label="Your Name / Username" />
+            </div>
+          </div>
+
+          <div class="gc-field">
+            <p class="gc-label mono" id="gc-game-label">Game / Social Media</p>
+            <div class="gc-option-grid gc-option-grid-5" id="gc-game-grid" role="listbox" aria-label="Game / Social Media" aria-labelledby="gc-game-label">
+              <button type="button" class="gc-option-card" data-game="gaming" role="option" aria-selected="false">
+                <span class="gc-option-emoji" aria-hidden="true">🎮</span>
+                <span class="gc-option-label">Gaming</span>
+              </button>
+              <button type="button" class="gc-option-card" data-game="youtube" role="option" aria-selected="false">
+                <span class="gc-option-emoji" aria-hidden="true">▶️</span>
+                <span class="gc-option-label">YouTube</span>
+              </button>
+              <button type="button" class="gc-option-card" data-game="instagram" role="option" aria-selected="false">
+                <span class="gc-option-emoji" aria-hidden="true">📸</span>
+                <span class="gc-option-label">Instagram</span>
+              </button>
+              <button type="button" class="gc-option-card" data-game="streaming" role="option" aria-selected="false">
+                <span class="gc-option-emoji" aria-hidden="true">🎙️</span>
+                <span class="gc-option-label">Streaming</span>
+              </button>
+              <button type="button" class="gc-option-card" data-game="other" role="option" aria-selected="false">
+                <span class="gc-option-emoji" aria-hidden="true">💻</span>
+                <span class="gc-option-label">Other</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="gc-field">
+            <div class="gc-label-row">
+              <label class="gc-label mono" for="gc-bio">Bio</label>
+              <button type="button" id="gc-get-ogbio" class="gc-ogbio-link mono">✨ Get OG Bio →</button>
+            </div>
+            <div class="gc-textarea-row">
+              <textarea id="gc-bio" class="mono" placeholder="Write something about yourself..." maxlength="200" rows="3" aria-label="Bio"></textarea>
+            </div>
+          </div>
+
+          <div class="gc-field">
+            <p class="gc-label mono" id="gc-style-label">Style / Background</p>
+            <div class="gc-option-grid" id="gc-style-grid" role="listbox" aria-label="Style / Background" aria-labelledby="gc-style-label">
+              <button type="button" class="gc-option-card" data-style="cyberpunk" role="option" aria-selected="false">
+                <span class="gc-option-emoji" aria-hidden="true">⚡</span>
+                <span class="gc-option-label">Cyberpunk</span>
+              </button>
+              <button type="button" class="gc-option-card" data-style="esports" role="option" aria-selected="false">
+                <span class="gc-option-emoji" aria-hidden="true">🔥</span>
+                <span class="gc-option-label">Esports</span>
+              </button>
+              <button type="button" class="gc-option-card" data-style="dark" role="option" aria-selected="false">
+                <span class="gc-option-emoji" aria-hidden="true">🌌</span>
+                <span class="gc-option-label">Dark</span>
+              </button>
+              <button type="button" class="gc-option-card" data-style="neon" role="option" aria-selected="false">
+                <span class="gc-option-emoji" aria-hidden="true">💜</span>
+                <span class="gc-option-label">Neon</span>
+              </button>
+              <button type="button" class="gc-option-card" data-style="pro" role="option" aria-selected="false">
+                <span class="gc-option-emoji" aria-hidden="true">🏆</span>
+                <span class="gc-option-label">Pro</span>
+              </button>
+              <button type="button" class="gc-option-card" data-style="creator" role="option" aria-selected="false">
+                <span class="gc-option-emoji" aria-hidden="true">🎥</span>
+                <span class="gc-option-label">Creator</span>
+              </button>
+            </div>
+          </div>
+
+          <p class="gc-format-note mono"><span aria-hidden="true">📱</span> poster output — vertical 9:16</p>
+
+          <p id="gc-error" class="error-msg" style="text-align:center;">fill in your name, game/social and style first.</p>
+
+          <div class="compare-cta-row">
+            <button type="submit" class="btn btn-primary">🔥 Create My Poster</button>
+          </div>
+        </form>
+
+        <div class="switcher">
+          <button type="button" id="gc-go-home" class="btn btn-ghost">← back to rating</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GAMECARD POSTER VIEW ============ -->
+    <section id="view-gamecard-poster" class="view" hidden>
+      <div class="hero">
+        <p class="kicker">// your identity, generated</p>
+        <h1 class="headline">⚡ your gamecard</h1>
+        <p class="sub">swap styles instantly, edit your text live, or head back to tweak your details.</p>
+
+        <div class="gc-poster-stage">
+          <div class="gc-poster" id="gc-poster" data-style="cyberpunk">
+            <div class="gc-poster-bg" aria-hidden="true">
+              <span class="gc-poster-blob gc-poster-blob-a"></span>
+              <span class="gc-poster-blob gc-poster-blob-b"></span>
+              <span class="gc-poster-shape"></span>
+              <span class="gc-poster-grid"></span>
+              <span class="gc-poster-particles"></span>
+              <span class="gc-poster-noise"></span>
+              <span class="gc-poster-sheen"></span>
+            </div>
+
+            <span class="gc-poster-giant" id="gc-poster-giant" aria-hidden="true">⚡</span>
+
+            <div class="gc-poster-content">
+              <div class="gc-poster-badge-row">
+                <span class="gc-poster-platform">
+                  <span class="gc-poster-platform-icon" id="gc-poster-platform-icon" aria-hidden="true">🎮</span>
+                  <span class="gc-poster-platform-label" id="gc-poster-platform-label">Gaming</span>
+                </span>
+                <span class="gc-poster-emblem" aria-hidden="true"><span id="gc-poster-emblem-icon">⚡</span></span>
+              </div>
+
+              <div class="gc-poster-hero">
+                <span class="gc-poster-kicker" id="gc-poster-kicker">Identity loaded</span>
+                <p class="gc-poster-name" id="gc-poster-name" contenteditable="true">@username</p>
+                <span class="gc-poster-name-bar" aria-hidden="true"></span>
+              </div>
+
+              <div class="gc-poster-bio-wrap">
+                <p class="gc-poster-bio" id="gc-poster-bio" contenteditable="true">your bio will show up here.</p>
+              </div>
+
+              <div class="gc-poster-foot">
+                <span class="gc-poster-brand">
+                  <span class="gc-poster-brand-mark" aria-hidden="true">⚡</span>
+                  <span class="gc-poster-brand-text">RateMyUsername</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gc-style-switcher" id="gc-style-switcher" role="listbox" aria-label="Quick style switch">
+          <button type="button" class="gc-swatch" data-style="cyberpunk" role="option" aria-selected="true" aria-label="Cyberpunk style"><span aria-hidden="true">⚡</span></button>
+          <button type="button" class="gc-swatch" data-style="esports" role="option" aria-selected="false" aria-label="Esports style"><span aria-hidden="true">🔥</span></button>
+          <button type="button" class="gc-swatch" data-style="dark" role="option" aria-selected="false" aria-label="Dark style"><span aria-hidden="true">🌌</span></button>
+          <button type="button" class="gc-swatch" data-style="neon" role="option" aria-selected="false" aria-label="Neon style"><span aria-hidden="true">💜</span></button>
+          <button type="button" class="gc-swatch" data-style="pro" role="option" aria-selected="false" aria-label="Pro style"><span aria-hidden="true">🏆</span></button>
+          <button type="button" class="gc-swatch" data-style="creator" role="option" aria-selected="false" aria-label="Creator style"><span aria-hidden="true">🎥</span></button>
+        </div>
+
+        <div class="gc-poster-controls">
+          <button type="button" id="gc-poster-edit" class="btn btn-outline gc-poster-btn" aria-expanded="false" aria-controls="gc-edit-panel">✏️ Edit Poster</button>
+          <button type="button" id="gc-poster-regenerate" class="btn btn-outline gc-poster-btn">↻ Regenerate</button>
+          <button type="button" id="gc-poster-share" class="btn btn-outline gc-poster-btn share">↗ Share</button>
+        </div>
+        <p id="gc-poster-share-note" class="gc-poster-share-note mono">sharing is dropping in a future update — for now, screenshot away ✨</p>
+
+        <div class="gc-edit-panel" id="gc-edit-panel" hidden>
+          <p class="gc-edit-kicker mono">✏️ quick edit — updates your poster instantly</p>
+          <p class="gc-edit-hint mono">💡 drag text on poster or use controls below</p>
+
+          <!-- Content Section -->
+          <div class="gc-edit-section">
+            <h4 class="gc-section-title mono">📝 content</h4>
+            
+            <div class="gc-edit-field">
+              <label class="gc-edit-label mono" for="gc-edit-name">Name / Username</label>
+              <div class="input-row gc-edit-input-row">
+                <input id="gc-edit-name" class="mono" type="text" maxlength="40" placeholder="Enter your name or username..." aria-label="Name / Username" />
+              </div>
+            </div>
+
+            <div class="gc-edit-field">
+              <label class="gc-edit-label mono" for="gc-edit-game">Game / Platform</label>
+              <div class="gc-edit-select-row">
+                <select id="gc-edit-game" class="mono" aria-label="Game / Platform">
+                  <option value="gaming">🎮 Gaming</option>
+                  <option value="youtube">▶️ YouTube</option>
+                  <option value="instagram">📸 Instagram</option>
+                  <option value="streaming">🎙️ Streaming</option>
+                  <option value="other">💻 Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="gc-edit-field">
+              <label class="gc-edit-label mono" for="gc-edit-bio">Bio</label>
+              <div class="gc-textarea-row">
+                <textarea id="gc-edit-bio" class="mono" maxlength="200" rows="3" placeholder="Write something about yourself..." aria-label="Bio"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Style Section -->
+          <div class="gc-edit-section">
+            <h4 class="gc-section-title mono">🎨 customize text</h4>
+            
+            <div class="gc-style-group">
+              <div class="gc-style-group-label">👤 name</div>
+              <div class="gc-style-controls-compact">
+                <div class="gc-style-row-compact">
+                  <label class="gc-edit-label-compact mono" for="gc-edit-name-size">size</label>
+                  <input id="gc-edit-name-size" type="range" min="14" max="60" step="1" aria-label="Name font size" />
+                </div>
+                <div class="gc-style-row-compact">
+                  <label class="gc-edit-label-compact mono" for="gc-edit-name-color">color</label>
+                  <input id="gc-edit-name-color" type="color" aria-label="Name colour" />
+                </div>
+                <div class="gc-style-row-compact">
+                  <label class="gc-edit-label-compact mono">move</label>
+                  <div class="gc-style-pos-compact">
+                    <div class="gc-pos-controls">
+                      <button type="button" class="gc-pos-btn" data-target="name" data-direction="up" aria-label="Move name up" title="↑">↑</button>
+                    </div>
+                    <div class="gc-pos-sliders">
+                      <button type="button" class="gc-pos-btn" data-target="name" data-direction="left" aria-label="Move name left" title="←">←</button>
+                      <div class="gc-slider-group">
+                        <input id="gc-edit-name-x" type="range" min="-40" max="40" step="1" aria-label="Name horizontal position" title="left / right" />
+                        <input id="gc-edit-name-y" type="range" min="-40" max="40" step="1" aria-label="Name vertical position" title="up / down" />
+                      </div>
+                      <button type="button" class="gc-pos-btn" data-target="name" data-direction="right" aria-label="Move name right" title="→">→</button>
+                    </div>
+                    <div class="gc-pos-controls">
+                      <button type="button" class="gc-pos-btn" data-target="name" data-direction="down" aria-label="Move name down" title="↓">↓</button>
+                      <button type="button" class="gc-pos-reset-btn" data-target="name" aria-label="Reset name position" title="Reset">⟲</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="gc-style-group">
+              <div class="gc-style-group-label">💬 bio</div>
+              <div class="gc-style-controls-compact">
+                <div class="gc-style-row-compact">
+                  <label class="gc-edit-label-compact mono" for="gc-edit-bio-size">size</label>
+                  <input id="gc-edit-bio-size" type="range" min="9" max="22" step="1" aria-label="Bio font size" />
+                </div>
+                <div class="gc-style-row-compact">
+                  <label class="gc-edit-label-compact mono" for="gc-edit-bio-color">color</label>
+                  <input id="gc-edit-bio-color" type="color" aria-label="Bio colour" />
+                </div>
+                <div class="gc-style-row-compact">
+                  <label class="gc-edit-label-compact mono">move</label>
+                  <div class="gc-style-pos-compact">
+                    <div class="gc-pos-controls">
+                      <button type="button" class="gc-pos-btn" data-target="bio" data-direction="up" aria-label="Move bio up" title="↑">↑</button>
+                    </div>
+                    <div class="gc-pos-sliders">
+                      <button type="button" class="gc-pos-btn" data-target="bio" data-direction="left" aria-label="Move bio left" title="←">←</button>
+                      <div class="gc-slider-group">
+                        <input id="gc-edit-bio-x" type="range" min="-40" max="40" step="1" aria-label="Bio horizontal position" title="left / right" />
+                        <input id="gc-edit-bio-y" type="range" min="-40" max="40" step="1" aria-label="Bio vertical position" title="up / down" />
+                      </div>
+                      <button type="button" class="gc-pos-btn" data-target="bio" data-direction="right" aria-label="Move bio right" title="→">→</button>
+                    </div>
+                    <div class="gc-pos-controls">
+                      <button type="button" class="gc-pos-btn" data-target="bio" data-direction="down" aria-label="Move bio down" title="↓">↓</button>
+                      <button type="button" class="gc-pos-reset-btn" data-target="bio" aria-label="Reset bio position" title="Reset">⟲</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions Section -->
+          <div class="gc-edit-actions">
+            <button type="button" id="gc-edit-full" class="gc-edit-full-link mono">⚙ full editor →</button>
+            <div class="gc-edit-btn-group">
+              <button type="button" id="gc-edit-done" class="btn btn-secondary gc-edit-done">✓ Done</button>
+              <button type="button" id="gc-edit-save-download" class="btn btn-primary gc-edit-done">💾 Save</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="switcher">
+          <button type="button" id="gc-poster-go-home" class="btn btn-ghost">← back to rating</button>
+        </div>
+      </div>
+    </section>
+
   </div>
 </main>
 
@@ -541,6 +834,7 @@
         <button type="button" id="ogbio-regenerate" class="btn btn-primary ogbio-regenerate">regenerate ↻</button>
         <button type="button" id="ogbio-copy" class="btn btn-outline ogbio-copy">copy</button>
       </div>
+      <button type="button" id="ogbio-use-gamecard" class="btn btn-primary ogbio-use-gamecard" hidden>✨ Use This Bio in GameCard →</button>
       <button type="button" id="ogbio-back" class="btn btn-ghost">← back to identities</button>
     </div>
 
@@ -575,6 +869,7 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

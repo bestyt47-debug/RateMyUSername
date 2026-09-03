@@ -1503,6 +1503,15 @@
     background: var(--yellow);
     border-color: var(--ink);
   }
+  .ogbio-use-gamecard{
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .ogbio-use-gamecard.is-used{
+    background: var(--yellow);
+    color: var(--ink);
+  }
   :root[data-theme="dark"] .ogbio-copy.is-copied{
     background: var(--yellow);
     border-color: var(--yellow);
@@ -1623,3 +1632,1138 @@
     text-underline-offset: 2px;
   }
   .footer-blog-link:hover{ color: var(--ink); }
+
+  /* ---------- gamecard (additive, rest of homepage untouched) ----------
+     Reuses .hero/.kicker/.headline/.sub, .input-row, .btn-primary,
+     .compare-cta-row and .switcher from above. Option grids are a new,
+     dedicated class (not .identity-card) so they can't be picked up by
+     the OG Bio overlay's `.identity-card` query — same visual language,
+     independent selection state. */
+  .gc-form{
+    max-width: 440px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .gc-field{ margin-bottom: 22px; }
+  .gc-label{
+    display: block;
+    font-size: 11px;
+    text-transform: lowercase;
+    letter-spacing: .05em;
+    color: var(--ink-soft);
+    margin: 0 0 8px;
+  }
+  .gc-label-row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0 0 8px;
+  }
+  .gc-label-row .gc-label{ margin: 0; }
+
+  .gc-ogbio-link{
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--red);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity .15s ease, transform .15s ease;
+  }
+  .gc-ogbio-link:hover{ opacity: .75; transform: translateX(1px); }
+  .gc-ogbio-link:active{ transform: translateX(0); }
+
+  /* bio textarea — same tactile pill language as .input-row, tuned
+     to a softer radius so a multi-line field doesn't look like a stretched pill */
+  .gc-textarea-row{
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 20px;
+    padding: 4px;
+    box-shadow: var(--shadow);
+    transition: transform .18s cubic-bezier(.2,.9,.25,1), box-shadow .18s cubic-bezier(.2,.9,.25,1);
+  }
+  .gc-textarea-row:hover{
+    transform: translate(-1px,-1px);
+    box-shadow: 7px 7px 0 var(--ink);
+  }
+  .gc-textarea-row:focus-within{
+    transform: translate(-3px,-3px);
+    box-shadow: 9px 9px 0 var(--ink);
+  }
+  .gc-textarea-row textarea{
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    resize: vertical;
+    background: transparent;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    line-height: 1.55;
+    padding: 14px 16px;
+    min-height: 84px;
+    max-height: 220px;
+    color: var(--ink);
+  }
+  .gc-textarea-row textarea::placeholder{ color:var(--placeholder); transition: opacity .15s ease; }
+  .gc-textarea-row textarea:focus::placeholder{ opacity: .55; }
+
+  .gc-option-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .gc-option-grid-5{
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .gc-option-grid-5 .gc-option-card:last-child{
+    grid-column: 1 / -1;
+  }
+  .gc-option-card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 10px;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    color: var(--ink);
+    font-family: inherit;
+    position: relative;
+    transition: transform .16s cubic-bezier(.2,.9,.25,1), box-shadow .16s cubic-bezier(.2,.9,.25,1), background .16s ease, border-color .16s ease;
+  }
+  .gc-option-card:hover{
+    transform: translate(-2px,-2px);
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  .gc-option-card:active{
+    transform: translate(0,0);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .gc-option-card[aria-selected="true"]{
+    background: var(--yellow);
+    border-color: var(--ink);
+    transform: translate(-2px,-2px);
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  .gc-option-card[aria-selected="true"]::after{
+    content: "✓";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--ink-contrast);
+    border: 1.5px solid var(--card);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .gc-option-emoji{
+    font-size: 24px;
+    line-height: 1;
+  }
+  .gc-option-label{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: -0.01em;
+    text-align: center;
+  }
+
+  .gc-format-note{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--ink-soft);
+    border: 1.5px dashed var(--line-soft);
+    border-radius: 999px;
+    padding: 7px 14px;
+    margin: 4px 0 22px;
+  }
+
+  .gc-coming-soon{
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: all .2s ease;
+  }
+  .gc-coming-soon.show{ opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 420px){
+    .gc-option-grid{ grid-template-columns: 1fr 1fr; gap: 8px; }
+    .gc-option-card{ padding: 12px 8px; }
+  }
+
+  /* ---------- gamecard: poster preview ----------
+     A true 9:16 social poster, not a UI card. Six palettes drive six
+     genuinely different compositions (position, scale, alignment) off
+     the same markup via [data-style] — nothing here is "add a border
+     to a rectangle": each style repositions the hero name, the bio,
+     the platform badge and a giant background icon differently.
+     Everything is CSS gradients/blends/an inline SVG noise data-uri —
+     no images, no external services. */
+  .gc-poster-stage{
+    display: flex;
+    justify-content: center;
+    margin: 26px 0 20px;
+  }
+
+  .gc-poster{
+    position: relative;
+    width: min(320px, 80vw);
+    aspect-ratio: 9 / 16;
+    border-radius: 20px;
+    overflow: hidden;
+    isolation: isolate;
+    background: #0c0c12;
+    box-shadow: 0 18px 40px -14px rgba(0,0,0,.55), 0 2px 0 rgba(0,0,0,.08);
+    transition: box-shadow .35s cubic-bezier(.2,.9,.25,1), transform .35s cubic-bezier(.2,.9,.25,1);
+  }
+  .gc-poster.is-regenerating{
+    transform: scale(.978);
+  }
+
+  /* ----- palettes ----- */
+  .gc-poster[data-style="cyberpunk"]{
+    --gc-bg-1: #0a0916; --gc-bg-2: #1c1040; --gc-bg-3: #05040c;
+    --gc-accent: #17f2ff; --gc-accent-2: #ff2bd6;
+    --gc-text: #f3f8ff; --gc-text-soft: rgba(230,245,255,.78);
+    --gc-badge-bg: rgba(23,242,255,.12); --gc-badge-border: rgba(23,242,255,.55);
+    --gc-name-shadow: none;
+    --gc-name-glow: drop-shadow(0 0 3px rgba(255,255,255,.7)) drop-shadow(0 0 16px rgba(23,242,255,.75)) drop-shadow(0 0 34px rgba(255,43,214,.5));
+    --gc-name-weight: 800; --gc-name-transform: none; --gc-name-tracking: -0.02em;
+    --gc-grid-op: .5; --gc-blob-op: .6; --gc-brand-op: .78;
+    --gc-emblem-bg: rgba(23,242,255,.14); --gc-emblem-border: rgba(23,242,255,.6);
+    --gc-bar-grad: linear-gradient(90deg, var(--gc-accent), var(--gc-accent-2));
+    --gc-particle-op: .5;
+  }
+  .gc-poster[data-style="esports"]{
+    --gc-bg-1: #1a0403; --gc-bg-2: #3c0906; --gc-bg-3: #0a0201;
+    --gc-accent: #ff4b1f; --gc-accent-2: #ffb400;
+    --gc-text: #fff7f2; --gc-text-soft: rgba(255,240,230,.82);
+    --gc-badge-bg: rgba(255,75,31,.16); --gc-badge-border: rgba(255,180,0,.55);
+    --gc-name-shadow: 3px 3px 0 rgba(0,0,0,.6), 0 0 30px rgba(255,75,31,.55);
+    --gc-name-weight: 900; --gc-name-transform: uppercase; --gc-name-tracking: -0.02em;
+    --gc-grid-op: 0; --gc-blob-op: .55; --gc-brand-op: .82;
+    --gc-emblem-bg: rgba(255,75,31,.16); --gc-emblem-border: rgba(255,180,0,.6);
+    --gc-bar-grad: linear-gradient(90deg, var(--gc-accent), var(--gc-accent-2));
+    --gc-particle-op: 0;
+  }
+  .gc-poster[data-style="dark"]{
+    --gc-bg-1: #17171a; --gc-bg-2: #232327; --gc-bg-3: #08080a;
+    --gc-accent: #d8d9cf; --gc-accent-2: #8a8b85;
+    --gc-text: #f4f4f1; --gc-text-soft: rgba(244,244,241,.68);
+    --gc-badge-bg: rgba(255,255,255,.06); --gc-badge-border: rgba(255,255,255,.22);
+    --gc-name-shadow: 0 2px 26px rgba(0,0,0,.65);
+    --gc-name-weight: 700; --gc-name-transform: uppercase; --gc-name-tracking: .04em;
+    --gc-grid-op: .18; --gc-blob-op: .3; --gc-brand-op: .6;
+    --gc-emblem-bg: rgba(255,255,255,.05); --gc-emblem-border: rgba(255,255,255,.25);
+    --gc-bar-grad: linear-gradient(90deg, transparent, var(--gc-accent), transparent);
+    --gc-particle-op: 0;
+  }
+  .gc-poster[data-style="neon"]{
+    --gc-bg-1: #170b2e; --gc-bg-2: #3a0f5c; --gc-bg-3: #0a0518;
+    --gc-accent: #ff5ed2; --gc-accent-2: #7c5cff;
+    --gc-text: #fbf3ff; --gc-text-soft: rgba(250,235,255,.8);
+    --gc-badge-bg: rgba(255,94,210,.14); --gc-badge-border: rgba(255,94,210,.5);
+    --gc-name-shadow: none;
+    --gc-name-glow: drop-shadow(0 0 12px rgba(255,94,210,.8)) drop-shadow(0 0 28px rgba(124,92,255,.6));
+    --gc-name-weight: 800; --gc-name-transform: none; --gc-name-tracking: -0.01em;
+    --gc-grid-op: 0; --gc-blob-op: .68; --gc-brand-op: .8;
+    --gc-emblem-bg: rgba(255,94,210,.16); --gc-emblem-border: rgba(255,94,210,.55);
+    --gc-bar-grad: linear-gradient(90deg, var(--gc-accent), var(--gc-accent-2));
+    --gc-particle-op: .65;
+  }
+  .gc-poster[data-style="pro"]{
+    --gc-bg-1: #0b1220; --gc-bg-2: #16233d; --gc-bg-3: #060a13;
+    --gc-accent: #e8c468; --gc-accent-2: #6c86b8;
+    --gc-text: #f6f1e2; --gc-text-soft: rgba(240,232,210,.75);
+    --gc-badge-bg: rgba(232,196,104,.14); --gc-badge-border: rgba(232,196,104,.55);
+    --gc-name-shadow: 0 2px 0 rgba(0,0,0,.45), 0 0 26px rgba(232,196,104,.4);
+    --gc-name-weight: 800; --gc-name-transform: none; --gc-name-tracking: -0.01em;
+    --gc-grid-op: .22; --gc-blob-op: .35; --gc-brand-op: .75;
+    --gc-emblem-bg: rgba(232,196,104,.16); --gc-emblem-border: rgba(232,196,104,.6);
+    --gc-bar-grad: linear-gradient(90deg, transparent, var(--gc-accent), transparent);
+    --gc-particle-op: 0;
+  }
+  .gc-poster[data-style="creator"]{
+    --gc-bg-1: #ff7a5c; --gc-bg-2: #dd2a7b; --gc-bg-3: #6a3fd8;
+    --gc-accent: #ffe27a; --gc-accent-2: #ffffff;
+    --gc-text: #ffffff; --gc-text-soft: rgba(255,255,255,.88);
+    --gc-badge-bg: rgba(255,255,255,.18); --gc-badge-border: rgba(255,255,255,.5);
+    --gc-name-shadow: 0 4px 28px rgba(90,0,60,.4);
+    --gc-name-weight: 800; --gc-name-transform: none; --gc-name-tracking: -0.015em;
+    --gc-grid-op: 0; --gc-blob-op: .5; --gc-brand-op: .85;
+    --gc-emblem-bg: rgba(255,255,255,.2); --gc-emblem-border: rgba(255,255,255,.55);
+    --gc-bar-grad: linear-gradient(90deg, var(--gc-accent), var(--gc-accent-2));
+    --gc-particle-op: .4;
+  }
+
+  .gc-poster-bg{
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120% 90% at 50% -8%, var(--gc-bg-2), transparent 60%),
+      radial-gradient(130% 100% at 90% 115%, var(--gc-bg-3), transparent 55%),
+      var(--gc-bg-1);
+    z-index: 0;
+  }
+  .gc-poster-blob{
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(30px);
+    opacity: var(--gc-blob-op, .5);
+    transition: transform .5s cubic-bezier(.2,.9,.25,1), opacity .4s ease;
+  }
+  .gc-poster-blob-a{
+    width: 62%; aspect-ratio: 1;
+    top: -12%; left: -18%;
+    background: var(--gc-accent);
+    transform: translate(var(--blob-a-x, 0), var(--blob-a-y, 0)) rotate(var(--blob-a-r, 0deg));
+  }
+  .gc-poster-blob-b{
+    width: 58%; aspect-ratio: 1;
+    bottom: -14%; right: -20%;
+    background: var(--gc-accent-2);
+    transform: translate(var(--blob-b-x, 0), var(--blob-b-y, 0)) rotate(var(--blob-b-r, 0deg));
+  }
+  .gc-poster.is-regenerating .gc-poster-blob{ opacity: calc(var(--gc-blob-op, .5) * .55); }
+
+  .gc-poster-grid{
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.09) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.09) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: var(--gc-grid-op, 0);
+    mix-blend-mode: overlay;
+  }
+  .gc-poster-noise{
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: .05;
+    mix-blend-mode: overlay;
+  }
+  .gc-poster-sheen{
+    position: absolute; inset: 0;
+    background: linear-gradient(115deg, rgba(255,255,255,.14) 0%, transparent 30%, transparent 70%, rgba(255,255,255,.05) 100%);
+    pointer-events: none;
+  }
+
+  .gc-poster-particles{
+    position: absolute; inset: 0;
+    opacity: var(--gc-particle-op, 0);
+    background-image:
+      radial-gradient(1.6px 1.6px at 12% 18%, var(--gc-accent) 96%, transparent),
+      radial-gradient(1.3px 1.3px at 82% 12%, var(--gc-accent-2) 96%, transparent),
+      radial-gradient(1.8px 1.8px at 22% 82%, var(--gc-accent-2) 96%, transparent),
+      radial-gradient(1.3px 1.3px at 68% 70%, var(--gc-accent) 96%, transparent),
+      radial-gradient(1.5px 1.5px at 90% 55%, var(--gc-accent) 96%, transparent),
+      radial-gradient(1.2px 1.2px at 40% 30%, var(--gc-accent-2) 96%, transparent),
+      radial-gradient(1.4px 1.4px at 8% 62%, var(--gc-accent) 96%, transparent),
+      radial-gradient(1.3px 1.3px at 58% 90%, var(--gc-accent-2) 96%, transparent);
+    filter: drop-shadow(0 0 3px currentColor);
+  }
+
+  /* ----- giant background icon — the "large emoji/icon as an actual
+     design element" requirement. One per style, huge, oversized,
+     positioned and rotated differently so it reads as composition,
+     not decoration; text sits above it (z-index) so it can visually
+     cross/anchor the typography without ever fighting for legibility. ----- */
+  .gc-poster-giant{
+    position: absolute;
+    z-index: 1;
+    line-height: 1;
+    font-size: 230px;
+    pointer-events: none;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* esports: aggressive diagonal stripes + a slashed banner accent */
+  .gc-poster[data-style="esports"] .gc-poster-bg::before{
+    content: "";
+    position: absolute; inset: -25%;
+    background: repeating-linear-gradient(45deg, rgba(255,255,255,.055) 0 12px, transparent 12px 26px);
+  }
+  .gc-poster-shape{ position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+  .gc-poster[data-style="esports"] .gc-poster-shape::before{
+    content: "";
+    position: absolute; top: 46%; left: -14%; right: -14%;
+    height: 34%;
+    background: linear-gradient(100deg, transparent, rgba(255,180,0,.22), transparent);
+    transform: rotate(-7deg);
+  }
+  .gc-poster[data-style="esports"] .gc-poster-shape::after{
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: 0; height: 7px;
+    background: linear-gradient(90deg, var(--gc-accent), var(--gc-accent-2));
+  }
+
+  /* pro: thin gold divider + structured frame */
+  .gc-poster[data-style="pro"] .gc-poster-shape::before{
+    content: "";
+    position: absolute; left: 7%; right: 7%; top: 17%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gc-accent) 40%, var(--gc-accent) 60%, transparent);
+    opacity: .55;
+  }
+  .gc-poster[data-style="pro"] .gc-poster-shape::after{
+    content: "";
+    position: absolute; inset: 12px;
+    border-top: 1.5px solid rgba(232,196,104,.35);
+    border-bottom: 1.5px solid rgba(232,196,104,.35);
+    pointer-events: none;
+  }
+
+  /* dark: quiet vignette + hairline inner frame so it reads premium */
+  .gc-poster[data-style="dark"] .gc-poster-shape::before{
+    content: "";
+    position: absolute; inset: 0;
+    box-shadow: inset 0 0 90px 16px rgba(0,0,0,.6);
+  }
+  .gc-poster[data-style="dark"] .gc-poster-shape::after{
+    content: "";
+    position: absolute; inset: 10px;
+    border: 1px solid rgba(255,255,255,.08);
+    pointer-events: none;
+  }
+
+  /* neon: extra glow ring behind the hero + a base glow line */
+  .gc-poster[data-style="neon"] .gc-poster-shape::before{
+    content: "";
+    position: absolute; left: 30%; top: 46%;
+    width: 100%; height: 34%;
+    transform: translate(-50%,-50%);
+    background: radial-gradient(closest-side, rgba(255,94,210,.4), transparent 75%);
+    filter: blur(10px);
+  }
+  .gc-poster[data-style="neon"] .gc-poster-shape::after{
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: 0; height: 5px;
+    background: linear-gradient(90deg, transparent, var(--gc-accent), var(--gc-accent-2), transparent);
+    filter: blur(1px);
+  }
+
+  /* creator: playful blurred "lens" accents up top */
+  .gc-poster[data-style="creator"] .gc-poster-shape::before,
+  .gc-poster[data-style="creator"] .gc-poster-shape::after{
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.4);
+  }
+  .gc-poster[data-style="creator"] .gc-poster-shape::before{
+    width: 46px; height: 46px; top: 7%; right: 10%;
+  }
+  .gc-poster[data-style="creator"] .gc-poster-shape::after{
+    width: 20px; height: 20px; top: 12%; right: 17%;
+    border-color: rgba(255,255,255,.55);
+  }
+
+  /* cyberpunk: thin circuit-style corner traces */
+  .gc-poster[data-style="cyberpunk"] .gc-poster-shape::before{
+    content: "";
+    position: absolute; top: 16px; left: 16px; width: 30px; height: 30px;
+    border-top: 2px solid var(--gc-accent);
+    border-left: 2px solid var(--gc-accent);
+    opacity: .55;
+  }
+  .gc-poster[data-style="cyberpunk"] .gc-poster-shape::after{
+    content: "";
+    position: absolute; bottom: 16px; right: 16px; width: 30px; height: 30px;
+    border-bottom: 2px solid var(--gc-accent-2);
+    border-right: 2px solid var(--gc-accent-2);
+    opacity: .55;
+  }
+
+  /* ----- content grid: badge / hero / bio / foot. Base order is the
+     same for every style, but each [data-style] rewrites rows,
+     alignment and offsets below so the poster is a genuinely
+     different composition, not a re-skinned stack. ----- */
+  .gc-poster-content{
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 26px 22px 20px;
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas: "badge" "hero" "bio" "foot";
+    row-gap: 12px;
+    color: var(--gc-text);
+    text-align: left;
+    user-select: auto;
+  }
+
+  .gc-poster-badge-row{
+    grid-area: badge;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .gc-poster-platform{
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--gc-badge-bg);
+    border: 1.5px solid var(--gc-badge-border);
+    backdrop-filter: blur(6px);
+  }
+  .gc-poster-platform-icon{ font-size: 14px; line-height: 1; }
+  .gc-poster-platform-label{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--gc-text);
+  }
+  .gc-poster-emblem{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--gc-emblem-bg);
+    border: 1.5px solid var(--gc-emblem-border);
+    font-size: 15px;
+    backdrop-filter: blur(6px);
+  }
+
+  /* hero block: kicker + oversized name + accent bar. This is the
+     single biggest, boldest element on the poster. */
+  .gc-poster-hero{
+    grid-area: hero;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 0;
+    gap: 10px;
+  }
+  .gc-poster-kicker{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--gc-accent);
+    opacity: .85;
+    user-select: auto;
+  }
+  .gc-poster-name{
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: var(--gc-name-weight, 800);
+    text-transform: var(--gc-name-transform, none);
+    letter-spacing: var(--gc-name-tracking, -0.01em);
+    font-size: 52px;
+    line-height: .96;
+    text-shadow: var(--gc-name-shadow, none);
+    filter: var(--gc-name-glow, none);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: auto;
+    outline: none;
+  }
+  .gc-poster-name[contenteditable="true"]:focus {
+    outline: 2px solid var(--gc-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  .gc-poster-name.gc-name-lg{ font-size: 40px; }
+  .gc-poster-name.gc-name-md{ font-size: 30px; }
+  .gc-poster-name.gc-name-sm{ font-size: 22px; }
+
+  .gc-poster-name-bar{
+    display: block;
+    width: 46px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--gc-bar-grad, var(--gc-accent));
+  }
+
+  .gc-poster-bio-wrap{ grid-area: bio; padding: 0 1px; }
+  .gc-poster-bio{
+    margin: 0;
+    max-width: 100%;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--gc-text-soft);
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: auto;
+    outline: none;
+  }
+  .gc-poster-bio[contenteditable="true"]:focus {
+    outline: 2px solid var(--gc-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  .gc-poster-bio.gc-bio-sm{ font-size: 11.5px; line-height: 1.5; }
+  .gc-poster-bio.is-placeholder{ opacity: .55; font-style: italic; }
+
+  .gc-poster-foot{
+    grid-area: foot;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 6px;
+    gap: 8px;
+  }
+  .gc-poster-foot::before{
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gc-text-soft), transparent);
+    opacity: .25;
+  }
+  .gc-poster-brand{
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    opacity: var(--gc-brand-op, .75);
+    flex: none;
+  }
+  .gc-poster-brand-mark{ font-size: 11px; color: var(--gc-accent); }
+  .gc-poster-brand-text{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .04em;
+    color: var(--gc-text-soft);
+  }
+
+  /* ================= PER-STYLE COMPOSITIONS =================
+     Six deliberately different posters. Each rewrites: giant-icon
+     placement, hero position/alignment, bio placement/treatment,
+     and badge/foot treatment — not just palette. */
+
+  /* ⚡ CYBERPUNK — futuristic gaming poster: hero pinned upper-left,
+     a huge rotated bolt bleeds off the top-right corner behind it,
+     a scanline bar cuts straight across the name, bio reads like a
+     terminal readout with a mono ">" prompt. */
+  .gc-poster[data-style="cyberpunk"] .gc-poster-giant{
+    top: -4%; right: -20%;
+    color: var(--gc-accent);
+    opacity: .18;
+    transform: rotate(18deg);
+    filter: drop-shadow(0 0 46px rgba(23,242,255,.5));
+  }
+  .gc-poster[data-style="cyberpunk"] .gc-poster-content{
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas: "badge" "hero" "bio" "foot";
+  }
+  .gc-poster[data-style="cyberpunk"] .gc-poster-hero::before{
+    content: "";
+    position: absolute; left: -22px; right: -22px; top: 60%;
+    height: 9px;
+    background: linear-gradient(90deg, transparent, var(--gc-accent), var(--gc-accent-2), transparent);
+    opacity: .32;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .gc-poster[data-style="cyberpunk"] .gc-poster-bio-wrap{
+    border-left: 2px solid var(--gc-accent);
+    padding-left: 12px;
+  }
+  .gc-poster[data-style="cyberpunk"] .gc-poster-bio::before{ content: "> "; color: var(--gc-accent); }
+
+  /* 🔥 ESPORTS — aggressive competitive poster: platform shown as a
+     tilted nameplate tag, name pinned low and huge crossing the
+     diagonal slash, a giant flame bleeds off the bottom-right. */
+  .gc-poster[data-style="esports"] .gc-poster-giant{
+    bottom: -8%; right: -16%;
+    color: var(--gc-accent-2);
+    opacity: .16;
+    transform: rotate(-12deg);
+  }
+  .gc-poster[data-style="esports"] .gc-poster-content{
+    grid-template-rows: auto 1.4fr auto auto auto;
+    grid-template-areas: "badge" "spacer" "hero" "bio" "foot";
+    row-gap: 10px;
+  }
+  .gc-poster[data-style="esports"] .gc-poster-hero{
+    align-items: flex-start;
+    margin-left: -3px;
+  }
+  .gc-poster[data-style="esports"] .gc-poster-bio-wrap{ margin-top: 2px; }
+  .gc-poster[data-style="esports"] .gc-poster-platform{
+    border-radius: 5px;
+    background: var(--gc-accent);
+    border: none;
+    padding: 6px 13px;
+    transform: rotate(-3deg);
+  }
+  .gc-poster[data-style="esports"] .gc-poster-platform-label{ color: #1a0403; }
+
+  /* 🌌 DARK — cinematic premium poster: everything centered like a
+     film title card, generous negative space, hairline rules framing
+     the name, a huge moon watermark sits almost invisibly behind. */
+  .gc-poster[data-style="dark"] .gc-poster-giant{
+    top: 50%; left: 50%;
+    transform: translate(-50%,-55%) rotate(-4deg);
+    color: var(--gc-accent);
+    opacity: .06;
+    font-size: 300px;
+  }
+  .gc-poster[data-style="dark"] .gc-poster-badge-row{ justify-content: center; }
+  .gc-poster[data-style="dark"] .gc-poster-content{
+    grid-template-rows: auto 1fr auto auto;
+  }
+  .gc-poster[data-style="dark"] .gc-poster-hero{
+    align-items: center;
+    text-align: center;
+  }
+  .gc-poster[data-style="dark"] .gc-poster-name{ max-width: 90%; }
+  .gc-poster[data-style="dark"] .gc-poster-name-bar{ margin: 0 auto; }
+  .gc-poster[data-style="dark"] .gc-poster-bio-wrap{ text-align: center; }
+  .gc-poster[data-style="dark"] .gc-poster-bio{ margin: 0 auto; max-width: 86%; font-style: italic; }
+  .gc-poster[data-style="dark"] .gc-poster-foot{ justify-content: center; }
+  .gc-poster[data-style="dark"] .gc-poster-foot::before{ display: none; }
+
+  /* 💜 NEON — vibrant modern creator poster: the name sits rotated
+     and offset like a sticker, the bio lives inside a speech-bubble
+     chip pushed to the right, a huge blurred glyph glows behind it. */
+  .gc-poster[data-style="neon"] .gc-poster-giant{
+    top: 8%; left: -18%;
+    color: var(--gc-accent-2);
+    opacity: .2;
+    transform: rotate(-16deg);
+    filter: blur(1px);
+  }
+  .gc-poster[data-style="neon"] .gc-poster-hero{
+    transform: rotate(-3deg);
+    margin-left: 2px;
+  }
+  .gc-poster[data-style="neon"] .gc-poster-bio-wrap{
+    margin-left: auto;
+    max-width: 84%;
+    background: var(--gc-badge-bg);
+    border: 1.5px solid var(--gc-badge-border);
+    border-radius: 18px 18px 4px 18px;
+    padding: 12px 14px;
+    transform: rotate(1.4deg);
+    backdrop-filter: blur(6px);
+  }
+
+  /* 🏆 PRO — professional player announcement poster: symmetric and
+     structured like a roster-reveal graphic, a giant trophy watermark
+     centered low-opacity behind a centered name, gold rules flank it. */
+  .gc-poster[data-style="pro"] .gc-poster-giant{
+    bottom: -2%; left: 50%;
+    transform: translateX(-50%);
+    color: var(--gc-accent);
+    opacity: .09;
+    font-size: 270px;
+  }
+  .gc-poster[data-style="pro"] .gc-poster-hero{
+    align-items: center;
+    text-align: center;
+  }
+  .gc-poster[data-style="pro"] .gc-poster-kicker{ letter-spacing: .22em; }
+  .gc-poster[data-style="pro"] .gc-poster-name{ max-width: 92%; }
+  .gc-poster[data-style="pro"] .gc-poster-name-bar{ margin: 0 auto; }
+  .gc-poster[data-style="pro"] .gc-poster-bio-wrap{ text-align: center; }
+  .gc-poster[data-style="pro"] .gc-poster-bio{ margin: 0 auto; max-width: 88%; }
+  .gc-poster[data-style="pro"] .gc-poster-foot{ justify-content: center; }
+  .gc-poster[data-style="pro"] .gc-poster-foot::before{ display: none; }
+
+  /* 🎥 CREATOR — modern social-media creator poster: the bio reads
+     as caption copy up top (in quotes), the name is pinned huge to
+     the bottom with a camera stamp overlapping it like a sticker. */
+  .gc-poster[data-style="creator"] .gc-poster-giant{
+    bottom: 4%; left: -10%;
+    color: var(--gc-accent-2);
+    opacity: .22;
+    transform: rotate(-10deg);
+  }
+  .gc-poster[data-style="creator"] .gc-poster-content{
+    grid-template-rows: auto auto 1fr auto auto;
+    grid-template-areas: "badge" "bio" "spacer" "hero" "foot";
+    row-gap: 10px;
+  }
+  .gc-poster[data-style="creator"] .gc-poster-bio-wrap{ grid-row: 2; }
+  .gc-poster[data-style="creator"] .gc-poster-bio::before{ content: "\201C"; }
+  .gc-poster[data-style="creator"] .gc-poster-bio::after{ content: "\201D"; }
+  .gc-poster[data-style="creator"] .gc-poster-hero{ grid-row: 4; }
+  .gc-poster[data-style="creator"] .gc-poster-foot{ grid-row: 5; }
+
+
+  /* ----- quick style switcher (below the poster) ----- */
+  .gc-style-switcher{
+    display: flex;
+    justify-content: center;
+    gap: 9px;
+    margin: 20px auto 6px;
+    flex-wrap: wrap;
+    max-width: 340px;
+  }
+  .gc-swatch{
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+    font-size: 17px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s cubic-bezier(.2,.9,.25,1), box-shadow .15s cubic-bezier(.2,.9,.25,1);
+  }
+  .gc-swatch:hover{ transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--ink); }
+  .gc-swatch:active{ transform: translate(0,0); box-shadow: 1px 1px 0 var(--ink); }
+  .gc-swatch[aria-selected="true"]{
+    background: var(--yellow);
+    border-color: var(--ink);
+    transform: translate(-2px,-2px);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  /* ----- controls row: secondary to the poster itself ----- */
+  .gc-poster-controls{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 18px auto 4px;
+  }
+  .gc-poster-btn{
+    font-size: 13px;
+    padding: 10px 16px;
+  }
+
+  .gc-poster-share-note{
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin: 12px 0 0;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: all .2s ease;
+  }
+  .gc-poster-share-note.show{ opacity: 1; transform: translateY(0); }
+
+  /* ----- inline "edit text" panel — appears under the controls row,
+     lets name/platform/bio be tweaked without leaving the poster.
+     Deliberately reuses .input-row / .gc-textarea-row / .btn-primary
+     so it feels like part of the same design system as the form. ----- */
+  .gc-edit-panel{
+    max-width: 420px;
+    margin: 6px auto 0;
+    padding: 20px;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    text-align: left;
+    animation: gcEditIn .22s cubic-bezier(.2,.9,.25,1);
+  }
+  @keyframes gcEditIn{
+    from{ opacity: 0; transform: translateY(-6px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+  .gc-edit-kicker{
+    margin: 0 0 6px;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: .03em;
+  }
+  .gc-edit-hint{
+    margin: 0 0 16px;
+    font-size: 10px;
+    color: var(--ink-soft);
+    background: rgba(255, 66, 34, 0.05);
+    padding: 8px 12px;
+    border-radius: 8px;
+    letter-spacing: .02em;
+  }
+  
+  /* ----- organized sections within edit panel ----- */
+  .gc-edit-section{
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .gc-edit-section:last-of-type{ 
+    border-bottom: none;
+  }
+  
+  .gc-section-title{
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    color: var(--ink);
+    margin: 0 0 12px;
+    text-transform: lowercase;
+  }
+  
+  .gc-edit-field{ margin-bottom: 12px; }
+  .gc-edit-field:last-of-type{ margin-bottom: 0; }
+  .gc-edit-label{
+    display: block;
+    font-size: 10.5px;
+    text-transform: lowercase;
+    letter-spacing: .05em;
+    color: var(--ink-soft);
+    margin: 0 0 7px;
+  }
+  .gc-edit-input-row input{ font-size: 15px; }
+  .gc-edit-select-row{
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 6px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .18s cubic-bezier(.2,.9,.25,1), box-shadow .18s cubic-bezier(.2,.9,.25,1);
+  }
+  .gc-edit-select-row:hover{ transform: translate(-1px,-1px); box-shadow: 5px 5px 0 var(--ink); }
+  .gc-edit-select-row:focus-within{ transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); }
+  .gc-edit-select-row select{
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14.5px;
+    padding: 10px 14px;
+    color: var(--ink);
+    cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%), linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);
+    background-position: calc(100% - 18px) center, calc(100% - 13px) center;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+  
+  /* ----- text style controls — organized by element ----- */
+  .gc-style-group{
+    margin-bottom: 14px;
+    padding: 12px;
+    background: rgba(255, 66, 34, 0.02);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  .gc-style-group:last-of-type{ margin-bottom: 0; }
+  
+  .gc-style-group-label{
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    color: var(--ink);
+    margin: 0 0 10px;
+    text-transform: lowercase;
+  }
+  
+  .gc-style-controls-compact{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .gc-style-row-compact{
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .gc-edit-label-compact{
+    font-size: 9px;
+    text-transform: lowercase;
+    letter-spacing: .05em;
+    color: var(--ink-soft);
+    margin: 0;
+    white-space: nowrap;
+  }
+  
+  .gc-style-pos-compact{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .gc-pos-controls{
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .gc-pos-sliders{
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .gc-slider-group{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .gc-pos-btn{
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .gc-pos-btn:hover{
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    transform: scale(1.08);
+  }
+  
+  .gc-pos-btn:active{
+    transform: scale(0.96);
+  }
+  
+  .gc-pos-reset-btn{
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .gc-pos-reset-btn:hover{
+    background: var(--line);
+    border-color: var(--ink);
+    transform: rotate(180deg);
+  }
+  
+  .gc-pos-reset-btn:active{
+    transform: rotate(180deg) scale(0.96);
+  }
+  
+  .gc-style-pos-compact input[type="range"]{
+    width: 100%;
+    accent-color: var(--ink);
+  }
+  
+  .gc-style-row-compact input[type="range"]{
+    accent-color: var(--ink);
+  }
+  
+  .gc-style-row-compact input[type="color"]{
+    width: 32px;
+    height: 28px;
+    padding: 0;
+    border: 2px solid var(--line);
+    border-radius: 6px;
+    background: var(--card);
+    cursor: pointer;
+    justify-self: start;
+  }
+  
+  .gc-edit-actions{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .gc-edit-btn-group{
+    display: flex;
+    gap: 8px;
+  }
+  
+  .gc-edit-full-link{
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 10px;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    transition: color .15s ease;
+    text-transform: lowercase;
+  }
+  .gc-edit-full-link:hover{ color: var(--ink); }
+  .gc-edit-done{ padding: 10px 16px; font-size: 12px; white-space: nowrap; }
+  
+  .btn-secondary{
+    background: var(--bg);
+    border: 2px solid var(--line);
+    color: var(--ink);
+    transition: all .15s ease;
+  }
+  .btn-secondary:hover{
+    background: var(--card);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  @media (max-width: 420px){
+    .gc-poster{ width: min(300px, 86vw); }
+    .gc-swatch{ width: 38px; height: 38px; font-size: 15px; }
+    .gc-poster-btn{ padding: 9px 13px; font-size: 12.5px; }
+    .gc-poster-name{ font-size: 44px; }
+    .gc-poster-name.gc-name-lg{ font-size: 34px; }
+    .gc-poster-name.gc-name-md{ font-size: 26px; }
+    .gc-poster-name.gc-name-sm{ font-size: 20px; }
+    .gc-poster-giant{ font-size: 170px; }
+    .gc-edit-panel{ max-width: 92vw; padding: 16px 14px 14px; }
+    .gc-edit-actions{ justify-content: center; }
+    .gc-edit-done{ margin-left: 0; width: 100%; justify-content: center; }
+  }

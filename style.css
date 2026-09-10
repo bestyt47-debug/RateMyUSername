@@ -236,6 +236,16 @@
   @media (max-width: 480px){
     .kicker.kicker-cinematic{ text-shadow: 2px 2px 0 var(--yellow); }
   }
+  /* roast variant — big, bold warning above the roast headline */
+  .kicker.kicker-roast{
+    font-family:'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: clamp(15px, 3.6vw, 19px);
+    letter-spacing: .04em;
+    color: var(--ink);
+    opacity: 1;
+    margin: 0 0 16px;
+  }
   h1.headline{
     font-family:'Space Grotesk', sans-serif;
     font-weight: 900;
@@ -2766,4 +2776,47 @@
     .gc-edit-panel{ max-width: 92vw; padding: 16px 14px 14px; }
     .gc-edit-actions{ justify-content: center; }
     .gc-edit-done{ margin-left: 0; width: 100%; justify-content: center; }
+  }
+
+  /* ========================================================
+     💀 ROAST MY USERNAME
+     ======================================================== */
+  .roast-stub{
+    text-align: center;
+  }
+  .roast-complete-label{
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 2px 0 12px;
+    animation: fade-up-sm .4s .04s cubic-bezier(.2,.9,.25,1) both;
+  }
+  .roast-text{
+    font-size: 18px;
+    line-height: 1.45;
+    margin: 10px 0 14px;
+  }
+  .roast-level-label{
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .roast-stamp{
+    font-size: 9px;
+    letter-spacing: .03em;
+    padding: 0 4px;
+  }
+
+  .stub.roast-stub.level-light{ box-shadow: 6px 6px 0 var(--mint); }
+  .stamp.roast-stamp.level-light{ color: var(--mint); }
+
+  .stub.roast-stub.level-brutal{ box-shadow: 6px 6px 0 var(--red); }
+  .stamp.roast-stamp.level-brutal{ color: var(--red); }
+
+  .stub.roast-stub.level-nuclear{ box-shadow: 6px 6px 0 var(--ink), 0 0 40px -10px rgba(255,66,34,.5); }
+  .stamp.roast-stamp.level-nuclear{ color: var(--ink); }
+
+  @media (max-width: 420px){
+    .roast-text{ font-size: 16px; }
   }

@@ -314,20 +314,27 @@
    * deterministic score is already known; this is purely an entertaining
    * client-side beat before the reveal.
    */
-  function showLoading(then){
+  function showLoading(then, opts){
     showView("loading");
 
+    // opts lets other flows (like the roast feature) reuse this same loading
+    // beat with their own flavor text / timing, without changing the default
+    // behavior for existing callers that only pass `then`.
+    const lines = (opts && opts.lines) || LOADING_LINES;
+    const minMs = (opts && opts.minMs) || 3000;
+    const maxMs = (opts && opts.maxMs) || (minMs + 900);
+
     const textEl = document.getElementById("loading-text");
-    const totalDuration = 3000 + Math.random() * 900; // 3.0s–3.9s, always >= 3s
+    const totalDuration = minMs + Math.random() * Math.max(0, maxMs - minMs);
     const startedAt = performance.now();
 
-    let queue = shuffledQueue(LOADING_LINES);
+    let queue = shuffledQueue(lines);
     let queueIdx = 0;
     let cancelled = false;
 
     function nextMessage(){
       if (queueIdx >= queue.length){
-        queue = shuffledQueue(LOADING_LINES);
+        queue = shuffledQueue(lines);
         queueIdx = 0;
       }
       return queue[queueIdx++];
@@ -2393,6 +2400,564 @@
       storeTheme(next);
     });
   }
+
+  /* ========================================================
+     💀 ROAST MY USERNAME
+     ------------------------------------------------------
+     Local, deterministic-ish roast generator: no backend,
+     no AI API. Looks at real traits of the typed username
+     (numbers, underscores, repeated letters, length, common
+     words, "xX...Xx" gamer patterns, edgy words, etc.) and
+     picks from a large pool of templates that match those
+     traits, so the result feels analyzed instead of random.
+     ======================================================== */
+  (function(){
+
+    views.roast = document.getElementById("view-roast");
+    views.roastResult = document.getElementById("view-roast-result");
+
+    const roastForm = document.getElementById("roast-form");
+    const roastInput = document.getElementById("roast-input");
+    const roastError = document.getElementById("roast-error");
+    const roastGoHome = document.getElementById("roast-go-home");
+    const toolRoast = document.getElementById("tool-roast");
+
+    if (!roastForm || !roastInput) return; // markup not present, bail safely
+
+    let lastRoast = null; // { handle, text, level, mode: 'roast' }
+
+    const ROAST_LOADING_LINES = [
+      "loading disrespect...",
+      "scanning for cringe...",
+      "calculating comedic damage...",
+      "consulting the roast council...",
+      "measuring copium levels...",
+      "checking the username's rap sheet...",
+      "sharpening the burns...",
+      "cross-referencing the cringe database...",
+      "detecting main character delusion...",
+      "preparing constructive violence...",
+      "reviewing keyboard smash evidence...",
+      "calibrating the roast-o-meter..."
+    ];
+
+    function validateRoastInput(raw){
+      const trimmed = (raw || "").trim();
+      const name = cleanHandle(raw);
+      if (!name) return "type something first, we can't roast silence.";
+      if (/\s/.test(trimmed)) return "usernames don't have spaces, bestie.";
+      if (!/[a-z0-9]/i.test(name)) return "we need at least one real character to roast.";
+      return null;
+    }
+
+    /* ---------- trait analysis ---------- */
+
+    const COMMON_WORDS = [
+      "king","queen","shadow","dark","pro","gamer","official","real","legend",
+      "ninja","boss","god","master","killer","epic","super","mega","ultra",
+      "tiger","wolf","dragon","angel","star","cool","swag","elite","alpha",
+      "yeet","vibes","baddie","kingpin","lord","chief","captain","wizard"
+    ];
+    const EDGY_WORDS = [
+      "dark","shadow","blood","death","kill","slayer","demon","reaper","venom",
+      "chaos","savage","phantom","nightmare","doom","grim","toxic","psycho",
+      "destroyer","evil","skull","assassin","venomous"
+    ];
+    const GAMER_WORDS = [
+      "gamer","gg","pro","clan","squad","fps","pvp","xd","ez","clutch","noob",
+      "yt","tv","og","hq","hd"
+    ];
+
+    function analyzeUsername(rawName){
+      const name = cleanHandle(rawName);
+      const lower = name.toLowerCase();
+      const len = name.length;
+
+      const digitChars = (name.match(/\d/g) || []).length;
+      const trailingMatch = name.match(/(\d{2,4})$/);
+      const trailingNum = trailingMatch ? trailingMatch[1] : null;
+      const base = trailingNum ? name.slice(0, name.length - trailingNum.length) : name;
+
+      const underscoreCount = (name.match(/_/g) || []).length;
+      const dotCount = (name.match(/\./g) || []).length;
+
+      let maxRun = 1, run = 1, repeatedChar = "";
+      for (let i = 1; i < name.length; i++){
+        if (name[i].toLowerCase() === name[i - 1].toLowerCase()){
+          run++;
+          if (run > maxRun){ maxRun = run; repeatedChar = name[i]; }
+        } else run = 1;
+      }
+
+      const letters = (lower.match(/[a-z]/g) || []).length;
+      const vowels = (lower.match(/[aeiou]/g) || []).length;
+      const vowelRatio = letters ? vowels / letters : 0;
+      const noVowelsChaos = letters >= 4 && vowelRatio < 0.15;
+
+      const xPattern = len >= 6 && /^x[x_.]?/i.test(name) && /[x_.]?x$/i.test(name);
+
+      let caseSwitches = 0;
+      for (let i = 1; i < name.length; i++){
+        const a = name[i - 1], b = name[i];
+        if (/[a-z]/.test(a) && /[A-Z]/.test(b)) caseSwitches++;
+        if (/[A-Z]/.test(a) && /[a-z]/.test(b)) caseSwitches++;
+      }
+      const mixedCaseChaos = caseSwitches >= 3;
+
+      const wordHits = COMMON_WORDS.filter(w => lower.includes(w));
+      const edgyHits = EDGY_WORDS.filter(w => lower.includes(w));
+      const gamerHits = GAMER_WORDS.filter(w => lower.includes(w));
+
+      const allLowerSimple = /^[a-z]+$/.test(name) && len <= 5;
+
+      return {
+        name, lower, len, digitChars, trailingNum, base,
+        underscoreCount, dotCount, maxRun, repeatedChar,
+        vowelRatio, noVowelsChaos, xPattern, mixedCaseChaos,
+        wordHits, edgyHits, gamerHits, allLowerSimple
+      };
+    }
+
+    /* ---------- roast template pool ---------- */
+    // Each category has a `test` (which trait it matches), an `edge`
+    // (how spicy that trait tends to feel) and several template
+    // functions so the same trait doesn't always produce the same line.
+
+    const ROAST_CATEGORIES = [
+      {
+        id: "trailingNumber",
+        test: a => !!a.trailingNum && a.digitChars <= 4 && a.base.length > 0,
+        edge: 45,
+        templates: [
+          a => `Bro added ${a.trailingNum} like the first ${Math.max(1, Number(a.trailingNum) - 1)} @${a.base}s were already taken.`,
+          a => `${a.trailingNum} at the end really said "I couldn't think of anything else."`,
+          a => `@${a.base} was taken, so you settled for @${a.name} like it's a consolation prize.`,
+          a => `Adding ${a.trailingNum} to @${a.base} is giving "the good version of this name was gone."`,
+          a => `Nobody's asking why it's ${a.trailingNum} specifically, but we're all thinking it.`
+        ]
+      },
+      {
+        id: "heavyNumbers",
+        test: a => a.digitChars >= 4,
+        edge: 60,
+        templates: [
+          a => `@${a.name} has more numbers than personality, and it shows.`,
+          a => `Did you type your username or your phone number by accident?`,
+          a => `This username reads like a receipt, not a handle.`,
+          a => `At this point just use your zip code, it'd be more original.`,
+          a => `@${a.name} looks like it's still waiting on a security code.`
+        ]
+      },
+      {
+        id: "xPattern",
+        test: a => a.xPattern,
+        edge: 55,
+        templates: [
+          a => `This username just time-travelled here from 2014.`,
+          a => `@${a.name} called, it wants its Xbox Live gamertag back.`,
+          a => `The "xX...Xx" combo is basically a museum exhibit at this point.`,
+          a => `Somewhere a 2013 lobby is missing its main character.`,
+          a => `Nothing says "peaked in middle school" like the double X treatment.`
+        ]
+      },
+      {
+        id: "underscoreOverload",
+        test: a => a.underscoreCount >= 2,
+        edge: 50,
+        templates: [
+          a => `You used ${a.underscoreCount} underscores like spaces were the enemy.`,
+          a => `@${a.name} looks held together with duct tape and underscores.`,
+          a => `This username has more underscores than actual ideas.`,
+          a => `Every underscore in @${a.name} is a quiet cry for a better name.`,
+          a => `The underscore key really carried this entire username.`
+        ]
+      },
+      {
+        id: "dotsOverload",
+        test: a => a.dotCount >= 2,
+        edge: 40,
+        templates: [
+          a => `@${a.name} has more dots than a connect-the-dots page.`,
+          a => `This many periods and it still doesn't feel like a complete sentence.`,
+          a => `@${a.name} looks like it's still loading...`,
+          a => `The dots aren't decorative, they're a cry for help.`,
+          a => `You Morse-coded your way into a username.`
+        ]
+      },
+      {
+        id: "repeatedLetters",
+        test: a => a.maxRun >= 3,
+        edge: 55,
+        templates: [
+          a => `The "${a.repeatedChar.repeat(3)}" in @${a.name} really said calm down.`,
+          a => `Your finger got stuck on the "${a.repeatedChar}" key and nobody stopped you.`,
+          a => `@${a.name} screams louder than necessary with those repeated letters.`,
+          a => `That letter didn't need to show up that many times, but here we are.`,
+          a => `Somewhere your keyboard is filing a formal complaint.`
+        ]
+      },
+      {
+        id: "veryLong",
+        test: a => a.len >= 18,
+        edge: 45,
+        templates: [
+          a => `@${a.name} is ${a.len} characters of "I couldn't decide."`,
+          a => `This username needs its own scroll bar.`,
+          a => `By the time someone finishes typing @${a.name}, they've forgotten why they were following you.`,
+          a => `Autocomplete gave up somewhere in the middle of this one.`,
+          a => `${a.len} characters and still no clear plan.`
+        ]
+      },
+      {
+        id: "veryShortSimple",
+        test: a => a.len <= 4,
+        edge: 35,
+        templates: [
+          a => `@${a.name} took four seconds to make and it shows.`,
+          a => `Minimalist, or just didn't try? We may never know.`,
+          a => `This username has the effort level of a placeholder.`,
+          a => `${a.len} characters of pure "eh, good enough."`,
+          a => `@${a.name} is giving "I forgot to finish typing."`
+        ]
+      },
+      {
+        id: "noVowelsChaos",
+        test: a => a.noVowelsChaos,
+        edge: 50,
+        templates: [
+          a => `You removed the vowels and somehow kept the confidence.`,
+          a => `@${a.name} reads like you sneezed on the keyboard.`,
+          a => `Vowels called, they said you owe them an apology.`,
+          a => `This username is basically a consonant support group.`,
+          a => `Nobody's pronouncing @${a.name} right on the first try, including you.`
+        ]
+      },
+      {
+        id: "mixedCaseChaos",
+        test: a => a.mixedCaseChaos,
+        edge: 45,
+        templates: [
+          a => `The random capital letters in @${a.name} are doing entirely too much work.`,
+          a => `@${a.name} really said "why use one case when you can use two."`,
+          a => `This capitalization pattern has main character syndrome.`,
+          a => `Somebody's Caps Lock had a mind of its own while making @${a.name}.`,
+          a => `@${a.name} looks like it was typed while falling down a flight of stairs.`
+        ]
+      },
+      {
+        id: "edgyWordHit",
+        test: a => a.edgyHits.length > 0,
+        edge: 75,
+        templates: [
+          a => `"${a.edgyHits[0]}" in your username is giving middle school phase, not intimidation.`,
+          a => `Nothing says "definitely not scary" like typing "${a.edgyHits[0]}" into a username box.`,
+          a => `@${a.name} really wants to be feared and instead is just... a lot.`,
+          a => `The edginess of "${a.edgyHits[0]}" peaked years ago and never left.`,
+          a => `Cool concept, "${a.edgyHits[0]}", terrifying execution, @${a.name}.`
+        ]
+      },
+      {
+        id: "gamerStyleHit",
+        test: a => a.gamerHits.length > 0,
+        edge: 55,
+        templates: [
+          a => `@${a.name} smells like a lobby full of unranked matches.`,
+          a => `This username has "still figuring out the controller" written all over it.`,
+          a => `"${a.gamerHits[0]}" in your name and the K/D still isn't mentioned. Suspicious.`,
+          a => `@${a.name} sounds like someone who rage quits and blames the lag.`,
+          a => `Certified controller-thrower energy right here.`
+        ]
+      },
+      {
+        id: "commonWordHit",
+        test: a => a.wordHits.length > 0,
+        edge: 40,
+        templates: [
+          a => `"${a.wordHits[0]}" in a username has never once made someone cooler.`,
+          a => `Calling yourself "${a.wordHits[0]}" doesn't make it true, it just makes it loud.`,
+          a => `Every third username has "${a.wordHits[0]}" in it, and yours is no different.`,
+          a => `"${a.wordHits[0]}" is doing a lot of heavy lifting in @${a.name}.`,
+          a => `@${a.name} really thought "${a.wordHits[0]}" was an original move.`
+        ]
+      },
+      {
+        id: "randomLooking",
+        test: a => a.wordHits.length === 0 && a.edgyHits.length === 0 && a.gamerHits.length === 0 &&
+          !a.xPattern && a.underscoreCount < 2 && a.dotCount < 2 && a.maxRun < 3 &&
+          !a.noVowelsChaos && !a.mixedCaseChaos && a.len > 5 && a.len < 18 && a.digitChars < 4,
+        edge: 50,
+        templates: [
+          a => `@${a.name} looks like your hand slipped across the keyboard and you just went with it.`,
+          a => `This has main character energy for a randomly generated password.`,
+          a => `Nobody's spelling @${a.name} right on the first try, including you.`,
+          a => `This looks less like a username and more like a CAPTCHA you failed.`,
+          a => `@${a.name} is giving "autocorrect gave up halfway through."`
+        ]
+      }
+    ];
+
+    const ROAST_FALLBACK = [
+      a => `@${a.name} isn't bad, it's just deeply, aggressively fine.`,
+      a => `If @${a.name} was a font, it'd be Comic Sans pretending to be professional.`,
+      a => `This username is the human equivalent of a shrug emoji.`,
+      a => `@${a.name} didn't ask for feedback but here it is anyway: mid.`,
+      a => `Somewhere, a slightly better version of this username is still available.`,
+      a => `@${a.name} has the energy of a Wi-Fi network named after itself.`,
+      a => `This username peaked the moment you hit "create account."`,
+      a => `@${a.name} is trying its best and honestly, that's kind of the problem.`,
+      a => `Not the worst username we've seen today, but it's trying real hard.`,
+      a => `@${a.name} would make a great placeholder if it wasn't permanent.`,
+      a => `This one's giving "I'll change it later" energy from three years ago.`,
+      a => `@${a.name} reads like a default suggestion you accidentally kept.`,
+      a => `Somewhere a "what not to do" slide is using @${a.name} as the example.`,
+      a => `This username isn't cursed, it's just deeply unremarkable.`,
+      a => `@${a.name} is the beige paint of usernames.`
+    ];
+
+    function pickOne(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function generateRoast(rawName){
+      const a = analyzeUsername(rawName);
+      const matches = ROAST_CATEGORIES.filter(c => c.test(a));
+
+      let text, edge;
+      if (matches.length){
+        const category = pickOne(matches);
+        text = pickOne(category.templates)(a);
+        edge = category.edge;
+      } else {
+        text = pickOne(ROAST_FALLBACK)(a);
+        edge = 40;
+      }
+
+      let heat = edge + (Math.random() * 30 - 15);
+      if (a.edgyHits.length) heat += 15;
+      if (a.digitChars >= 5) heat += 10;
+      if (a.allLowerSimple || (a.wordHits.length && !a.edgyHits.length)) heat -= 10;
+      heat = clamp(Math.round(heat), 0, 100);
+
+      let level;
+      if (heat <= 34) level = { key: "light", emoji: "😭", label: "😭 Light" };
+      else if (heat <= 70) level = { key: "brutal", emoji: "💀", label: "💀 Brutal" };
+      else level = { key: "nuclear", emoji: "☠️", label: "☠️ Nuclear" };
+
+      return { handle: a.name, text, level };
+    }
+
+    /* ---------- rendering ---------- */
+
+    function renderRoastResult(r){
+      document.getElementById("roast-status-label").textContent = "ROAST COMPLETE 💀";
+      document.getElementById("roast-handle").textContent = emojiForHandle(r.handle) + " @" + r.handle;
+      document.getElementById("roast-avatar").innerHTML = generateAvatarSVG(r.handle);
+      document.getElementById("roast-text").textContent = "\u201C" + r.text + "\u201D";
+
+      const levelLabelEl = document.getElementById("roast-level-label");
+      const stampEl = document.getElementById("roast-level-stamp");
+      const stub = document.getElementById("roast-stub");
+
+      levelLabelEl.textContent = "Roast Level: " + r.level.label;
+      stampEl.textContent = r.level.emoji + " " + r.level.key.toUpperCase();
+
+      stub.className = "stub roast-stub level-" + r.level.key;
+      stampEl.className = "stamp roast-stamp level-" + r.level.key;
+      void stub.offsetWidth; // restart entrance animation on repeat roasts
+    }
+
+    /* ---------- flow wiring ---------- */
+
+    roastForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      const err = validateRoastInput(roastInput.value);
+      if (err){
+        roastError.textContent = err;
+        roastError.classList.add("show");
+        roastInput.focus();
+        return;
+      }
+      roastError.classList.remove("show");
+      const rawHandle = roastInput.value;
+      showLoading(function(){
+        const roast = generateRoast(rawHandle);
+        lastRoast = Object.assign({ mode: "roast" }, roast);
+        renderRoastResult(lastRoast);
+        showView("roastResult");
+      }, { lines: ROAST_LOADING_LINES, minMs: 2000, maxMs: 3000 });
+    });
+
+    if (roastGoHome){
+      roastGoHome.addEventListener("click", function(){
+        showView("home");
+      });
+    }
+
+    if (toolRoast){
+      toolRoast.addEventListener("click", function(){
+        showView("roast");
+        setTimeout(() => roastInput.focus(), 200);
+      });
+    }
+
+    const roastAnotherBtn = document.getElementById("roast-another");
+    if (roastAnotherBtn){
+      roastAnotherBtn.addEventListener("click", function(){
+        roastInput.value = "";
+        roastError.classList.remove("show");
+        showView("roast");
+        setTimeout(() => roastInput.focus(), 200);
+      });
+    }
+
+    /* ---------- share roast (own overlay + canvas, isolated from
+       the existing rate-score share so nothing there is touched) ---------- */
+
+    const roastShareOverlay = document.getElementById("roast-share-overlay");
+    const roastShareCanvas = document.getElementById("roast-share-canvas");
+    const roastShareBtn = document.getElementById("roast-share-btn");
+
+    if (roastShareOverlay && roastShareCanvas && roastShareBtn){
+      const rctx = roastShareCanvas.getContext("2d");
+
+      function levelColor(key){
+        if (key === "light") return "#17C989";
+        if (key === "nuclear") return "#15151B";
+        return "#FF4222"; // brutal
+      }
+
+      function wrapCenteredText(c, text, cx, y, maxWidth, lineHeight){
+        const words = text.split(" ");
+        let line = "";
+        const lines = [];
+        for (let n = 0; n < words.length; n++){
+          const testLine = line + words[n] + " ";
+          if (c.measureText(testLine).width > maxWidth && n > 0){
+            lines.push(line.trim());
+            line = words[n] + " ";
+          } else {
+            line = testLine;
+          }
+        }
+        lines.push(line.trim());
+        lines.forEach((l, i) => c.fillText(l, cx, y + i * lineHeight));
+        return lines.length;
+      }
+
+      function drawRoundedRectLocal(c, x, y, w, h, r){
+        c.beginPath();
+        c.moveTo(x + r, y);
+        c.arcTo(x + w, y, x + w, y + h, r);
+        c.arcTo(x + w, y + h, x, y + h, r);
+        c.arcTo(x, y + h, x, y, r);
+        c.arcTo(x, y, x + w, y, r);
+        c.closePath();
+      }
+
+      function drawRoastShareCard(r){
+        const W = roastShareCanvas.width, H = roastShareCanvas.height;
+        rctx.clearRect(0, 0, W, H);
+
+        rctx.fillStyle = "#F0F2EA";
+        rctx.fillRect(0, 0, W, H);
+        rctx.fillStyle = "#E7EBDF";
+        rctx.beginPath(); rctx.arc(60, 70, 160, 0, Math.PI * 2); rctx.fill();
+        rctx.beginPath(); rctx.arc(W - 40, H - 90, 190, 0, Math.PI * 2); rctx.fill();
+
+        const cardX = 40, cardY = 90, cardW = W - 80, cardH = H - 200;
+        rctx.fillStyle = "#ffffff";
+        rctx.strokeStyle = "#15151B";
+        rctx.lineWidth = 4;
+        drawRoundedRectLocal(rctx, cardX, cardY, cardW, cardH, 28);
+        rctx.fill(); rctx.stroke();
+
+        rctx.textAlign = "center";
+        rctx.fillStyle = "#15151B";
+        rctx.font = "700 22px 'Space Grotesk', sans-serif";
+        rctx.fillText("ROAST COMPLETE 💀", W / 2, 60);
+
+        rctx.font = "500 24px 'JetBrains Mono', monospace";
+        rctx.fillStyle = "#55564F";
+        rctx.fillText("@" + r.handle, W / 2, cardY + 60);
+
+        rctx.font = "700 28px 'Space Grotesk', sans-serif";
+        rctx.fillStyle = "#15151B";
+        const lineCount = wrapCenteredText(rctx, "\u201C" + r.text + "\u201D", W / 2, cardY + 140, cardW - 100, 40);
+
+        const levelY = cardY + 140 + lineCount * 40 + 50;
+        rctx.font = "700 22px 'Space Grotesk', sans-serif";
+        rctx.fillStyle = levelColor(r.level.key);
+        rctx.fillText("Roast Level: " + r.level.label, W / 2, levelY);
+
+        rctx.font = "500 15px 'JetBrains Mono', monospace";
+        rctx.fillStyle = "#A8A99E";
+        rctx.fillText("ratemyusername.local · roast my username", W / 2, cardY + cardH - 26);
+      }
+
+      function openRoastShare(){
+        if (!lastRoast) return;
+        const draw = () => drawRoastShareCard(lastRoast);
+        if (document.fonts && document.fonts.ready){
+          document.fonts.ready.then(draw).catch(draw);
+        } else {
+          draw();
+        }
+        roastShareOverlay.classList.add("open");
+
+        const nativeBtn = document.getElementById("roast-share-native");
+        if (nativeBtn){
+          nativeBtn.style.display = (navigator.canShare && navigator.share) ? "inline-flex" : "none";
+        }
+      }
+
+      roastShareBtn.addEventListener("click", openRoastShare);
+
+      const roastShareClose = document.getElementById("roast-share-close");
+      if (roastShareClose){
+        roastShareClose.addEventListener("click", function(){
+          roastShareOverlay.classList.remove("open");
+        });
+      }
+      roastShareOverlay.addEventListener("click", function(e){
+        if (e.target === roastShareOverlay) roastShareOverlay.classList.remove("open");
+      });
+
+      const roastShareDownload = document.getElementById("roast-share-download");
+      if (roastShareDownload){
+        roastShareDownload.addEventListener("click", function(){
+          if (!lastRoast) return;
+          roastShareCanvas.toBlob(function(blob){
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "roast-my-username-" + lastRoast.handle + ".png";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+          }, "image/png");
+        });
+      }
+
+      const roastShareNative = document.getElementById("roast-share-native");
+      if (roastShareNative){
+        roastShareNative.addEventListener("click", function(){
+          if (!lastRoast) return;
+          roastShareCanvas.toBlob(async function(blob){
+            try{
+              const file = new File([blob], "roast-my-username.png", { type: "image/png" });
+              if (navigator.canShare({ files: [file] })){
+                await navigator.share({
+                  files: [file],
+                  title: "roast my username.",
+                  text: "@" + lastRoast.handle + " just got roasted on Rate My Username 💀"
+                });
+              }
+            } catch(err){ /* user cancelled or share unsupported — silently ignore */ }
+          }, "image/png");
+        });
+      }
+    }
+
+  })();
 
   /* focus home input on load */
   window.addEventListener("load", function(){ rateInput.focus(); });

@@ -95,6 +95,12 @@
               <span class="tool-name">GameCard</span>
               <span class="tool-desc">build a 9:16 gamer/creator poster</span>
             </button>
+            <button type="button" class="tool-card tool-card-new" id="tool-roast" data-tool="roast">
+              <span class="tool-badge mono">new</span>
+              <span class="tool-emoji" aria-hidden="true">💀</span>
+              <span class="tool-name">Roast My Username</span>
+              <span class="tool-desc">get cooked, respectfully</span>
+            </button>
           </div>
         </div>
 
@@ -138,6 +144,55 @@
         <div class="result-actions">
           <button type="button" id="rate-another" class="btn btn-outline">rate another →</button>
           <button type="button" id="share-btn" class="btn btn-outline share">share score ↗</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 💀 ROAST INPUT VIEW ============ -->
+    <section id="view-roast" class="view" hidden>
+      <div class="hero">
+        <p class="kicker kicker-roast">// enter at your own risk</p>
+        <h1 class="headline">roast my username <span class="accent">💀</span></h1>
+        <p class="sub">type it in. get cooked. screenshot the damage.</p>
+
+        <form id="roast-form" autocomplete="off">
+          <div class="compare-inputs">
+            <div class="compare-field">
+              <input id="roast-input" class="mono" type="text" placeholder="@ enter your username" maxlength="40" aria-label="username to roast" />
+            </div>
+          </div>
+          <p id="roast-error" class="error-msg">type something first, we can't roast silence.</p>
+          <div class="compare-cta-row">
+            <button type="submit" class="btn btn-primary">💀 Roast My Username</button>
+          </div>
+        </form>
+
+        <div class="switcher">
+          <button type="button" id="roast-go-home" class="btn btn-ghost">← back to rating</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 💀 ROAST RESULT VIEW ============ -->
+    <section id="view-roast-result" class="view" hidden>
+      <div class="result-wrap">
+        <div class="stub roast-stub" id="roast-stub">
+          <div class="stub-handle"><span></span></div>
+          <div id="roast-level-stamp" class="stamp roast-stamp">💀</div>
+          <p id="roast-status-label" class="roast-complete-label mono">ROAST COMPLETE 💀</p>
+
+          <div class="handle-row">
+            <span id="roast-avatar" class="avatar" aria-hidden="true"></span>
+            <p id="roast-handle" class="handle-name mono">@username</p>
+          </div>
+
+          <p id="roast-text" class="verdict-line roast-text">"..."</p>
+          <p id="roast-level-label" class="verdict-sub roast-level-label">Roast Level: 💀 Brutal</p>
+        </div>
+
+        <div class="result-actions">
+          <button type="button" id="roast-another" class="btn btn-outline">💀 Roast Another</button>
+          <button type="button" id="roast-share-btn" class="btn btn-outline share">Share Roast ↗</button>
         </div>
       </div>
     </section>
@@ -866,6 +921,18 @@
       <li>Both winners face each other in the semifinal.</li>
       <li>The final winner becomes the Ultimate Username Champion <span aria-hidden="true">🏆</span></li>
     </ol>
+  </div>
+</div>
+
+<!-- ============ 💀 ROAST SHARE OVERLAY ============ -->
+<div id="roast-share-overlay" class="share-overlay">
+  <div class="share-panel">
+    <canvas id="roast-share-canvas" width="640" height="800"></canvas>
+    <div class="share-actions">
+      <button type="button" id="roast-share-download" class="btn btn-outline share">download ↓</button>
+      <button type="button" id="roast-share-native" class="btn btn-outline" style="display:none;">share…</button>
+    </div>
+    <button type="button" id="roast-share-close" class="share-close">close</button>
   </div>
 </div>
 

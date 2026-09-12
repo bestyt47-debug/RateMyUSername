@@ -321,11 +321,8 @@
       // the user tries again.
     });
 
-  sb.auth.onAuthStateChange(function (_event, session) {
-  updateUIForSession(session);
-  
-  // This removes the hash and tokens from the URL bar without reloading the page
-  if (session && window.location.hash) {
-    window.history.replaceState(null, null, window.location.pathname);
+    sb.auth.onAuthStateChange(function (_event, session) {
+      updateUIForSession(session);
+    });
   }
-});
+})();

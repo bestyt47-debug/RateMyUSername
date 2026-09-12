@@ -985,8 +985,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <!-- Supabase client library (auth foundation only — see auth.js) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<!-- Runtime config: injects window.__SUPABASE_CONFIG__ from environment variables. Served by /functions/config.js (Cloudflare Pages Function) — never hardcode keys here. -->
-<script src="/config.js"></script>
+<!--
+  Optional static config override for hosts/deploy methods that can't run
+  server code (e.g. plain drag-and-drop uploads). Copy env.example.js to
+  env.js, fill in your real Supabase URL/key, and keep env.js out of git
+  (see .gitignore). If env.js isn't present, this 404s harmlessly and
+  auth.js falls back to fetching /config.js (a Cloudflare Pages Function —
+  only works when deployed via Git integration or Wrangler, not drag-and-drop).
+-->
+<script src="env.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 </body>

@@ -34,14 +34,57 @@
   }
 
   ready(function () {
+    main().catch(function (err) {
+      console.warn("[auth] unexpected error during setup — running in guest-only mode.", err);
+    });
+  });
+
+  async function resolveConfig() {
+    // 1) Already set inline (e.g. a small <script> block someone added by
+    //    hand directly in index.html before this file runs). Highest
+    //    priority since it requires no network round trip.
+    if (window.__SUPABASE_CONFIG__ && window.__SUPABASE_CONFIG__.url && window.__SUPABASE_CONFIG__.anonKey) {
+      return window.__SUPABASE_CONFIG__;
+    }
+
+    // 2) A same-origin runtime endpoint, e.g. functions/config.js (a
+    //    Cloudflare Pages Function). We fetch it ourselves — rather than
+    //    load it as a <script src>  — specifically so that a wrong
+    //    response (for example a host without Functions support serving
+    //    index.html for every unknown path) is just data we can inspect,
+    //    not a browser-level MIME-type/script error.
+    try {
+      const res = await fetch("/config.js", { cache: "no-store", headers: { Accept: "application/json" } });
+      if (res.ok) {
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.indexOf("json") !== -1) {
+          const data = await res.json();
+          if (data && data.url && data.anonKey) return data;
+        }
+        // else: got a 200 but not JSON (commonly an SPA fallback serving
+        // index.html) — this host isn't actually running the function.
+        // Fall through to the static override below.
+      }
+    } catch (err) {
+      // network error / endpoint doesn't exist — fall through.
+    }
+
+    // 3) A plain static file (env.js) the deployer creates locally from
+    //    env.example.js and uploads alongside the rest of the site. This
+    //    is what makes auth work on hosts/deploy methods that can't run
+    //    server code, e.g. Cloudflare Pages "drag and drop" uploads.
+    if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+      return { url: window.SUPABASE_URL, anonKey: window.SUPABASE_ANON_KEY };
+    }
+
+    return null;
+  }
+
+  async function main() {
     // ---------- config ----------
-    // Preferred source: /config.js (Cloudflare Pages Function) sets this.
-    // Fallback: a deployment can set window.SUPABASE_URL / window.SUPABASE_ANON_KEY
-    // itself (e.g. a different host's env-injection mechanism) before this
-    // script runs. Either way, no key is ever hardcoded in this file.
-    const runtimeConfig = window.__SUPABASE_CONFIG__ || {};
-    const SUPABASE_URL = runtimeConfig.url || window.SUPABASE_URL || "";
-    const SUPABASE_ANON_KEY = runtimeConfig.anonKey || window.SUPABASE_ANON_KEY || "";
+    const config = await resolveConfig();
+    const SUPABASE_URL = (config && config.url) || "";
+    const SUPABASE_ANON_KEY = (config && config.anonKey) || "";
 
     const authToggle = document.getElementById("auth-toggle");
 
@@ -53,7 +96,7 @@
       // full access to every existing feature; we just never reveal the
       // account button.
       if (!hasConfig) {
-        console.warn("[auth] Supabase env vars missing — running in guest-only mode. See /functions/config.js.");
+        console.warn("[auth] Supabase config not found — running in guest-only mode. See functions/config.js and env.example.js.");
       } else if (!hasLibrary) {
         console.warn("[auth] Supabase client library failed to load — running in guest-only mode.");
       }
@@ -281,5 +324,5 @@
     sb.auth.onAuthStateChange(function (_event, session) {
       updateUIForSession(session);
     });
-  });
+  }
 })();

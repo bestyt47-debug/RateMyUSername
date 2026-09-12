@@ -68,6 +68,12 @@
       }
     });
 
+    // Library loaded, config present, client created — safe to reveal the
+    // account button now. Don't wait on the async getSession() call below;
+    // that call restores the session but has no bearing on whether the
+    // button itself should be shown.
+    authToggle.hidden = false;
+
     // ---------- DOM refs ----------
     const authToggleDot = document.getElementById("auth-toggle-dot");
     const overlay = document.getElementById("auth-overlay");
@@ -266,9 +272,10 @@
     // ---------- session restoration + live updates ----------
     sb.auth.getSession().then(function (res) {
       updateUIForSession(res && res.data && res.data.session);
-      authToggle.hidden = false; // reveal the account button once we know the auth state
     }).catch(function () {
-      authToggle.hidden = false;
+      // If session restoration fails (e.g. transient network issue), the
+      // button is already visible and simply behaves as logged-out until
+      // the user tries again.
     });
 
     sb.auth.onAuthStateChange(function (_event, session) {

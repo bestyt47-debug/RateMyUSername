@@ -96,6 +96,20 @@
   :root[data-theme="dark"] .theme-toggle .icon-sun{ display:block; }
   :root[data-theme="dark"] .theme-toggle .icon-moon{ display:none; }
 
+  /* ---------- account button (additive, rest of topbar untouched) ---------- */
+  .auth-toggle{ position: relative; }
+  .auth-toggle.is-authed{ border-color: var(--mint); color: var(--mint); }
+  .auth-toggle-dot{
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--mint);
+    border: 1.5px solid var(--card);
+  }
+
   .topbar-right{
     display:flex;
     align-items:center;
@@ -1260,6 +1274,60 @@
       padding: 5px 10px;
     }
   }
+
+  /* ---------- account / sign up / log in overlay (additive, rest of site untouched) ---------- */
+  .auth-panel{
+    max-width: 360px;
+    text-align: left;
+    position: relative;
+    padding: 26px 22px 22px;
+  }
+  .auth-kicker{ margin: 0 0 6px; text-align: left; }
+  .auth-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+  }
+  .auth-sub{
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0 0 18px;
+  }
+  .auth-input-row{ margin-bottom: 10px; }
+  .auth-input-row input{ text-align: left; }
+  .auth-error{
+    text-align: left;
+    height: auto;
+    min-height: 18px;
+    margin-top: 2px;
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+  .auth-submit-btn{
+    width: 100%;
+    justify-content: center;
+    margin-top: 6px;
+  }
+  .auth-submit-btn:disabled{ opacity: .65; cursor: default; transform: none; filter: none; }
+  .auth-switch{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 18px 0 0;
+  }
+  .auth-account-note{
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0 0 18px;
+  }
+  .auth-logout-btn{ width: 100%; justify-content: center; }
 
   /* ---------- get og bio overlay ---------- */
   .ogbio-panel{

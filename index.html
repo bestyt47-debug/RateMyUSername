@@ -44,6 +44,13 @@
         <path d="M12 2.5v2.5M12 19v2.5M4.22 4.22l1.77 1.77M18 18l1.77 1.77M2.5 12H5M19 12h2.5M4.22 19.78l1.77-1.77M18 6l1.77-1.77" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </button>
+    <button type="button" id="auth-toggle" class="theme-toggle auth-toggle" aria-label="Sign up or log in" aria-haspopup="dialog" aria-controls="auth-overlay" hidden>
+      <svg class="icon-user" width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="12" cy="8.2" r="3.8" stroke="currentColor" stroke-width="2"/>
+        <path d="M4.5 19.5c0-4.14 3.36-6.7 7.5-6.7s7.5 2.56 7.5 6.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span id="auth-toggle-dot" class="auth-toggle-dot" hidden></span>
+    </button>
   </div>
 </header>
 
@@ -831,6 +838,45 @@
   </div>
 </div>
 
+<!-- ============ ACCOUNT / SIGN UP / LOG IN OVERLAY ============ -->
+<div id="auth-overlay" class="share-overlay" role="dialog" aria-modal="true" aria-label="Account">
+  <div class="share-panel auth-panel">
+    <button type="button" id="auth-close-x" class="ogbio-close-x" aria-label="Close account panel">×</button>
+
+    <!-- guest state: sign up / log in form -->
+    <div id="auth-view-form" class="auth-view">
+      <p class="kicker auth-kicker">// your account</p>
+      <h3 id="auth-title" class="auth-title">log in</h3>
+      <p class="auth-sub" id="auth-sub">optional — you can keep rating as a guest, no account needed.</p>
+
+      <form id="auth-form" autocomplete="on" novalidate>
+        <div class="input-row auth-input-row">
+          <input id="auth-email" class="mono" type="email" placeholder="email" autocomplete="email" aria-label="email" />
+        </div>
+        <div class="input-row auth-input-row">
+          <input id="auth-password" class="mono" type="password" placeholder="password" autocomplete="current-password" aria-label="password" minlength="6" />
+        </div>
+        <p id="auth-error" class="error-msg auth-error" role="alert"></p>
+        <button type="submit" id="auth-submit-btn" class="btn btn-primary auth-submit-btn">log in →</button>
+      </form>
+
+      <p class="auth-switch mono">
+        <span id="auth-switch-text">new here?</span>
+        <button type="button" id="auth-switch-btn" class="btn-ghost">sign up</button>
+      </p>
+    </div>
+
+    <!-- signed-in state: account summary + logout -->
+    <div id="auth-view-account" class="auth-view" hidden>
+      <p class="kicker auth-kicker">// signed in</p>
+      <h3 class="auth-title">you're in <span aria-hidden="true">✅</span></h3>
+      <p class="auth-sub" id="auth-account-email">—</p>
+      <p class="auth-account-note">daily leaderboard, saved results, and downloads are coming soon for accounts.</p>
+      <button type="button" id="auth-logout-btn" class="btn btn-outline auth-logout-btn">log out</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ GET OG BIO OVERLAY ============ -->
 <div id="ogbio-overlay" class="share-overlay" role="dialog" aria-modal="true" aria-labelledby="ogbio-title">
   <div class="share-panel ogbio-panel">
@@ -937,6 +983,11 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- Supabase client library (auth foundation only — see auth.js) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<!-- Runtime config: injects window.__SUPABASE_CONFIG__ from environment variables. Served by /functions/config.js (Cloudflare Pages Function) — never hardcode keys here. -->
+<script src="/config.js"></script>
+<script src="auth.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

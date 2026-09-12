@@ -871,9 +871,38 @@
       <p class="kicker auth-kicker">// signed in</p>
       <h3 class="auth-title">you're in <span aria-hidden="true">✅</span></h3>
       <p class="auth-sub" id="auth-account-email">—</p>
-      <p class="auth-account-note">daily leaderboard, saved results, and downloads are coming soon for accounts.</p>
-      <button type="button" id="auth-logout-btn" class="btn btn-outline auth-logout-btn">log out</button>
+      <p class="auth-account-note">daily leaderboard is coming soon for accounts.</p>
+      <div class="auth-account-actions">
+        <button type="button" id="auth-my-saves-btn" class="btn btn-outline auth-my-saves-btn">📁 my saves</button>
+        <button type="button" id="auth-logout-btn" class="btn btn-outline auth-logout-btn">log out</button>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- ============ MY SAVES OVERLAY (additive, rest of site untouched) ============ -->
+<div id="saves-overlay" class="share-overlay" role="dialog" aria-modal="true" aria-labelledby="saves-title">
+  <div class="share-panel saves-panel">
+    <button type="button" id="saves-close-x" class="ogbio-close-x" aria-label="Close my saves">×</button>
+
+    <p class="kicker auth-kicker">// your saves</p>
+    <h3 id="saves-title" class="auth-title">my saves</h3>
+
+    <div id="saves-loading" class="saves-state" hidden>
+      <p class="loading-text mono show">loading your saves...</p>
+    </div>
+
+    <div id="saves-error" class="saves-state" hidden>
+      <p class="auth-sub" id="saves-error-text">couldn't load your saves — try again.</p>
+      <button type="button" id="saves-retry-btn" class="btn btn-outline">retry →</button>
+    </div>
+
+    <div id="saves-empty" class="saves-state" hidden>
+      <p class="auth-sub">no saved results yet.</p>
+      <p class="auth-account-note">rate, roast, or build a gamecard for your @ and hit save — it'll show up here.</p>
+    </div>
+
+    <div id="saves-list" class="saves-list" hidden></div>
   </div>
 </div>
 
@@ -997,6 +1026,7 @@
 <script src="auth.js"></script>
 <script src="script.js"></script>
 <script src="save.js"></script>
+<script src="saves.js"></script>
 </body>
 </html>
 

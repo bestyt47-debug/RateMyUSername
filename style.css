@@ -1328,6 +1328,107 @@
     margin: 0 0 18px;
   }
   .auth-logout-btn{ width: 100%; justify-content: center; }
+  .auth-account-actions{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .auth-my-saves-btn{ width: 100%; justify-content: center; }
+
+  /* ---------- my saves overlay (additive, rest of site untouched) ---------- */
+  .saves-panel{
+    max-width: 460px;
+    text-align: left;
+    position: relative;
+    padding: 26px 22px 22px;
+  }
+  .saves-state{ padding: 6px 0 4px; }
+  .saves-state .btn{ margin-top: 10px; }
+  .saves-list{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 56vh;
+    overflow-y: auto;
+    margin-top: 4px;
+    padding-right: 4px;
+  }
+  .save-card{
+    background: var(--bg);
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    padding: 14px 14px 12px;
+  }
+  .save-card-top{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .save-card-handle{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 15.5px;
+    letter-spacing: -0.01em;
+    word-break: break-word;
+  }
+  .save-card-meta{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .save-card-score{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 15.5px;
+    color: var(--red);
+  }
+  .save-card-type{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: var(--ink-soft);
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 9px;
+    background: var(--card);
+  }
+  .save-card-date{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin: 4px 0 0;
+  }
+  .save-card-detail{
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 10px 0 0;
+    padding-top: 10px;
+    border-top: 1.5px dashed var(--line-soft);
+  }
+  .save-card-actions{
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .save-card-actions .btn{
+    padding: 7px 13px;
+    font-size: 12.5px;
+    box-shadow: none;
+  }
+  .save-card-actions .btn:hover{ box-shadow: 3px 3px 0 var(--ink); }
+  .save-card-delete{ color: var(--red); }
+  .save-card.is-deleting{ opacity: .5; pointer-events: none; }
+
+  @media (max-width: 480px){
+    .saves-panel{ padding: 22px 16px 18px; }
+    .saves-list{ max-height: 62vh; }
+  }
 
   /* ---------- get og bio overlay ---------- */
   .ogbio-panel{

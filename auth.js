@@ -33,6 +33,19 @@
     }
   }
 
+  // Lets other independent, self-contained modules (e.g. save.js) find out
+  // once — whether synchronously-already or via an event later — whether
+  // the auth foundation actually came up on this deployment. auth.js does
+  // not know or care whether anything is listening.
+  function notifyAuthReady(available) {
+    window.__RMU_AUTH_STATE__ = { ready: true, available: !!available };
+    try {
+      window.dispatchEvent(new CustomEvent("rmu:auth-ready", { detail: { available: !!available } }));
+    } catch (err) {
+      // CustomEvent constructor should exist in any supported browser; ignore otherwise.
+    }
+  }
+
   ready(function () {
     main().catch(function (err) {
       console.warn("[auth] unexpected error during setup — running in guest-only mode.", err);
@@ -100,6 +113,7 @@
       } else if (!hasLibrary) {
         console.warn("[auth] Supabase client library failed to load — running in guest-only mode.");
       }
+      notifyAuthReady(false);
       return;
     }
 
@@ -214,13 +228,14 @@
       viewAccount.hidden = false;
     }
 
-    function openOverlay() {
+    function openOverlay(promptMessage) {
       overlay.classList.add("open");
       if (currentSession) {
         showAccountView();
       } else {
         showFormView();
         setMode("login");
+        if (promptMessage) subEl.textContent = promptMessage;
         setTimeout(function () { emailInput.focus(); }, 50);
       }
     }
@@ -249,7 +264,7 @@
     }
 
     // ---------- wire up UI ----------
-    authToggle.addEventListener("click", openOverlay);
+    authToggle.addEventListener("click", function () { openOverlay(); });
     closeX.addEventListener("click", closeOverlay);
     overlay.addEventListener("click", function (e) {
       if (e.target === overlay) closeOverlay();
@@ -324,5 +339,16 @@
     sb.auth.onAuthStateChange(function (_event, session) {
       updateUIForSession(session);
     });
+
+    // ---------- minimal public API for other independent modules ----------
+    // save.js (added separately for Save/Download gating) reads the current
+    // session and reuses this same client + modal rather than building a
+    // second auth system. Nothing here changes how auth.js itself behaves.
+    window.RMUAuth = {
+      getClient: function () { return sb; },
+      getSession: function () { return currentSession; },
+      openAuthModal: function (promptMessage) { openOverlay(promptMessage); }
+    };
+    notifyAuthReady(true);
   }
 })();

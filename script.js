@@ -414,6 +414,7 @@
     const result = scoreUsername(rateInput.value);
     showLoading(function(){
       lastResult = result;
+      window.__RMU_LAST_RESULT__ = result; // read-only handoff for save.js; script.js does not depend on it
       renderResult(result);
       showView("result");
     });
@@ -1628,6 +1629,7 @@
         nameStyle: defaultTextStyle(),
         bioStyle: defaultTextStyle()
       };
+      window.__RMU_GC_POSTER_DATA__ = gcPosterData; // read-only handoff for save.js; script.js does not depend on it
 
       renderPoster(gcPosterData);
       if (gcPosterShareNote) gcPosterShareNote.classList.remove("show");
@@ -2780,6 +2782,7 @@
       showLoading(function(){
         const roast = generateRoast(rawHandle);
         lastRoast = Object.assign({ mode: "roast" }, roast);
+        window.__RMU_LAST_ROAST__ = lastRoast; // read-only handoff for save.js; script.js does not depend on it
         renderRoastResult(lastRoast);
         showView("roastResult");
       }, { lines: ROAST_LOADING_LINES, minMs: 2000, maxMs: 3000 });

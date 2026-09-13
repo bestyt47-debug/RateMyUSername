@@ -3287,10 +3287,22 @@
     25%, 75%{ background: var(--yellow); }
   }
 
-  /* .btn sets display:inline-flex, so — same reasoning as the toggle above —
-     hidden needs to be re-asserted explicitly for the "see leaderboard"
-     result button. */
-  #lb-see-btn[hidden]{ display:none; }
+  /* opt-in leaderboard CTA on the result screen */
+  .lb-cta{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: 8px;
+    margin-top: 14px;
+    animation: fade-up-sm .4s .55s cubic-bezier(.2,.9,.25,1) both;
+  }
+  .lb-cta[hidden]{ display:none; }
+  .lb-cta-label{
+    text-align:center;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin:0;
+  }
 
 
   @media (max-width: 480px){

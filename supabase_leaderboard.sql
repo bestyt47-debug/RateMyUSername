@@ -7,10 +7,11 @@
 
 create extension if not exists pgcrypto; -- provides gen_random_uuid()
 
--- One row per user. The existing Check/Rate action upserts this row on
--- every rate — there is no separate "submit to leaderboard" button and
--- no unbounded history: each user has exactly one public leaderboard
--- position, always reflecting their most recent rate result.
+-- One row per user. The app only upserts this row when a signed-in user
+-- explicitly clicks "add to global leaderboard" on a result — rating a
+-- username by itself never writes here. No unbounded history: each user
+-- has exactly one public leaderboard position, reflecting whichever
+-- result they last chose to add.
 create table if not exists public.leaderboard_entries (
   id           uuid primary key default gen_random_uuid(),
   user_id      uuid not null unique references auth.users (id) on delete cascade,

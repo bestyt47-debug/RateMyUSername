@@ -18,6 +18,8 @@
     --placeholder: #A8A99E;
     --overlay-bg: rgba(21,21,27,.55);
     --ink-contrast: #FFFFFF;
+    --silver: #9CA3AF;
+    --bronze: #CD7F32;
   }
 
   :root[data-theme="dark"]{
@@ -39,6 +41,8 @@
     --placeholder: #6C6D68;
     --overlay-bg: rgba(0,0,0,.65);
     --ink-contrast: #121214;
+    --silver: #A6ACB8;
+    --bronze: #D9924E;
   }
 
   *{ box-sizing: border-box; }
@@ -114,6 +118,14 @@
     display:flex;
     align-items:center;
   }
+
+  /* ---------- leaderboard nav toggle (additive, rest of topbar untouched) ---------- */
+  .leaderboard-toggle{ font-size: 16px; line-height: 1; }
+  /* .theme-toggle sets display:inline-flex, which (like several classes in
+     this file) takes precedence over the UA [hidden] rule once an author
+     rule sets `display` on the same element — so hidden must be re-asserted
+     explicitly here, the same way .view[hidden] does below. */
+  .leaderboard-toggle[hidden]{ display:none; }
 
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
@@ -2988,4 +3000,206 @@
 
   @media (max-width: 420px){
     .roast-text{ font-size: 16px; }
+  }
+
+  /* ========================================================
+     🏆 GLOBAL LEADERBOARD (additive, rest of site untouched)
+     Reuses .share-overlay/.share-panel chrome (auth/saves) and
+     .btn/.badge/.mono for visual consistency with the rest of
+     the app instead of introducing a parallel style language.
+     ======================================================== */
+  .leaderboard-panel{
+    max-width: 520px;
+    text-align: left;
+    position: relative;
+    padding: 26px 22px 22px;
+  }
+  .lb-kicker{ margin: 0 0 6px; text-align: left; }
+  .lb-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+  }
+
+  /* ---------- locked state ---------- */
+  .lb-locked{ padding: 6px 0 4px; text-align: center; }
+  .lb-locked-emoji{ font-size: 38px; display:block; margin: 4px 0 14px; }
+  .lb-locked-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 19px;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+  }
+  .lb-locked-sub{
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+  }
+  .lb-locked-actions{
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .lb-locked-actions .btn{ width: 100%; justify-content:center; }
+
+  /* ---------- loading / error / empty states ---------- */
+  .lb-state{ padding: 10px 0 4px; text-align: center; }
+  .lb-state .btn{ margin-top: 10px; }
+  .lb-empty-emoji{ font-size: 32px; display:block; margin: 2px 0 12px; }
+
+  /* ---------- content ---------- */
+  .lb-content{ }
+
+  .lb-nudge{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--track-bg);
+    border: 1.5px dashed var(--line-soft);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin: 0 0 14px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+  .lb-nudge[hidden]{ display:none; }
+
+  .lb-your-rank-bar{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--ink);
+    color: var(--ink-contrast);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin: 0 0 14px;
+  }
+  .lb-your-rank-bar[hidden]{ display:none; }
+  .lb-your-rank-info{ display:flex; align-items: baseline; gap: 8px; }
+  .lb-your-rank-num{ font-family:'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; }
+  .lb-your-rank-score{ font-family:'JetBrains Mono', monospace; font-size: 12px; opacity: .8; }
+  .lb-jump-btn{
+    background: var(--ink-contrast);
+    color: var(--ink);
+    border: none;
+    border-radius: 999px;
+    padding: 8px 13px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .lb-jump-btn:hover{ filter: brightness(1.15); }
+
+  .lb-list{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 56vh;
+    overflow-y: auto;
+    padding-right: 4px;
+    scroll-behavior: smooth;
+  }
+
+  .lb-row{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    background: var(--bg);
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    padding: 10px 12px;
+  }
+  .lb-row-rank{
+    font-family:'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink-soft);
+    width: 30px;
+    flex: 0 0 auto;
+    text-align: center;
+  }
+  .lb-row-emoji{
+    font-size: 20px;
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: var(--stub-handle-bg);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .lb-row-mid{ flex: 1 1 auto; min-width: 0; }
+  .lb-row-name{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 14.5px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display:flex;
+    align-items:center;
+    gap: 6px;
+  }
+  .lb-you-badge{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    background: var(--red);
+    color: #fff;
+    border-radius: 999px;
+    padding: 2px 7px;
+    flex: 0 0 auto;
+  }
+  .lb-row-score{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    flex: 0 0 auto;
+    text-align: right;
+    min-width: 46px;
+  }
+
+  .lb-row-top1, .lb-row-top2, .lb-row-top3{ padding: 13px 12px; }
+  .lb-row-top1{ border-color: var(--yellow); box-shadow: 4px 4px 0 var(--yellow); }
+  .lb-row-top1 .lb-row-rank{ color: var(--yellow); font-size: 15px; }
+  .lb-row-top2{ border-color: var(--silver); box-shadow: 4px 4px 0 var(--silver); }
+  .lb-row-top2 .lb-row-rank{ color: var(--silver); font-size: 14.5px; }
+  .lb-row-top3{ border-color: var(--bronze); box-shadow: 4px 4px 0 var(--bronze); }
+  .lb-row-top3 .lb-row-rank{ color: var(--bronze); font-size: 14.5px; }
+
+  .lb-row-you{ border-color: var(--red); box-shadow: 4px 4px 0 var(--red); }
+
+  .lb-row-flash{ animation: lb-flash 1.6s ease; }
+  @keyframes lb-flash{
+    0%, 100%{ background: var(--bg); }
+    25%, 75%{ background: var(--yellow); }
+  }
+
+  /* .btn sets display:inline-flex, so — same reasoning as the toggle above —
+     hidden needs to be re-asserted explicitly for the "see leaderboard"
+     result button. */
+  #lb-see-btn[hidden]{ display:none; }
+
+
+  @media (max-width: 480px){
+    .leaderboard-panel{ padding: 22px 16px 18px; }
+    .lb-list{ max-height: 60vh; }
+    .lb-row{ padding: 9px 10px; gap: 8px; }
+    .lb-row-rank{ width: 24px; font-size: 12px; }
+    .lb-row-emoji{ width: 26px; height: 26px; font-size: 17px; }
+    .lb-row-name{ font-size: 13.5px; }
+    .lb-row-score{ font-size: 14.5px; min-width: 38px; }
   }

@@ -44,6 +44,9 @@
         <path d="M12 2.5v2.5M12 19v2.5M4.22 4.22l1.77 1.77M18 18l1.77 1.77M2.5 12H5M19 12h2.5M4.22 19.78l1.77-1.77M18 6l1.77-1.77" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </button>
+    <button type="button" id="leaderboard-toggle" class="theme-toggle leaderboard-toggle" aria-label="Global Leaderboard" aria-haspopup="dialog" aria-controls="leaderboard-overlay" hidden>
+      <span aria-hidden="true">🏆</span>
+    </button>
     <button type="button" id="auth-toggle" class="theme-toggle auth-toggle" aria-label="Sign up or log in" aria-haspopup="dialog" aria-controls="auth-overlay" hidden>
       <svg class="icon-user" width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <circle cx="12" cy="8.2" r="3.8" stroke="currentColor" stroke-width="2"/>
@@ -151,6 +154,7 @@
         <div class="result-actions">
           <button type="button" id="rate-another" class="btn btn-outline">rate another →</button>
           <button type="button" id="share-btn" class="btn btn-outline share">share score ↗</button>
+          <button type="button" id="lb-see-btn" class="btn btn-outline" hidden>see leaderboard →</button>
         </div>
       </div>
     </section>
@@ -871,8 +875,9 @@
       <p class="kicker auth-kicker">// signed in</p>
       <h3 class="auth-title">you're in <span aria-hidden="true">✅</span></h3>
       <p class="auth-sub" id="auth-account-email">—</p>
-      <p class="auth-account-note">daily leaderboard is coming soon for accounts.</p>
+      <p class="auth-account-note">rate a username to claim your spot on the global leaderboard.</p>
       <div class="auth-account-actions">
+        <button type="button" id="auth-leaderboard-btn" class="btn btn-outline auth-my-saves-btn">🏆 leaderboard</button>
         <button type="button" id="auth-my-saves-btn" class="btn btn-outline auth-my-saves-btn">📁 my saves</button>
         <button type="button" id="auth-logout-btn" class="btn btn-outline auth-logout-btn">log out</button>
       </div>
@@ -903,6 +908,60 @@
     </div>
 
     <div id="saves-list" class="saves-list" hidden></div>
+  </div>
+</div>
+
+<!-- ============ GLOBAL LEADERBOARD OVERLAY (additive, rest of site untouched) ============ -->
+<div id="leaderboard-overlay" class="share-overlay" role="dialog" aria-modal="true" aria-labelledby="lb-title">
+  <div class="share-panel leaderboard-panel">
+    <button type="button" id="lb-close-x" class="ogbio-close-x" aria-label="Close leaderboard">×</button>
+
+    <p class="kicker lb-kicker">// global leaderboard</p>
+    <h3 id="lb-title" class="lb-title">leaderboard 🏆</h3>
+
+    <!-- guest state -->
+    <div id="lb-locked" class="lb-locked" hidden>
+      <span class="lb-locked-emoji" aria-hidden="true">🔒</span>
+      <h4 class="lb-locked-title">unlock the leaderboard</h4>
+      <p class="lb-locked-sub">sign in to see how your username ranks against everyone else — free, takes a few seconds.</p>
+      <div class="lb-locked-actions">
+        <button type="button" id="lb-locked-signup" class="btn btn-primary">sign up →</button>
+        <button type="button" id="lb-locked-login" class="btn btn-outline">log in</button>
+      </div>
+    </div>
+
+    <!-- loading state -->
+    <div id="lb-loading" class="lb-state" hidden>
+      <p class="loading-text mono show">loading the leaderboard...</p>
+    </div>
+
+    <!-- error state -->
+    <div id="lb-error" class="lb-state" hidden>
+      <p class="auth-sub" id="lb-error-text">couldn't load the leaderboard — try again.</p>
+      <button type="button" id="lb-retry-btn" class="btn btn-outline">retry →</button>
+    </div>
+
+    <!-- empty state (no entries yet at all) -->
+    <div id="lb-empty" class="lb-state" hidden>
+      <span class="lb-empty-emoji" aria-hidden="true">🏁</span>
+      <p class="auth-sub">no one's on the board yet.</p>
+      <p class="auth-account-note">rate your username to be the very first entry.</p>
+    </div>
+
+    <!-- signed-in state: ranked list -->
+    <div id="lb-content" class="lb-content" hidden>
+      <p id="lb-no-entry-note" class="lb-nudge" hidden>
+        <span>rate your username to claim your spot 🚀</span>
+      </p>
+      <div id="lb-your-rank-bar" class="lb-your-rank-bar" hidden>
+        <div class="lb-your-rank-info">
+          <span class="lb-your-rank-num mono" id="lb-your-rank-num">#—</span>
+          <span class="lb-your-rank-score mono" id="lb-your-rank-score">—/100</span>
+        </div>
+        <button type="button" id="lb-jump-btn" class="lb-jump-btn">jump to me ↓</button>
+      </div>
+      <div id="lb-list" class="lb-list"></div>
+    </div>
   </div>
 </div>
 
@@ -1027,6 +1086,7 @@
 <script src="script.js"></script>
 <script src="save.js"></script>
 <script src="saves.js"></script>
+<script src="leaderboard.js"></script>
 </body>
 </html>
 

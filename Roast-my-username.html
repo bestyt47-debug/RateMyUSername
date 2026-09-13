@@ -1120,6 +1120,24 @@
   });
 })();
 </script>
+
+<script>
+/* Sends the browser back to the real homepage ("/") when this page's own
+   back/close-to-home control(s) are used, instead of only revealing
+   #view-home in place (which left the URL stuck on this feature page).
+   Purely additive -- doesn't touch the existing click handler(s) that
+   already run to toggle the view. */
+(function () {
+  var HOME_CONTROL_IDS = ['roast-go-home'];
+  HOME_CONTROL_IDS.forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("click", function () {
+      window.location.href = "/";
+    });
+  });
+})();
+</script>
 </body>
 </html>
 

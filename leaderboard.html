@@ -14,6 +14,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+  /* This page opens straight into an in-app overlay; hiding the
+     homepage content behind it makes this read as its own
+     dedicated page (like the other feature pages) instead of a
+     dialog sitting on top of a visible homepage. Purely visual --
+     doesn't touch script.js's view-toggling logic. */
+  #view-home{ display:none !important; }
+</style>
 <script>
   (function(){
     try{
@@ -1129,6 +1137,24 @@
       if (!available) return; // guest-only deployment, same as the topbar button staying hidden
       var btn = document.getElementById("leaderboard-toggle");
       if (btn) btn.click();
+    });
+  });
+})();
+</script>
+
+<script>
+/* Sends the browser back to the real homepage ("/") when this page's own
+   back/close-to-home control(s) are used, instead of only revealing
+   #view-home in place (which left the URL stuck on this feature page).
+   Purely additive -- doesn't touch the existing click handler(s) that
+   already run to toggle the view. */
+(function () {
+  var HOME_CONTROL_IDS = ['lb-close-x'];
+  HOME_CONTROL_IDS.forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("click", function () {
+      window.location.href = "/";
     });
   });
 })();

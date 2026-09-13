@@ -1357,38 +1357,71 @@
     max-width: 360px;
     text-align: left;
     position: relative;
-    padding: 26px 22px 22px;
+    padding: 30px 24px 26px;
+    overflow: hidden;
   }
-  .auth-kicker{ margin: 0 0 6px; text-align: left; }
+  /* subtle dot-grid texture, consistent with the site's noise/grid accents
+     elsewhere — kept low-opacity and behind the content, click-through. */
+  .auth-panel::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(currentColor 1px, transparent 1px);
+    background-size: 14px 14px;
+    background-position: -4px -4px;
+    color: var(--ink);
+    opacity: .05;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .auth-panel > .auth-view{ position: relative; z-index: 1; }
+  .auth-kicker{ margin: 0 0 8px; text-align: left; }
   .auth-title{
     font-family:'Space Grotesk', sans-serif;
     font-weight: 900;
-    font-size: 22px;
+    font-size: 24px;
     letter-spacing: -0.02em;
-    margin: 0 0 8px;
+    margin: 0 0 10px;
+    line-height: 1.15;
   }
   .auth-sub{
     font-size: 13px;
     line-height: 1.5;
     color: var(--ink-soft);
-    margin: 0 0 18px;
+    margin: 0 0 22px;
   }
-  .auth-input-row{ margin-bottom: 10px; }
+  .auth-input-row{ margin-bottom: 14px; }
   .auth-input-row input{ text-align: left; }
+  /* premium/interactive polish scoped to this panel only — the shared
+     .input-row base rule (used across the rest of the site) is untouched. */
+  .auth-panel .input-row:focus-within{
+    border-color: var(--blue);
+  }
   .auth-error{
     text-align: left;
     height: auto;
     min-height: 18px;
     margin-top: 2px;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     line-height: 1.4;
   }
   .auth-submit-btn{
     width: 100%;
     justify-content: center;
-    margin-top: 6px;
+    margin-top: 10px;
+    box-shadow: var(--shadow-sm);
+    letter-spacing: .01em;
   }
-  .auth-submit-btn:disabled{ opacity: .65; cursor: default; transform: none; filter: none; }
+  .auth-submit-btn:hover{
+    filter: none;
+    transform: translate(-2px,-2px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .auth-submit-btn:active{
+    transform: translate(0,0);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .auth-submit-btn:disabled{ opacity: .65; cursor: default; transform: none; filter: none; box-shadow: var(--shadow-sm); }
   .auth-switch{
     display: flex;
     align-items: center;
@@ -1396,7 +1429,7 @@
     justify-content: center;
     font-size: 12.5px;
     color: var(--ink-soft);
-    margin: 18px 0 0;
+    margin: 22px 0 0;
   }
   .auth-account-note{
     font-size: 12.5px;
@@ -1411,6 +1444,55 @@
     gap: 10px;
   }
   .auth-my-saves-btn{ width: 100%; justify-content: center; }
+
+  /* ---------- sign-up success: "check your email" confirmation state ---------- */
+  .auth-confirm{
+    text-align: center;
+  }
+  .auth-confirm .auth-kicker{ text-align: center; }
+  .auth-confirm .auth-sub{ margin: 0 0 14px; }
+  .auth-confirm-icon{
+    width: 60px;
+    height: 60px;
+    margin: 2px auto 16px;
+    border-radius: 50%;
+    border: 2.5px solid var(--line);
+    background: var(--card);
+    color: var(--mint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 6px 6px 0 var(--mint);
+    transform: rotate(-6deg);
+  }
+  .auth-confirm-email{
+    display: inline-block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    background: var(--bg-2);
+    border: 1.5px solid var(--line-soft);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 12.5px;
+    color: var(--ink);
+    margin: 0 0 18px;
+  }
+  .auth-confirm-guide{
+    font-size: 11.5px;
+    letter-spacing: .03em;
+    color: var(--ink-soft);
+    text-transform: lowercase;
+    margin: 0 0 22px;
+  }
+  .auth-confirm-back{
+    display: block;
+    margin: 0 auto;
+  }
+  @media (max-width: 380px){
+    .auth-panel{ padding: 26px 18px 22px; }
+    .auth-title{ font-size: 21px; }
+    .auth-confirm-icon{ width: 52px; height: 52px; }
+  }
 
   /* ---------- my saves overlay (additive, rest of site untouched) ---------- */
   .saves-panel{

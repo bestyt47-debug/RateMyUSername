@@ -880,6 +880,21 @@
       </p>
     </div>
 
+    <!-- post sign-up state: email confirmation required (Supabase returned a user with no session) -->
+    <div id="auth-view-confirm" class="auth-view auth-confirm" hidden aria-live="polite">
+      <div class="auth-confirm-icon" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="4 12.5 9.5 18 20 5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="kicker auth-kicker">// one more step</p>
+      <h3 class="auth-title">check your email.</h3>
+      <p class="auth-sub">we sent a confirmation link to your email. click it to activate your account.</p>
+      <p class="auth-confirm-email mono" id="auth-confirm-email">your@email.com</p>
+      <p class="auth-confirm-guide mono">open your inbox → confirm → come back here</p>
+      <button type="button" id="auth-confirm-back-btn" class="btn-ghost auth-confirm-back">← back to sign up</button>
+    </div>
+
     <!-- signed-in state: account summary + logout -->
     <div id="auth-view-account" class="auth-view" hidden>
       <p class="kicker auth-kicker">// signed in</p>

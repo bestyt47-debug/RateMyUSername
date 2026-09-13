@@ -3398,3 +3398,57 @@
     .lb-row-score{ font-size: 14.5px; min-width: 38px; }
     .lb-tagline{ font-size: 12.5px; }
   }
+
+/* ========================================================
+   MULTI-PAGE SITE NAV (additive only — every existing rule
+   above is untouched; this just supports the split into
+   index.html / compare.html / versus.html / roast.html /
+   hype.html / championship.html / leaderboard.html)
+   ======================================================== */
+.site-nav{
+  width:100%;
+  max-width: 900px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  padding: 12px 20px 0;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.site-nav-link{
+  text-decoration:none;
+  cursor:pointer;
+  font-size: 11.5px;
+  font-weight:700;
+  color: var(--ink-soft);
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, color .15s ease;
+  white-space: nowrap;
+}
+.site-nav-link:hover{
+  color: var(--ink);
+  background: var(--yellow);
+  transform: translate(-1px,-1px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.site-nav-link.is-current{
+  background: var(--ink);
+  color: var(--ink-contrast);
+}
+.logo[href]{ text-decoration:none; }
+@media (max-width: 480px){
+  .site-nav{
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .site-nav::-webkit-scrollbar{ display:none; }
+  .site-nav-link{ flex: 0 0 auto; }
+}
+
+/* homepage tool cards for Versus / Leaderboard are real <a> links
+   (rather than the JS-driven <button>s the in-page tools use) so
+   they need the anchor defaults reset to match .tool-card exactly. */
+a.tool-card{ text-decoration:none; }

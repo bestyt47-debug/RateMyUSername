@@ -132,7 +132,7 @@
     authToggle.hidden = false;
 
     // ---------- DOM refs ----------
-    const authToggleDot = document.getElementById("auth-toggle-dot");
+    const authToggleAvatar = document.getElementById("auth-toggle-avatar");
     const overlay = document.getElementById("auth-overlay");
     const closeX = document.getElementById("auth-close-x");
 
@@ -252,13 +252,16 @@
       if (user) {
         authToggle.classList.add("is-authed");
         authToggle.setAttribute("aria-label", "Account (" + (user.email || "signed in") + ")");
-        if (authToggleDot) authToggleDot.hidden = false;
+        if (authToggleAvatar) {
+          authToggleAvatar.textContent = (user.email || "?").charAt(0).toUpperCase();
+          authToggleAvatar.hidden = false;
+        }
         if (accountEmailEl) accountEmailEl.textContent = user.email || "";
         if (overlay.classList.contains("open")) showAccountView();
       } else {
         authToggle.classList.remove("is-authed");
         authToggle.setAttribute("aria-label", "Sign up or log in");
-        if (authToggleDot) authToggleDot.hidden = true;
+        if (authToggleAvatar) authToggleAvatar.hidden = true;
         if (overlay.classList.contains("open")) showFormView();
       }
     }

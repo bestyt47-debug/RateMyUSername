@@ -102,21 +102,33 @@
 
   /* ---------- account button (additive, rest of topbar untouched) ---------- */
   .auth-toggle{ position: relative; }
-  .auth-toggle.is-authed{ border-color: var(--mint); color: var(--mint); }
-  .auth-toggle-dot{
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    width: 9px;
-    height: 9px;
+  .auth-toggle.is-authed{ border-color: var(--red); }
+  .auth-toggle.is-authed .icon-user{ display:none; }
+  /* signed-in state swaps the generic person glyph for an initial-letter
+     avatar — reads as an actual account control rather than a status dot. */
+  .auth-toggle-avatar{
+    width: 19px;
+    height: 19px;
     border-radius: 50%;
-    background: var(--mint);
-    border: 1.5px solid var(--card);
+    background: var(--red);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 10px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+  .auth-toggle-avatar[hidden]{ display:none; }
 
   .topbar-right{
     display:flex;
     align-items:center;
+  }
+
+  @media (max-width: 480px){
+    .topbar-tagline{ display:none; }
   }
 
   /* ---------- leaderboard nav toggle (additive, rest of topbar untouched) ---------- */
@@ -518,6 +530,59 @@
 
   @media (max-width: 560px){
     .tool-grid{ grid-template-columns: 1fr; }
+  }
+
+  /* ---------- homepage leaderboard announcement (additive, hidden until the
+     leaderboard feature is confirmed available — see leaderboard.js) ---------- */
+  .lb-announce{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 480px;
+    margin: 22px auto 0;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 18px 9px 8px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--ink);
+    text-align: left;
+    box-shadow: var(--shadow-sm);
+    transition: transform .18s cubic-bezier(.2,.9,.25,1), box-shadow .18s cubic-bezier(.2,.9,.25,1);
+  }
+  .lb-announce:hover{ transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink); }
+  .lb-announce:active{ transform: translate(0,0); box-shadow: 1px 1px 0 var(--ink); }
+  .lb-announce[hidden]{ display:none; }
+  .lb-announce-tag{
+    flex: 0 0 auto;
+    background: var(--red);
+    color: #fff;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: 999px;
+  }
+  .lb-announce-text{
+    flex: 1 1 auto;
+    font-size: 12.5px;
+    line-height: 1.35;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .lb-announce-arrow{
+    flex: 0 0 auto;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+  @media (max-width: 420px){
+    .lb-announce{ max-width: 100%; padding: 8px 13px 8px 8px; }
+    .lb-announce-text{ font-size: 11.5px; }
   }
 
   /* ---------- loading / analysis transition ---------- */
@@ -3020,7 +3085,12 @@
     font-weight: 900;
     font-size: 22px;
     letter-spacing: -0.02em;
-    margin: 0 0 16px;
+    margin: 0 0 6px;
+  }
+  .lb-tagline{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 18px;
   }
 
   /* ---------- locked state ---------- */
@@ -3050,6 +3120,29 @@
   .lb-state{ padding: 10px 0 4px; text-align: center; }
   .lb-state .btn{ margin-top: 10px; }
   .lb-empty-emoji{ font-size: 32px; display:block; margin: 2px 0 12px; }
+
+  /* ---------- loading skeleton ---------- */
+  .lb-skeleton{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+    text-align: left;
+  }
+  .lb-skeleton-row{
+    height: 50px;
+    border-radius: 14px;
+    border: 2px solid var(--line-soft);
+    background: var(--track-bg);
+    animation: lb-skeleton-pulse 1.3s ease-in-out infinite;
+  }
+  .lb-skeleton-row:nth-child(2){ animation-delay: .1s; }
+  .lb-skeleton-row:nth-child(3){ animation-delay: .2s; }
+  .lb-skeleton-row:nth-child(4){ animation-delay: .3s; }
+  @keyframes lb-skeleton-pulse{
+    0%, 100%{ opacity: .5; }
+    50%{ opacity: 1; }
+  }
 
   /* ---------- content ---------- */
   .lb-content{ }
@@ -3173,8 +3266,14 @@
   }
 
   .lb-row-top1, .lb-row-top2, .lb-row-top3{ padding: 13px 12px; }
+  .lb-row-top1 .lb-row-emoji, .lb-row-top2 .lb-row-emoji, .lb-row-top3 .lb-row-emoji{
+    width: 34px;
+    height: 34px;
+    font-size: 22px;
+    background: var(--card);
+  }
   .lb-row-top1{ border-color: var(--yellow); box-shadow: 4px 4px 0 var(--yellow); }
-  .lb-row-top1 .lb-row-rank{ color: var(--yellow); font-size: 15px; }
+  .lb-row-top1 .lb-row-rank{ color: var(--yellow); font-size: 15px; -webkit-text-stroke: .6px var(--ink); }
   .lb-row-top2{ border-color: var(--silver); box-shadow: 4px 4px 0 var(--silver); }
   .lb-row-top2 .lb-row-rank{ color: var(--silver); font-size: 14.5px; }
   .lb-row-top3{ border-color: var(--bronze); box-shadow: 4px 4px 0 var(--bronze); }
@@ -3200,6 +3299,8 @@
     .lb-row{ padding: 9px 10px; gap: 8px; }
     .lb-row-rank{ width: 24px; font-size: 12px; }
     .lb-row-emoji{ width: 26px; height: 26px; font-size: 17px; }
+    .lb-row-top1 .lb-row-emoji, .lb-row-top2 .lb-row-emoji, .lb-row-top3 .lb-row-emoji{ width: 30px; height: 30px; font-size: 19px; }
     .lb-row-name{ font-size: 13.5px; }
     .lb-row-score{ font-size: 14.5px; min-width: 38px; }
+    .lb-tagline{ font-size: 12.5px; }
   }

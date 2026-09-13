@@ -102,6 +102,7 @@
     // ---------- DOM refs ----------
     const leaderboardToggle = document.getElementById("leaderboard-toggle");
     const lbSeeBtn = document.getElementById("lb-see-btn");
+    const lbAnnounce = document.getElementById("lb-announce");
     const accountLbBtn = document.getElementById("auth-leaderboard-btn");
     const authOverlay = document.getElementById("auth-overlay");
 
@@ -138,6 +139,7 @@
     // leaderboard that can't work).
     if (leaderboardToggle) leaderboardToggle.hidden = false;
     if (lbSeeBtn) lbSeeBtn.hidden = false;
+    if (lbAnnounce) lbAnnounce.hidden = false;
 
     function isLoggedIn() {
       const session = authApi.getSession();
@@ -205,6 +207,13 @@
 
     if (leaderboardToggle) {
       leaderboardToggle.addEventListener("click", function () {
+        pendingReopenAfterAuth = false;
+        openOverlay();
+        loadLeaderboard();
+      });
+    }
+    if (lbAnnounce) {
+      lbAnnounce.addEventListener("click", function () {
         pendingReopenAfterAuth = false;
         openOverlay();
         loadLeaderboard();

@@ -34,7 +34,7 @@
   </div>
   <div class="topbar-right">
     <a href="blog/index.html" class="badge nav-blog-link">blog</a>
-    <div class="badge">no login. no cap.</div>
+    <div class="badge topbar-tagline">no cap, only vibes.</div>
     <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" aria-pressed="false">
       <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -52,7 +52,7 @@
         <circle cx="12" cy="8.2" r="3.8" stroke="currentColor" stroke-width="2"/>
         <path d="M4.5 19.5c0-4.14 3.36-6.7 7.5-6.7s7.5 2.56 7.5 6.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      <span id="auth-toggle-dot" class="auth-toggle-dot" hidden></span>
+      <span id="auth-toggle-avatar" class="auth-toggle-avatar" aria-hidden="true" hidden></span>
     </button>
   </div>
 </header>
@@ -65,7 +65,7 @@
       <div class="hero">
         <p class="kicker">rate my username.</p>
         <h1 class="headline">is your <span class="accent">@</span> actually tuff?</h1>
-        <p class="sub">type it in. find out. no signup, nothing saved.</p>
+        <p class="sub">type it in. find out. save it, see how you rank.</p>
 
         <form id="rate-form" autocomplete="off">
           <div class="input-row">
@@ -74,6 +74,12 @@
           </div>
           <p id="rate-error" class="error-msg">type something first, we can't rate silence.</p>
         </form>
+
+        <button type="button" id="lb-announce" class="lb-announce" aria-haspopup="dialog" aria-controls="leaderboard-overlay" hidden>
+          <span class="lb-announce-tag mono">new</span>
+          <span class="lb-announce-text">global leaderboard is live — see who's actually tuff</span>
+          <span class="lb-announce-arrow" aria-hidden="true">→</span>
+        </button>
 
         <div class="try-these" id="try-these">
           <p class="tt-kicker">😎 Must try these!</p>
@@ -916,14 +922,15 @@
   <div class="share-panel leaderboard-panel">
     <button type="button" id="lb-close-x" class="ogbio-close-x" aria-label="Close leaderboard">×</button>
 
-    <p class="kicker lb-kicker">// global leaderboard</p>
-    <h3 id="lb-title" class="lb-title">leaderboard 🏆</h3>
+    <p class="kicker lb-kicker">// who's actually tuff?</p>
+    <h3 id="lb-title" class="lb-title">global leaderboard 🏆</h3>
+    <p class="lb-tagline">your username vs everyone else.</p>
 
     <!-- guest state -->
     <div id="lb-locked" class="lb-locked" hidden>
       <span class="lb-locked-emoji" aria-hidden="true">🔒</span>
       <h4 class="lb-locked-title">unlock the leaderboard</h4>
-      <p class="lb-locked-sub">sign in to see how your username ranks against everyone else — free, takes a few seconds.</p>
+      <p class="lb-locked-sub">sign in to see where your @ actually lands — free, takes a few seconds.</p>
       <div class="lb-locked-actions">
         <button type="button" id="lb-locked-signup" class="btn btn-primary">sign up →</button>
         <button type="button" id="lb-locked-login" class="btn btn-outline">log in</button>
@@ -932,7 +939,13 @@
 
     <!-- loading state -->
     <div id="lb-loading" class="lb-state" hidden>
-      <p class="loading-text mono show">loading the leaderboard...</p>
+      <p class="loading-text mono show">pulling up the rankings...</p>
+      <div class="lb-skeleton" aria-hidden="true">
+        <div class="lb-skeleton-row"></div>
+        <div class="lb-skeleton-row"></div>
+        <div class="lb-skeleton-row"></div>
+        <div class="lb-skeleton-row"></div>
+      </div>
     </div>
 
     <!-- error state -->
@@ -945,7 +958,7 @@
     <div id="lb-empty" class="lb-state" hidden>
       <span class="lb-empty-emoji" aria-hidden="true">🏁</span>
       <p class="auth-sub">no one's on the board yet.</p>
-      <p class="auth-account-note">rate your username to be the very first entry.</p>
+      <p class="auth-account-note">rate your username to be the very first name up there.</p>
     </div>
 
     <!-- signed-in state: ranked list -->

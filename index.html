@@ -1100,6 +1100,33 @@
 <script src="save.js"></script>
 <script src="saves.js"></script>
 <script src="leaderboard.js"></script>
+
+<script>
+/* Sends the browser to each feature's own dedicated page instead of just
+   switching the in-page view, so the URL changes to match the feature
+   (e.g. clicking "Compare 2 Usernames" here goes to
+   /Compare-2-usernames.html). Purely additive: it does not remove or
+   alter any of the existing click handlers in script.js/auth.js/
+   leaderboard.js -- it just also navigates once they've run. */
+(function () {
+  var FEATURE_PAGES = {
+    "tool-compare": "Compare-2-usernames.html",
+    "tool-ogbio": "Get-OG-BIO.html",
+    "tool-championship": "Ultimate-championship.html",
+    "tool-gamecard": "Gamecard.html",
+    "tool-roast": "Roast-my-username.html",
+    "leaderboard-toggle": "leaderboard.html",
+    "auth-toggle": "signup/signin.html"
+  };
+  Object.keys(FEATURE_PAGES).forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("click", function () {
+      window.location.href = FEATURE_PAGES[id];
+    });
+  });
+})();
+</script>
 </body>
 </html>
 

@@ -17,24 +17,21 @@
 <script>
   (function(){
     try{
-      var t = localStorage.getItem("rmu-theme");
-      document.documentElement.setAttribute("data-theme", t === "dark" ? "dark" : "light");
-    } catch(e) {
       document.documentElement.setAttribute("data-theme", "light");
-    }
+    } catch(e) {}
   })();
 </script>
 </head>
 <body>
 
 <header class="topbar">
-  <a class="logo" href="index.html" aria-label="Rate My Username — home">
+  <div class="logo">
     <svg class="logo-mark" width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
       <rect class="logo-mark-rect" x="1.5" y="1.5" width="27" height="27" rx="8" fill="#FFFFFF" stroke="#15151B" stroke-width="2"/>
       <text x="15" y="20.5" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="15" fill="#FF4222">@</text>
     </svg>
     <span class="dot"></span><span class="logo-text">Rate My Username<span class="logo-period">.</span></span>
-  </a>
+  </div>
   <div class="topbar-right">
     <a href="blog/index.html" class="badge nav-blog-link">blog</a>
     <div class="badge topbar-tagline">no cap, only vibes.</div>
@@ -59,17 +56,6 @@
     </button>
   </div>
 </header>
-
-<nav class="site-nav" aria-label="feature pages">
-  <a href="index.html" class="badge site-nav-link">rate</a>
-  <a href="compare.html" class="badge site-nav-link">compare</a>
-  <a href="versus.html" class="badge site-nav-link">versus</a>
-  <a href="roast.html" class="badge site-nav-link">roast</a>
-  <a href="hype.html" class="badge site-nav-link">hype</a>
-  <a href="championship.html" class="badge site-nav-link">championship</a>
-  <a href="leaderboard.html" class="badge site-nav-link">leaderboard</a>
-  <a href="blog/index.html" class="badge site-nav-link">blog</a>
-</nav>
 
 <main>
   <div class="stage">
@@ -103,44 +89,34 @@
               <span class="tool-name">Rate My Username</span>
               <span class="tool-desc">score your @ out of 100</span>
             </button>
-            <a href="compare.html" class="tool-card" id="tool-compare" data-tool="compare">
+            <button type="button" class="tool-card" id="tool-compare" data-tool="compare">
               <span class="tool-emoji" aria-hidden="true">⚔️</span>
               <span class="tool-name">Compare 2 Usernames</span>
               <span class="tool-desc">put two @s head-to-head</span>
-            </a>
-            <a href="versus.html" class="tool-card" id="tool-versus" data-tool="versus">
-              <span class="tool-emoji" aria-hidden="true">🥊</span>
-              <span class="tool-name">Versus Mode</span>
-              <span class="tool-desc">the head-to-head battle, its own page</span>
-            </a>
+            </button>
             <button type="button" class="tool-card tool-card-new" id="tool-ogbio" data-tool="ogbio" aria-haspopup="dialog" aria-controls="ogbio-overlay">
               <span class="tool-badge mono">new</span>
               <span class="tool-emoji" aria-hidden="true">🗿</span>
               <span class="tool-name">Get OG Bio <span aria-hidden="true">🗿</span></span>
               <span class="tool-desc">a certified og bio for your @</span>
             </button>
-            <a href="championship.html" class="tool-card" id="tool-championship" data-tool="championship">
+            <button type="button" class="tool-card" id="tool-championship" data-tool="championship">
               <span class="tool-emoji" aria-hidden="true">🏆</span>
               <span class="tool-name">Ultimate Username Championship</span>
               <span class="tool-desc">battle it out for the crown</span>
-            </a>
-            <a href="leaderboard.html" class="tool-card" id="tool-leaderboard" data-tool="leaderboard">
-              <span class="tool-emoji" aria-hidden="true">📊</span>
-              <span class="tool-name">Global Leaderboard</span>
-              <span class="tool-desc">see where your @ ranks</span>
-            </a>
-            <a href="hype.html" class="tool-card tool-card-new" id="tool-gamecard" data-tool="gamecard">
+            </button>
+            <button type="button" class="tool-card tool-card-new" id="tool-gamecard" data-tool="gamecard">
               <span class="tool-badge mono">new</span>
               <span class="tool-emoji" aria-hidden="true">⚡</span>
-              <span class="tool-name">GameCard (Hype)</span>
+              <span class="tool-name">GameCard</span>
               <span class="tool-desc">build a 9:16 gamer/creator poster</span>
-            </a>
-            <a href="roast.html" class="tool-card tool-card-new" id="tool-roast" data-tool="roast">
+            </button>
+            <button type="button" class="tool-card tool-card-new" id="tool-roast" data-tool="roast">
               <span class="tool-badge mono">new</span>
               <span class="tool-emoji" aria-hidden="true">💀</span>
               <span class="tool-name">Roast My Username</span>
               <span class="tool-desc">get cooked, respectfully</span>
-            </a>
+            </button>
           </div>
         </div>
 
@@ -184,11 +160,7 @@
         <div class="result-actions">
           <button type="button" id="rate-another" class="btn btn-outline">rate another →</button>
           <button type="button" id="share-btn" class="btn btn-outline share">share score ↗</button>
-        </div>
-
-        <div class="lb-cta" id="lb-cta" hidden>
-          <p class="lb-cta-label">see where you rank</p>
-          <button type="button" id="lb-see-btn" class="btn btn-outline">add to global leaderboard →</button>
+          <button type="button" id="lb-see-btn" class="btn btn-outline" hidden>see leaderboard →</button>
         </div>
       </div>
     </section>
@@ -904,21 +876,6 @@
       </p>
     </div>
 
-    <!-- post sign-up state: email confirmation required (Supabase returned a user with no session) -->
-    <div id="auth-view-confirm" class="auth-view auth-confirm" hidden aria-live="polite">
-      <div class="auth-confirm-icon" aria-hidden="true">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polyline points="4 12.5 9.5 18 20 5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <p class="kicker auth-kicker">// one more step</p>
-      <h3 class="auth-title">check your email.</h3>
-      <p class="auth-sub">we sent a confirmation link to your email. click it to activate your account.</p>
-      <p class="auth-confirm-email mono" id="auth-confirm-email">your@email.com</p>
-      <p class="auth-confirm-guide mono">open your inbox → confirm → come back here</p>
-      <button type="button" id="auth-confirm-back-btn" class="btn-ghost auth-confirm-back">← back to sign up</button>
-    </div>
-
     <!-- signed-in state: account summary + logout -->
     <div id="auth-view-account" class="auth-view" hidden>
       <p class="kicker auth-kicker">// signed in</p>
@@ -1143,7 +1100,6 @@
 <script src="save.js"></script>
 <script src="saves.js"></script>
 <script src="leaderboard.js"></script>
-<script src="nav.js"></script>
 </body>
 </html>
 

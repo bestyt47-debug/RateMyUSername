@@ -1357,71 +1357,38 @@
     max-width: 360px;
     text-align: left;
     position: relative;
-    padding: 30px 24px 26px;
-    overflow: hidden;
+    padding: 26px 22px 22px;
   }
-  /* subtle dot-grid texture, consistent with the site's noise/grid accents
-     elsewhere — kept low-opacity and behind the content, click-through. */
-  .auth-panel::before{
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(currentColor 1px, transparent 1px);
-    background-size: 14px 14px;
-    background-position: -4px -4px;
-    color: var(--ink);
-    opacity: .05;
-    pointer-events: none;
-    border-radius: inherit;
-  }
-  .auth-panel > .auth-view{ position: relative; z-index: 1; }
-  .auth-kicker{ margin: 0 0 8px; text-align: left; }
+  .auth-kicker{ margin: 0 0 6px; text-align: left; }
   .auth-title{
     font-family:'Space Grotesk', sans-serif;
     font-weight: 900;
-    font-size: 24px;
+    font-size: 22px;
     letter-spacing: -0.02em;
-    margin: 0 0 10px;
-    line-height: 1.15;
+    margin: 0 0 8px;
   }
   .auth-sub{
     font-size: 13px;
     line-height: 1.5;
     color: var(--ink-soft);
-    margin: 0 0 22px;
+    margin: 0 0 18px;
   }
-  .auth-input-row{ margin-bottom: 14px; }
+  .auth-input-row{ margin-bottom: 10px; }
   .auth-input-row input{ text-align: left; }
-  /* premium/interactive polish scoped to this panel only — the shared
-     .input-row base rule (used across the rest of the site) is untouched. */
-  .auth-panel .input-row:focus-within{
-    border-color: var(--blue);
-  }
   .auth-error{
     text-align: left;
     height: auto;
     min-height: 18px;
     margin-top: 2px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     line-height: 1.4;
   }
   .auth-submit-btn{
     width: 100%;
     justify-content: center;
-    margin-top: 10px;
-    box-shadow: var(--shadow-sm);
-    letter-spacing: .01em;
+    margin-top: 6px;
   }
-  .auth-submit-btn:hover{
-    filter: none;
-    transform: translate(-2px,-2px);
-    box-shadow: 6px 6px 0 var(--ink);
-  }
-  .auth-submit-btn:active{
-    transform: translate(0,0);
-    box-shadow: 1px 1px 0 var(--ink);
-  }
-  .auth-submit-btn:disabled{ opacity: .65; cursor: default; transform: none; filter: none; box-shadow: var(--shadow-sm); }
+  .auth-submit-btn:disabled{ opacity: .65; cursor: default; transform: none; filter: none; }
   .auth-switch{
     display: flex;
     align-items: center;
@@ -1429,7 +1396,7 @@
     justify-content: center;
     font-size: 12.5px;
     color: var(--ink-soft);
-    margin: 22px 0 0;
+    margin: 18px 0 0;
   }
   .auth-account-note{
     font-size: 12.5px;
@@ -1444,55 +1411,6 @@
     gap: 10px;
   }
   .auth-my-saves-btn{ width: 100%; justify-content: center; }
-
-  /* ---------- sign-up success: "check your email" confirmation state ---------- */
-  .auth-confirm{
-    text-align: center;
-  }
-  .auth-confirm .auth-kicker{ text-align: center; }
-  .auth-confirm .auth-sub{ margin: 0 0 14px; }
-  .auth-confirm-icon{
-    width: 60px;
-    height: 60px;
-    margin: 2px auto 16px;
-    border-radius: 50%;
-    border: 2.5px solid var(--line);
-    background: var(--card);
-    color: var(--mint);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 6px 6px 0 var(--mint);
-    transform: rotate(-6deg);
-  }
-  .auth-confirm-email{
-    display: inline-block;
-    max-width: 100%;
-    overflow-wrap: anywhere;
-    background: var(--bg-2);
-    border: 1.5px solid var(--line-soft);
-    border-radius: 999px;
-    padding: 8px 18px;
-    font-size: 12.5px;
-    color: var(--ink);
-    margin: 0 0 18px;
-  }
-  .auth-confirm-guide{
-    font-size: 11.5px;
-    letter-spacing: .03em;
-    color: var(--ink-soft);
-    text-transform: lowercase;
-    margin: 0 0 22px;
-  }
-  .auth-confirm-back{
-    display: block;
-    margin: 0 auto;
-  }
-  @media (max-width: 380px){
-    .auth-panel{ padding: 26px 18px 22px; }
-    .auth-title{ font-size: 21px; }
-    .auth-confirm-icon{ width: 52px; height: 52px; }
-  }
 
   /* ---------- my saves overlay (additive, rest of site untouched) ---------- */
   .saves-panel{
@@ -3369,22 +3287,10 @@
     25%, 75%{ background: var(--yellow); }
   }
 
-  /* opt-in leaderboard CTA on the result screen */
-  .lb-cta{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap: 8px;
-    margin-top: 14px;
-    animation: fade-up-sm .4s .55s cubic-bezier(.2,.9,.25,1) both;
-  }
-  .lb-cta[hidden]{ display:none; }
-  .lb-cta-label{
-    text-align:center;
-    font-size: 12.5px;
-    color: var(--ink-soft);
-    margin:0;
-  }
+  /* .btn sets display:inline-flex, so — same reasoning as the toggle above —
+     hidden needs to be re-asserted explicitly for the "see leaderboard"
+     result button. */
+  #lb-see-btn[hidden]{ display:none; }
 
 
   @media (max-width: 480px){
@@ -3398,57 +3304,3 @@
     .lb-row-score{ font-size: 14.5px; min-width: 38px; }
     .lb-tagline{ font-size: 12.5px; }
   }
-
-/* ========================================================
-   MULTI-PAGE SITE NAV (additive only — every existing rule
-   above is untouched; this just supports the split into
-   index.html / compare.html / versus.html / roast.html /
-   hype.html / championship.html / leaderboard.html)
-   ======================================================== */
-.site-nav{
-  width:100%;
-  max-width: 900px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  padding: 12px 20px 0;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-.site-nav-link{
-  text-decoration:none;
-  cursor:pointer;
-  font-size: 11.5px;
-  font-weight:700;
-  color: var(--ink-soft);
-  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, color .15s ease;
-  white-space: nowrap;
-}
-.site-nav-link:hover{
-  color: var(--ink);
-  background: var(--yellow);
-  transform: translate(-1px,-1px);
-  box-shadow: 2px 2px 0 var(--ink);
-}
-.site-nav-link.is-current{
-  background: var(--ink);
-  color: var(--ink-contrast);
-}
-.logo[href]{ text-decoration:none; }
-@media (max-width: 480px){
-  .site-nav{
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .site-nav::-webkit-scrollbar{ display:none; }
-  .site-nav-link{ flex: 0 0 auto; }
-}
-
-/* homepage tool cards for Versus / Leaderboard are real <a> links
-   (rather than the JS-driven <button>s the in-page tools use) so
-   they need the anchor defaults reset to match .tool-card exactly. */
-a.tool-card{ text-decoration:none; }

@@ -137,7 +137,6 @@
     const closeX = document.getElementById("auth-close-x");
 
     const viewForm = document.getElementById("auth-view-form");
-    const viewConfirm = document.getElementById("auth-view-confirm");
     const viewAccount = document.getElementById("auth-view-account");
 
     const titleEl = document.getElementById("auth-title");
@@ -152,9 +151,6 @@
 
     const accountEmailEl = document.getElementById("auth-account-email");
     const logoutBtn = document.getElementById("auth-logout-btn");
-
-    const confirmEmailEl = document.getElementById("auth-confirm-email");
-    const confirmBackBtn = document.getElementById("auth-confirm-back-btn");
 
     if (!authToggle || !overlay || !form) return; // markup not present, bail safely
 
@@ -225,30 +221,11 @@
 
     function showFormView() {
       viewForm.hidden = false;
-      if (viewConfirm) viewConfirm.hidden = true;
       viewAccount.hidden = true;
     }
     function showAccountView() {
       viewForm.hidden = true;
-      if (viewConfirm) viewConfirm.hidden = true;
       viewAccount.hidden = false;
-    }
-    // Shown after a successful sign-up when Supabase requires email
-    // confirmation (a user was created but no session was returned).
-    // Does NOT log the user in and does NOT claim the account is active —
-    // it just tells them where things stand and what to do next.
-    function showConfirmView(email) {
-      viewForm.hidden = true;
-      viewAccount.hidden = true;
-      if (!viewConfirm) return;
-      if (confirmEmailEl) confirmEmailEl.textContent = email || "";
-      viewConfirm.hidden = false;
-      // subtle, reusable entrance animation (same utility the rest of the
-      // site uses for view transitions) — restart it in case this view
-      // is shown more than once in a session.
-      viewConfirm.classList.remove("view-enter");
-      void viewConfirm.offsetWidth;
-      viewConfirm.classList.add("view-enter");
     }
 
     function openOverlay(promptMessage) {
@@ -304,15 +281,6 @@
       emailInput.focus();
     });
 
-    if (confirmBackBtn) {
-      confirmBackBtn.addEventListener("click", function () {
-        setMode("signup");
-        passwordInput.value = "";
-        showFormView();
-        emailInput.focus();
-      });
-    }
-
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
       clearError();
@@ -331,12 +299,10 @@
           const { data, error } = await sb.auth.signUp({ email, password });
           if (error) throw error;
           if (data && data.user && !data.session) {
-            // email confirmation is required by this Supabase project —
-            // show the dedicated confirmation screen instead of leaving
-            // the user on the form. No session exists yet, so this is
-            // purely informational; the account isn't active until they
-            // click the link in their email.
-            showConfirmView(email);
+            // email confirmation is required by this Supabase project
+            setMode("login");
+            emailInput.value = email;
+            showError("account created — check your email to confirm, then log in.");
           } else {
             closeOverlay();
           }

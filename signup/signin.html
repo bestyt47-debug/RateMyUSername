@@ -5,15 +5,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="google-site-verification" content="6liRt7sSZLzX1MMLntCGgpT1fMaqrPw9pgbddLtZngQ" />
-<title>Leaderboard — Rate My Username</title>
-<meta name="description" content="See the global leaderboard and find out who's actually tuff.">
+<title>Sign Up / Log In — Rate My Username</title>
+<meta name="description" content="Create an account or log in to Rate My Username.">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://ratemyusername.fun/leaderboard.html" />
+<link rel="canonical" href="https://ratemyusername.fun/signup/signin.html" />
 <script defer src="https://cloud.umami.is/script.js" data-website-id="04ed4637-fdeb-4a08-853e-c8676ed534b6"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../style.css">
 <script>
   (function(){
     try{
@@ -33,7 +33,7 @@
     <span class="dot"></span><span class="logo-text">Rate My Username<span class="logo-period">.</span></span>
   </div>
   <div class="topbar-right">
-    <a href="blog/index.html" class="badge nav-blog-link">blog</a>
+    <a href="../blog/index.html" class="badge nav-blog-link">blog</a>
     <div class="badge topbar-tagline">no cap, only vibes.</div>
     <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" aria-pressed="false">
       <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -825,7 +825,7 @@
   </div>
 </section>
 
-<footer class="credit">ratemyusername.local — screenshots encouraged, receipts not included · <a href="blog/index.html" class="footer-blog-link">read the blog</a></footer>
+<footer class="credit">ratemyusername.local — screenshots encouraged, receipts not included · <a href="../blog/index.html" class="footer-blog-link">read the blog</a></footer>
 
 <!-- ============ TIPS OVERLAY ============ -->
 <div id="tips-overlay" class="share-overlay" role="dialog" aria-modal="true" aria-labelledby="tips-title">
@@ -1094,15 +1094,15 @@
   auth.js falls back to fetching /config.js (a Cloudflare Pages Function —
   only works when deployed via Git integration or Wrangler, not drag-and-drop).
 -->
-<script src="env.js"></script>
-<script src="auth.js"></script>
-<script src="script.js"></script>
-<script src="save.js"></script>
-<script src="saves.js"></script>
-<script src="leaderboard.js"></script>
+<script src="../env.js"></script>
+<script src="../auth.js"></script>
+<script src="../script.js"></script>
+<script src="../save.js"></script>
+<script src="../saves.js"></script>
+<script src="../leaderboard.js"></script>
 
 <script>
-/* Deep-link bootstrap: opens the Global Leaderboard feature automatically on load
+/* Deep-link bootstrap: opens the Sign up / Log in feature automatically on load
    by clicking the same button the topbar uses, once the existing
    rmu:auth-ready signal (dispatched by auth.js) says the account system
    is available -- same readiness check leaderboard.js already uses. */
@@ -1127,7 +1127,7 @@
   ready(function () {
     whenAuthReady(function (available) {
       if (!available) return; // guest-only deployment, same as the topbar button staying hidden
-      var btn = document.getElementById("leaderboard-toggle");
+      var btn = document.getElementById("auth-toggle");
       if (btn) btn.click();
     });
   });

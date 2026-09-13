@@ -15,10 +15,10 @@
      - the leaderboard overlay: locked / loading / error / empty /
        ranked-list states
      - reading + upserting public.leaderboard_entries (see
-       supabase_leaderboard.sql) — ONE row per user, created/updated
-       ONLY when a logged-in user explicitly clicks the "add to
-       global leaderboard" CTA on a result. Checking/rating a
-       username never writes a leaderboard row by itself.
+       supabase_leaderboard.sql) — ONE row per user, automatically
+       created/updated the moment a logged-in user completes the
+       existing Check/Rate action. There is no separate "submit to
+       leaderboard" button by design.
 
    If the auth foundation isn't available on this deployment (no
    Supabase config, library failed to load), this file does
@@ -101,7 +101,6 @@
 
     // ---------- DOM refs ----------
     const leaderboardToggle = document.getElementById("leaderboard-toggle");
-    const lbCta = document.getElementById("lb-cta");
     const lbSeeBtn = document.getElementById("lb-see-btn");
     const lbAnnounce = document.getElementById("lb-announce");
     const accountLbBtn = document.getElementById("auth-leaderboard-btn");
@@ -139,7 +138,7 @@
     // ship `hidden` in the markup so guest-only deployments never show a
     // leaderboard that can't work).
     if (leaderboardToggle) leaderboardToggle.hidden = false;
-    if (lbCta) lbCta.hidden = false;
+    if (lbSeeBtn) lbSeeBtn.hidden = false;
     if (lbAnnounce) lbAnnounce.hidden = false;
 
     function isLoggedIn() {
@@ -229,27 +228,8 @@
       });
     }
     if (lbSeeBtn) {
-      lbSeeBtn.addEventListener("click", async function () {
+      lbSeeBtn.addEventListener("click", function () {
         pendingReopenAfterAuth = false;
-
-        // Logged out: this CTA never creates an entry — just surface the
-        // existing locked/auth leaderboard flow so the person can sign up
-        // or log in first.
-        if (!isLoggedIn()) {
-          openOverlay();
-          loadLeaderboard();
-          return;
-        }
-
-        // Logged in: THIS click is the only thing that ever writes a
-        // leaderboard row. Upsert the currently-displayed result first,
-        // and only open/jump to the leaderboard if that actually worked —
-        // never claim something was added when it wasn't.
-        lbSeeBtn.disabled = true;
-        const added = await upsertFromLastResult();
-        lbSeeBtn.disabled = false;
-        if (!added) return;
-
         openOverlay();
         loadLeaderboard({ scrollToSelf: true });
       });
@@ -395,19 +375,17 @@
       }
     }
 
-    // ---------- explicit create/update of the caller's leaderboard entry ----------
-    // Called ONLY from the "add to global leaderboard" CTA click above —
-    // nothing else in this file writes to leaderboard_entries. Reads
-    // whatever result is currently on screen (window.__RMU_LAST_RESULT__,
-    // set by script.js right before it shows #view-result) so the entry
-    // always matches the exact result the person was looking at when they
-    // clicked, and upserts on the (user_id) unique key so a user always
-    // has exactly one leaderboard row, reflecting whichever result they
-    // chose to add. Returns true only if the write actually succeeded.
+    // ---------- auto-create/update the caller's leaderboard entry ----------
+    // The existing Check/Rate action is the only thing that ever writes
+    // here — there is no separate "submit" button. We watch the same
+    // `hidden` attribute script.js already toggles on #view-result (it
+    // only ever un-hides that section right after a fresh rate result is
+    // rendered), and upsert on the (user_id) unique key so a user always
+    // has exactly one leaderboard row, reflecting their latest result.
     async function upsertFromLastResult() {
-      if (!isLoggedIn()) return false;
+      if (!isLoggedIn()) return;
       const r = window.__RMU_LAST_RESULT__;
-      if (!r || typeof r.overall !== "number" || !r.handle) return false;
+      if (!r || typeof r.overall !== "number" || !r.handle) return;
 
       const session = authApi.getSession();
       try {
@@ -418,11 +396,23 @@
           updated_at: new Date().toISOString()
         }, { onConflict: "user_id" });
         if (error) throw error;
-        return true;
+        // keep an already-open leaderboard in sync with the fresh result
+        if (overlay.classList.contains("open")) loadLeaderboard();
       } catch (err) {
         console.warn("[leaderboard] could not update leaderboard entry", err);
-        return false;
       }
+    }
+
+    const resultView = document.getElementById("view-result");
+    if (resultView) {
+      const observer = new MutationObserver(function () {
+        if (!resultView.hidden) upsertFromLastResult();
+      });
+      observer.observe(resultView, { attributes: true, attributeFilter: ["hidden"] });
+      // Handle the case where a rate result is already showing at the
+      // moment auth finishes initializing (e.g. slow network, page already
+      // mid-flow) — resultView.hidden is false but no mutation will fire.
+      if (!resultView.hidden) upsertFromLastResult();
     }
   }
 })();

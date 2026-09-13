@@ -5,10 +5,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="google-site-verification" content="6liRt7sSZLzX1MMLntCGgpT1fMaqrPw9pgbddLtZngQ" />
-<title>Leaderboard — Rate My Username</title>
-<meta name="description" content="See the global leaderboard and find out who's actually tuff.">
+<title>GameCard — Rate My Username</title>
+<meta name="description" content="Build a shareable 9:16 gamer/creator poster for your username.">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://ratemyusername.fun/leaderboard.html" />
+<link rel="canonical" href="https://ratemyusername.fun/Gamecard.html" />
 <script defer src="https://cloud.umami.is/script.js" data-website-id="04ed4637-fdeb-4a08-853e-c8676ed534b6"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1102,10 +1102,10 @@
 <script src="leaderboard.js"></script>
 
 <script>
-/* Deep-link bootstrap: opens the Global Leaderboard feature automatically on load
-   by clicking the same button the topbar uses, once the existing
-   rmu:auth-ready signal (dispatched by auth.js) says the account system
-   is available -- same readiness check leaderboard.js already uses. */
+/* Deep-link bootstrap: opens the GameCard feature automatically on load
+   by clicking the same button the homepage tool-grid uses. Does not
+   modify or duplicate any app logic -- it only triggers the existing
+   button's existing click handler in script.js. */
 (function () {
   function ready(fn) {
     if (document.readyState === "loading") {
@@ -1114,22 +1114,9 @@
       fn();
     }
   }
-  function whenAuthReady(cb) {
-    if (window.__RMU_AUTH_STATE__ && window.__RMU_AUTH_STATE__.ready) {
-      cb(window.__RMU_AUTH_STATE__.available);
-      return;
-    }
-    window.addEventListener("rmu:auth-ready", function handler(e) {
-      window.removeEventListener("rmu:auth-ready", handler);
-      cb(e && e.detail ? e.detail.available : false);
-    });
-  }
   ready(function () {
-    whenAuthReady(function (available) {
-      if (!available) return; // guest-only deployment, same as the topbar button staying hidden
-      var btn = document.getElementById("leaderboard-toggle");
-      if (btn) btn.click();
-    });
+    var btn = document.getElementById("tool-gamecard");
+    if (btn) btn.click();
   });
 })();
 </script>

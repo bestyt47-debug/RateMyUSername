@@ -167,6 +167,77 @@
       errorEl.classList.add("show");
     }
 
+    function showVerifyEmailModal(email) {
+      var existing = document.getElementById("verify-email-overlay");
+      if (existing) existing.remove();
+
+      var verifyOverlay = document.createElement("div");
+      verifyOverlay.id = "verify-email-overlay";
+      verifyOverlay.className = "share-overlay open";
+      verifyOverlay.setAttribute("role", "dialog");
+      verifyOverlay.setAttribute("aria-modal", "true");
+      verifyOverlay.setAttribute("aria-label", "Verify your email");
+
+      var verifyPanel = document.createElement("div");
+      verifyPanel.className = "share-panel";
+      verifyPanel.style.maxWidth = "360px";
+      verifyPanel.style.textAlign = "center";
+
+      var badge = document.createElement("div");
+      badge.style.cssText =
+        "width:56px;height:56px;margin:0 auto 16px;border-radius:50%;" +
+        "background:var(--mint);border:2px solid var(--line);display:flex;" +
+        "align-items:center;justify-content:center;";
+      badge.innerHTML =
+        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+        '<path d="M5 13l4 4L19 7" stroke="var(--ink-contrast)" stroke-width="3" ' +
+        'stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+      var heading = document.createElement("h3");
+      heading.style.cssText =
+        "margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-size:20px;color:var(--ink);";
+      heading.textContent = "Account created — verify your email";
+
+      var body = document.createElement("p");
+      body.style.cssText = "margin:0 0 20px;color:var(--ink-soft);font-size:14px;line-height:1.5;";
+      body.appendChild(document.createTextNode("We sent a confirmation link to "));
+      var emailStrong = document.createElement("strong");
+      emailStrong.style.color = "var(--ink)";
+      emailStrong.textContent = email;
+      body.appendChild(emailStrong);
+      body.appendChild(document.createTextNode(
+        ". Open it to verify your account, then come back here and log in."
+      ));
+
+      var okBtn = document.createElement("button");
+      okBtn.type = "button";
+      okBtn.className = "btn btn-primary";
+      okBtn.style.width = "100%";
+      okBtn.textContent = "Got it";
+
+      verifyPanel.appendChild(badge);
+      verifyPanel.appendChild(heading);
+      verifyPanel.appendChild(body);
+      verifyPanel.appendChild(okBtn);
+      verifyOverlay.appendChild(verifyPanel);
+      document.body.appendChild(verifyOverlay);
+
+      function closeVerifyModal() {
+        verifyOverlay.classList.remove("open");
+        setTimeout(function () { verifyOverlay.remove(); }, 250);
+        document.removeEventListener("keydown", onKeydown);
+      }
+      function onKeydown(e) {
+        if (e.key === "Escape") closeVerifyModal();
+      }
+      okBtn.addEventListener("click", closeVerifyModal);
+      verifyOverlay.addEventListener("click", function (e) {
+        if (e.target === verifyOverlay) closeVerifyModal();
+      });
+      document.addEventListener("keydown", onKeydown);
+      okBtn.focus();
+    }
+
     function setLoading(isLoading) {
       submitBtn.disabled = isLoading;
       switchBtn.disabled = isLoading;
@@ -302,7 +373,7 @@
             // email confirmation is required by this Supabase project
             setMode("login");
             emailInput.value = email;
-            showError("account created — check your email to confirm, then log in.");
+            showVerifyEmailModal(email);
           } else {
             closeOverlay();
           }

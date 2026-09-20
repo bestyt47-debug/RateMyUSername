@@ -1204,7 +1204,7 @@
     ctx.textAlign = "center";
     ctx.font = "500 15px 'JetBrains Mono', monospace";
     ctx.fillStyle = "#A8A99E";
-    ctx.fillText("ratemyusername.local", W / 2, cardY + cardH - 26);
+    ctx.fillText("ratemyusername.fun", W / 2, cardY + cardH - 26);
   }
 
   function openShare(result){
@@ -2892,7 +2892,7 @@
 
         rctx.font = "500 15px 'JetBrains Mono', monospace";
         rctx.fillStyle = "#A8A99E";
-        rctx.fillText("ratemyusername.local · roast my username", W / 2, cardY + cardH - 26);
+        rctx.fillText("ratemyusername.fun · roast my username", W / 2, cardY + cardH - 26);
       }
 
       function openRoastShare(){
